@@ -9,6 +9,7 @@ fastapi: source code to run the FastAPI ingestion workflow
 To run the data ingestion workflow, make the following steps:
 1) create the conda environment from the environment.yaml file and activate it
      > conda env create -f environment.yaml
+     
      > conda activate fastapi
 2) run the main.py function
      > python main.py
