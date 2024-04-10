@@ -1,0 +1,13 @@
+name: fastapi
+channels:
+        - conda-forge
+dependencies:
+        - numpy
+        - pandas
+        - fastapi
+        - typeguard
+        - psycopg2
+        - pip
+        - pip:
+                - uvicorn
+                - python-multipart
