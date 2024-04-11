@@ -15,3 +15,8 @@ To run the data ingestion workflow, make the following steps:
 2) run the main.py function
      > python main.py
 3) open your browser and go to "http://127.0.0.1:8001/docs" (or change 8001 to the port you indicate in the main.py)
+
+**New instructions**
+
+1. Build the Dockerfile in src/Dockerfile
+1. Run the image with docker run -p 8000:80 <docker_image> python main.py

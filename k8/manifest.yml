@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-ingestor
+  labels:
+    app: data-ingestor
+    version: v0.1.0
+    env: dev
+    team: synthema
+    component: data-ingestor
+  namespace: synthema-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-ingestor
+  template:
+    metadata:
+      labels:
+        app: data-ingestor
+    spec:
+      containers:
+        - name: data-ingestor-container
+          image: harbor.synthema.rid-intrasoft.eu/synthema/data-ingestor:DOCKER_TAG
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          command: ["python", "main.py"]
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+      imagePullSecrets:
+        - name: harbor-cred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-ingestor-svc
+  namespace: synthema-dev
+spec:
+  type: NodePort
+  selector:
+    app: data-ingestor
+  ports:
+    - port: 80
+      protocol: TCP
