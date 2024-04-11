@@ -3,8 +3,9 @@ FastAPI workflow for data ingestion
 Example_data: here we can find an example of dataset to upload (.csv file) and an example of a schema for AML (.json)
 
 fastapi: source code to run the FastAPI ingestion workflow
-          - data_ingestion_utils.py: here the basic functions to connect fastapi and postgres database are defined
-          - main.py: here the CRUD functions for both schemas and datasets are defined. 
+
+- data_ingestion_utils.py: here the basic functions to connect fastapi and postgres database are defined
+- main.py: here the CRUD functions for both schemas and datasets are defined. 
 
 To run the data ingestion workflow, make the following steps:
 1) create the conda environment from the environment.yaml file and activate it
