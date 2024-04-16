@@ -29,6 +29,9 @@ central_node_schemas = {}
 ############################
 # SCHEMA FASTAPI FUNCTIONS #
 ############################
+@app.get("/healthcheck", tags=["healthcheck"])
+async def healthcheck():
+    return {"status": "ok"}
 
 # save schema in the postgres database
 @app.post("/schemas/{disease}", tags=["schemas"])

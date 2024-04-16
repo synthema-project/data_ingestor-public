@@ -1,0 +1,127 @@
+pipeline {
+    agent {
+        node {
+            label 'jenkins-dev'
+        }
+    }
+    environment {
+        APP_NAME = "data-ingestor"
+        MAJOR_RELEASE = 0.1
+        DOCKER_TAG = "${MAJOR_RELEASE}.${env.BUILD_NUMBER}"
+        DOCKER_REG = "harbor.synthema.rid-intrasoft.eu"
+        DOCKER_REPO = "/synthema/"
+        DOCKER_REG_CREDS = "harbor-jenkins-creds"
+    }
+
+    stages {
+        // *************************
+        // *** IMAGE BUILD STAGE ***
+        // *************************
+        stage("Build_Images"){
+            steps {
+                echo "***** Building Image *****"
+                // Build the image and push a test tag to the remote repository
+                sh 'docker image build -t ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test src/Dockerfile'
+                sh 'docker image push ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test'
+            }
+        }
+
+        // **************************
+        // *** RUN THE UNIT TESTS ***
+        // **************************
+        stage("Unit_Tests"){
+            steps{
+                sh 'docker container run -p 80:80 --name ${APP_NAME}p --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/unit'
+            }
+        }
+
+        // **************************************
+        // *** Functional & Integration Tests ***
+        // **************************************
+        stage("Func_Tests"){
+            steps {
+                echo "***** Running Functional Tests *****"
+                // Deploy the test image
+                withKubeConfig([credentialsId: 'k8s-admin']) {
+                    sh '''
+                    cp k8s/manifest.yaml k8s/manifest-test.yaml
+                    sed -e 's|DOCKER_TAG|test|g' k8s/manifest-test.yaml | kubectl apply -f -
+                    '''
+                }
+                sh 'sleep 10'
+                // Execute the tests
+                script {
+                    withKubeConfig([credentialsId: 'k8s-admin']) {
+                        def nodePort = sh(script: 'kubectl get svc data-ingestor-svc -n synthema-dev -o jsonpath={.spec.ports[0].nodePort}', returnStdout: true).trim()
+                        sh "curl -f http://49.13.149.57:${nodePort}/healthcheck"
+                    }
+                }
+                // Destroy the deployment
+                withKubeConfig([credentialsId: 'k8s-admin']) {
+                    sh '''
+                    kubectl delete -f k8s/manifest-test.yaml
+                    rm k8s/manifest-test.yaml
+                    '''
+               }
+            }
+        }
+
+        // *******************************
+        // *** Push Images To Registry ***
+        // *******************************
+        stage("Push_Image"){
+            when {
+                environment name: "GIT_BRANCH", value: "origin/master"
+            }
+            steps {
+                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'harbor-jenkins-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]){
+                    echo "***** Push Container Image *****"
+                    // Login to the remote Docker Registry
+                    sh 'docker login ${DOCKER_REG} -u ${USERNAME} -p ${PASSWORD}'
+                    // Build the images
+                    sh 'docker image tag ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:latest'
+                    sh 'docker image tag ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:${DOCKER_TAG}'
+                    sh 'docker image push ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:${DOCKER_TAG}'
+                    sh 'docker image push ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:latest'
+                }
+            }
+        }
+        // **************
+        // *** Deploy ***
+        // **************
+        stage("Deployment"){
+            when {
+                environment name: "GIT_BRANCH", value: "origin/master"
+            }
+
+            steps {
+                withKubeConfig([credentialsId: 'k8s-admin']) {
+                    sh '''
+                    cp k8s/mlflow_proxy-staging.yaml k8s/mlflow_proxy-staging-${DOCKER_TAG}.yaml
+                    sed -e "s|DOCKER_TAG|${DOCKER_TAG}|g" k8/k8_mlflow_proxy-staging-${DOCKER_TAG}.yaml | kubectl apply -f -
+                    '''
+               }
+            }
+        }
+    }
+    post{
+        always {
+            echo "***** Cleaning Up *****"
+            // Clean up the Docker resources
+            sh '''
+            docker image rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:${DOCKER_TAG} || true
+            docker image rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:latest || true
+            docker image rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test || true
+            '''
+        }
+        // failure{
+        // //     // slackSend (color: "#FF0000", message: "Job FAILED: '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        // //     sh 'docker image rm ${APP_NAME}:test &> /dev/null || True'
+        // //     sh 'DOCKER_TAG=test docker compose down --rmi all'
+        // }
+
+        // success{
+        //     slackSend (color: "#008000", message: "Job SUCCESSFUL: '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        // }
+    }
+}
