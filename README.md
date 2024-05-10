@@ -6,8 +6,8 @@ fastapi: source code to run the FastAPI ingestion workflow
 
 - data_ingestion_utils.py: here the basic functions to connect fastapi and sqlite database are defined
 - main.py: here the CRUD functions for both schemas and datasets are defined.
-- data_ingestion_utils_postgresql: here the basic functions to connect fastapi and postgresql database are defined
-- main_postgresql: here the CRUD functions for both schemas and datasets are defined.
+- data_ingestion_utils_postgresql.py: here the basic functions to connect fastapi and postgresql database are defined
+- main_postgresql.py: here the CRUD functions for both schemas and datasets are defined.
 
 To run the data ingestion workflow, make the following steps:
 1) create the conda environment from the environment.yaml file and activate it
