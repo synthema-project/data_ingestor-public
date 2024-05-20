@@ -25,6 +25,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
+          env:
+            - name: DATABASE_FILE
+              value: "/data/central_node.db"
           command: ["python", "main.py"]
           resources:
             limits:
