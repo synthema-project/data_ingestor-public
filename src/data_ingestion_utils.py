@@ -45,14 +45,26 @@ type_keys = {
 }
 
 # Funzione per creare la connessione al database SQLite
+#def create_connection():
+#    conn = None
+#    try:
+#        conn = sqlite3.connect(DATABASE_FILE)
+#        print(f"Connected to SQLite database '{DATABASE_FILE}'")
+#        return conn
+#    except Exception as e:
+#        print(e)
+
 def create_connection():
-    conn = None
     try:
+        if not os.path.exists(DATABASE_FILE):
+            print(f"Database file {DATABASE_FILE} does not exist.")
+
         conn = sqlite3.connect(DATABASE_FILE)
         print(f"Connected to SQLite database '{DATABASE_FILE}'")
         return conn
-    except Exception as e:
-        print(e)
+    except sqlite3.Error as e:
+        print(f"Error connecting to database: {e}")
+        return None
 
 ##################################################
 # CHECK COMPATIBILITY BETWEEN DATASET AND SCHEMA #
