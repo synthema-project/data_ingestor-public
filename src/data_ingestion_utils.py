@@ -12,8 +12,8 @@ import pandas as pd
 import numpy as np
 
 # directory dove salvare i dataset locali
-LOCAL_DATASETS_DIR = "/mnt/c/users/lenovo/desktop/fastapi/SYNTHEMA/local_datasets"
-#LOCAL_DATASETS_DIR = "./local_datasets"
+#LOCAL_DATASETS_DIR = "/mnt/c/users/lenovo/desktop/fastapi/SYNTHEMA/local_datasets"
+LOCAL_DATASETS_DIR = "/app/data/dataset/local_datasets"
 # dict to save datasets in the central node
 local_datasets = {}
 

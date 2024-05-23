@@ -12,8 +12,12 @@ import uuid
 import httpx
 import pandas as pd
 import numpy as np
+#import requests
 
 app = FastAPI()
+
+ANNOTATION_ENDPOINT = "http://data-annotation:8001/schema"
+CATALOGUE_ENDPOINT = "http://data-catalogue:8003/metadata"
 
 # create new dataset on database
 @app.post("/dataset", tags=["data-ingestion"])
@@ -26,12 +30,15 @@ async def upload_dataset(node: str, disease: str,  file: UploadFile = File(...))
         async with httpx.AsyncClient() as client:
             try:
                 # Fetch schema from data-annotation
-                response = await client.get(f"http://localhost:8001/schema/{disease}")
+                print('before response get schema')
+                response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
+                print(response.json())
                 if response.status_code != 200:
                     raise HTTPException(status_code=404, detail="Schema not found")
                 schema = response.json()["schema"]
 
                 errors = list(check_schema_dataset(schema, dataframe))
+                print('check dataset and schema')
                 if errors[0]:
                     raise HTTPException(status_code=404, detail=errors)
 
@@ -44,7 +51,8 @@ async def upload_dataset(node: str, disease: str,  file: UploadFile = File(...))
                 # Record path on central node
                 node_dataset = NodeDatasetInfo(node=node, path=filepath, disease=disease)
                 try:
-                    response = await client.post("http://localhost:8003/metadata", json=node_dataset.dict())
+                    response = await client.post(f"{CATALOGUE_ENDPOINT}", json=node_dataset.dict())
+                    print('save metadata')
                     response.raise_for_status()
                 except httpx.HTTPStatusError as e:
                     raise HTTPException(status_code=e.response.status_code,
@@ -65,7 +73,7 @@ async def remove_dataset(node: str, disease: str, path:str):
     async with httpx.AsyncClient() as client:
         try:
         # remove dataset from database
-            response = await client.delete("http://localhost:8003/metadata", params={"node": node, "disease": disease, "path": path})#remove_dataset_info_from_database(node, disease, path)
+            response = await client.delete(f"{CATALOGUE_ENDPOINT}", params={"node": node, "disease": disease, "path": path})#remove_dataset_info_from_database(node, disease, path)
             response.raise_for_status()
 #        # remove dataset from local node
             for filename, filepath in local_datasets.copy().items():
