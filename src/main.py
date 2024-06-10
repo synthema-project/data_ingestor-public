@@ -95,6 +95,12 @@ async def remove_dataset(node: str, disease: str, path:str):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error removing dataset: {str(e)}")
 
+@app.get("/healthcheck")
+async def healthcheck():
+    #dummy health check
+    #return Response(content="OK", status_code=200)
+    return {"status": "ok"}
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8002)
+    uvicorn.run(app, host="0.0.0.0", port=82)
