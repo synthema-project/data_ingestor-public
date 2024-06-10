@@ -24,14 +24,14 @@ spec:
           image: harbor.synthema.rid-intrasoft.eu/synthema/data-ingestor:DOCKER_TAG
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - containerPort: 83
           env:
             - name: DATABASE_FILE
               value: "/app/data/central_node.db"
           command: ["python", "main.py"]
           resources:
             limits:
-              cpu: "4"
+              cpu: "1"
               memory: "1Gi"
       imagePullSecrets:
         - name: harbor-cred
@@ -46,6 +46,6 @@ spec:
   selector:
     app: data-ingestor
   ports:
-    - port: 8002
-      targetPort: 80
+    - port: 83
+      targetPort: 83
       protocol: TCP
