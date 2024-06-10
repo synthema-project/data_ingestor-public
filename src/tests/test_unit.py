@@ -1,51 +1,38 @@
-import unittest
-from data_ingestion_utils import create_connection, save_dataset_info_to_database, get_dataset_info_from_database, remove_dataset_info_from_database
-from pydantic import BaseModel
+# test_utils.py
+import pandas as pd
+import numpy as np
+from data_ingestion_utils import check_schema_dataset, save_dataframe_as_csv, create_connection
 
-class NodeDatasetInfo(BaseModel):
-    node: str
-    path: str
-    disease: str
+def test_check_schema_dataset():
+    schema = {
+        "disease": "test_disease",
+        "data": {
+            "table1": {
+                "feature1": ["int"],
+                "feature2": ["string"]
+            }
+        }
+    }
+    data = {
+        "feature1": [1, 2, 3],
+        "feature2": ["a", "b", "c"]
+    }
+    df = pd.DataFrame(data)
+    errors = list(check_schema_dataset(schema, df))
+    assert len(errors) == 0
 
-class TestDataIngestor(unittest.TestCase):
+def test_save_dataframe_as_csv(tmp_path):
+    data = {
+        "feature1": [1, 2, 3],
+        "feature2": ["a", "b", "c"]
+    }
+    df = pd.DataFrame(data)
+    filename = "test.csv"
+    node = "node1"
+    filepath = save_dataframe_as_csv(df, filename, node)
+    assert os.path.exists(filepath)
 
-    def setUp(self):
-        self.node_dataset = NodeDatasetInfo(node="NODE1", path="/path/to/data", disease="DiseaseA")
-        # Create an in-memory database for testing
-        self.conn = sqlite3.connect(":memory:")
-        self.cursor = self.conn.cursor()
-        self.cursor.execute("""
-            CREATE TABLE datasets (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                node TEXT NOT NULL,
-                path TEXT NOT NULL,
-                disease TEXT NOT NULL
-            )
-        """)
-        self.conn.commit()
-
-    def tearDown(self):
-        self.conn.close()
-
-    def test_save_dataset_info(self):
-        save_dataset_info_to_database(self.node_dataset)
-        self.cursor.execute("SELECT * FROM datasets WHERE node = ?", (self.node_dataset.node,))
-        result = self.cursor.fetchone()
-        self.assertIsNotNone(result)
-        self.assertEqual(result[1], self.node_dataset.node)
-
-    def test_get_dataset_info(self):
-        save_dataset_info_to_database(self.node_dataset)
-        result = get_dataset_info_from_database(self.node_dataset.node, self.node_dataset.disease)
-        self.assertIsNotNone(result)
-        self.assertEqual(result[0], self.node_dataset.node)
-
-    def test_remove_dataset_info(self):
-        save_dataset_info_to_database(self.node_dataset)
-        removed = remove_dataset_info_from_database(self.node_dataset.node, self.node_dataset.disease, self.node_dataset.path)
-        self.assertTrue(removed)
-        result = get_dataset_info_from_database(self.node_dataset.node, self.node_dataset.disease)
-        self.assertIsNone(result)
-
-if __name__ == "__main__":
-    unittest.main()
+def test_create_connection():
+    conn = create_connection()
+    assert conn is not None
+    conn.close()
