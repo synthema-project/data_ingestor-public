@@ -21,7 +21,7 @@ pipeline {
             steps {
                 echo "***** Building Image *****"
                 // Build the image and push a test tag to the remote repository
-                sh 'docker image build -t ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test src/Dockerfile'
+                sh 'docker image build -t ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test src'
                 sh 'docker image push ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test'
             }
         }
@@ -31,7 +31,7 @@ pipeline {
         // **************************
         stage("Unit_Tests"){
             steps{
-                sh 'docker container run -p 80:80 --name ${APP_NAME}p --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/unit'
+                sh 'docker container run -p 83:83 --name ${APP_NAME}p --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit.py'
             }
         }
 
@@ -54,6 +54,7 @@ pipeline {
                     withKubeConfig([credentialsId: 'k8s-admin']) {
                         def nodePort = sh(script: 'kubectl get svc data-ingestor-svc -n synthema-dev -o jsonpath={.spec.ports[0].nodePort}', returnStdout: true).trim()
                         sh "curl -f http://49.13.149.57:${nodePort}/healthcheck"
+                        sh "docker run --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test pytest tests/test_functional.py"
                     }
                 }
                 // Destroy the deployment
