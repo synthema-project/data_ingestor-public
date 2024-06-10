@@ -2,7 +2,7 @@ import requests
 import unittest
 
 class TestDataIngestorAPI(unittest.TestCase):
-    BASE_URL = "http://localhost:8003"
+    BASE_URL = "http://localhost:83"
 
     def test_save_dataset_info(self):
         data = {
