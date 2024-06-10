@@ -1,5 +1,5 @@
 import unittest
-from data_ingestor import create_connection, save_dataset_info_to_database, get_dataset_info_from_database, remove_dataset_info_from_database
+from data_ingestor_utils import create_connection, save_dataset_info_to_database, get_dataset_info_from_database, remove_dataset_info_from_database
 from pydantic import BaseModel
 
 class NodeDatasetInfo(BaseModel):
