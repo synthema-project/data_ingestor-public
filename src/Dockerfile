@@ -4,6 +4,6 @@ RUN mkdir data
 COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r ./requirements.txt
 COPY . .
-EXPOSE 8002
+EXPOSE 82
 ENV DATASET_PATH = /app/data/dataset
 CMD ["python","main.py"]
