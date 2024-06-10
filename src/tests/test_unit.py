@@ -1,6 +1,7 @@
 # test_utils.py
 import pandas as pd
 import numpy as np
+import os
 from data_ingestion_utils import check_schema_dataset, save_dataframe_as_csv, create_connection
 
 def test_check_schema_dataset():
