@@ -266,4 +266,4 @@ def test_create_connection():
         conn = create_connection()
         assert conn is not None
     except Exception as e:
-        pytest.fail(f"Failed to create connection: {e}")
+        pytest.fail(f"Failed to create connection: {str(e)}")
