@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import pytest
 from data_ingestion_utils import check_schema_dataset, save_dataframe_as_csv, create_connection
 
 def test_check_schema_dataset():
