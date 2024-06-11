@@ -17,6 +17,8 @@ LOCAL_DATASETS_DIR = "/app/data/dataset/local_datasets"
 # dict to save datasets in the central node
 local_datasets = {}
 
+DATABASE_FILE = os.getenv("DATABASE_PATH", "/app/data/database/central_node.db")
+
 class DatasetSchema(BaseModel):
     disease: str
     data: Dict[str, Dict[str, List[Union[str, int, float, bool]]]]
