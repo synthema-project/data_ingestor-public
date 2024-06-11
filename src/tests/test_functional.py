@@ -17,14 +17,11 @@ def test_upload_dataset():
     # Prepare the files parameter for the upload
     files = {'file': ('AML_DATA_ES.csv', csv_content, 'text/csv')}
     
-    # Prepare the payload data for the upload
-    payload = {"node": "node1", "disease": "AML"}
+    # Prepare the URL with query parameters
+    url = "/dataset?node=node1&disease=AML"
     
     # Send the request to the endpoint
-    response = client.post("/dataset", data=payload, files=files)
-    
-    # Debugging: Print out the request payload
-    print("Request Payload:", payload)
+    response = client.post(url, files=files)
     
     # Debugging: Print out the response content
     print("Response Content:", response.content)
