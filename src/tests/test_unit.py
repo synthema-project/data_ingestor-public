@@ -210,16 +210,39 @@ def test_check_schema_dataset():
     assert len(errors_mutations) == 0
 
 def test_save_dataframe_as_csv(tmp_path):
+    # Create sample data according to the updated schema
     data = {
-        "feature1": [1, 2, 3],
-        "feature2": ["a", "b", "c"]
+        "ID": ["ID1", "ID2", "ID3"],
+        "WHO 2016": ["Type1", "Type2", "Type3"],
+        "WHO 2016 label": ["Label1", "Label2", "Label3"],
+        "WHO 2022": ["TypeA", "TypeB", "TypeC"],
+        "WHO 2022 label": ["LabelA", "LabelB", "LabelC"],
+        "ICC 2022": ["Category1", "Category2", "Category3"],
+        "ICC 2022 label": ["CategoryLabel1", "CategoryLabel2", "CategoryLabel3"],
+        "Qualifier": ["Qualifier1", "Qualifier2", "Qualifier3"],
+        "KARYOTYPE": ["Karyotype1", "Karyotype2", "Karyotype3"],
+        "complex": [1, 0, 1],
+        "inv3_t3_3": [0, 1, 0],
+        "ASXL1": [0, 1, 0],
+        "ATRX": [1, 0, 1]
     }
+
+    # Combine all data into a single DataFrame for saving
     df = pd.DataFrame(data)
+
+    # Save the DataFrame as a CSV file
     filename = "test.csv"
     node = "node1"
     filepath = save_dataframe_as_csv(df, filename, node)
+
+    # Assert that the file was created
     assert os.path.exists(filepath)
+
+    # Optionally, read the file and check its content
+    saved_df = pd.read_csv(filepath)
+    pd.testing.assert_frame_equal(df, saved_df)
 
 def test_create_connection():
     conn = create_connection()
     assert conn is not None
+    conn.close()
