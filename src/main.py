@@ -17,7 +17,7 @@ import numpy as np
 app = FastAPI()
 
 ANNOTATION_ENDPOINT =  "http://49.13.149.57:30892/schema" #"http://data-annotation:80/schema"
-CATALOGUE_ENDPOINT = "http://data-catalogue:83/metadata"
+CATALOGUE_ENDPOINT = "http://49.13.149.57:31591/metadata" #"http://data-catalogue:83/metadata"
 
 # create new dataset on database
 @app.post("/dataset", tags=["data-ingestion"])
