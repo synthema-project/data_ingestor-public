@@ -16,7 +16,7 @@ import numpy as np
 
 app = FastAPI()
 
-ANNOTATION_ENDPOINT = "http://data-annotation:80/schema"
+ANNOTATION_ENDPOINT =  http://49.13.149.57:30892/schema" #"http://data-annotation:80/schema"
 CATALOGUE_ENDPOINT = "http://data-catalogue:83/metadata"
 
 # create new dataset on database
