@@ -16,7 +16,12 @@ def test_upload_dataset():
     
     # Prepare the files parameter for the upload
     files = {'file': ('AML_DATA_ES.csv', csv_content, 'text/csv')}
-    response = client.post("/dataset", data={"node": "node1", "disease": "AML"}, files=files)
+    
+    # Prepare the payload data for the upload
+    payload = {"node": "node1", "disease": "AML"}
+    
+    # Send the request to the endpoint
+    response = client.post("/dataset", data=payload, files=files)
     
     # Check if the response status code is 200
     assert response.status_code == 200
