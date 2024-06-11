@@ -24,7 +24,7 @@ spec:
           image: harbor.synthema.rid-intrasoft.eu/synthema/data-ingestor:DOCKER_TAG
           imagePullPolicy: Always
           ports:
-            - containerPort: 83
+            - containerPort: 82
           env:
             - name: DATABASE_FILE
               value: "/app/data/central_node.db"
@@ -46,6 +46,6 @@ spec:
   selector:
     app: data-ingestor
   ports:
-    - port: 83
-      targetPort: 83
+    - port: 82
+      targetPort: 82
       protocol: TCP
