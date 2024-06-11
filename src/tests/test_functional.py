@@ -17,7 +17,11 @@ def test_upload_dataset():
     # Prepare the files parameter for the upload
     files = {'file': ('AML_DATA_ES.csv', csv_content, 'text/csv')}
     response = client.post("/dataset", data={"node": "node1", "disease": "AML"}, files=files)
+    
+    # Check if the response status code is 200
     assert response.status_code == 200
+    
+    # Check if the response message contains "Dataset uploaded and validated successfully"
     assert "Dataset uploaded and validated successfully" in response.json().get("message")
 
 def test_remove_dataset():
