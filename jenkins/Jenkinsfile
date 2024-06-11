@@ -31,7 +31,7 @@ pipeline {
         // **************************
         stage("Unit_Tests"){
             steps{
-                sh 'docker container run -p 83:83 --name ${APP_NAME}p --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit.py'
+                sh 'docker container run -p 83:83 --name ${APP_NAME} --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit.py'
             }
         }
 
