@@ -164,7 +164,7 @@ def test_check_schema_dataset():
     data = {
         "ID": ["ID1", "ID2", "ID3"],
         "WHO 2016": [12, 12, 12],
-        "WHO 2016 label": ["AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes"],
+        "WHO 2016 label": ["AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes"],
         "WHO 2022": [12, 12, 12],
         "WHO 2022 label": ["Acute myeloid leukaemia, myelodysplasia-related", "Acute myeloid leukaemia, myelodysplasia-related", "Acute myeloid leukaemia, myelodysplasia-related"],
         "ICC 2022": [14, 14, 14],
@@ -216,7 +216,7 @@ def test_save_dataframe_as_csv(tmp_path):
     data = {
         "ID": ["ID1", "ID2", "ID3"],
         "WHO 2016": [12, 12, 12],
-        "WHO 2016 label": ["AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes"],
+        "WHO 2016 label": ["AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes"],
         "WHO 2022": [12, 12, 12],
         "WHO 2022 label": ["Acute myeloid leukaemia, myelodysplasia-related", "Acute myeloid leukaemia, myelodysplasia-related", "Acute myeloid leukaemia, myelodysplasia-related"],
         "ICC 2022": [14, 14, 14],
