@@ -14,6 +14,7 @@ def test_upload_dataset():
     with open('tests/example_data/AML_DATA_ES.csv', 'r') as file:
         csv_content = file.read()
     
+    dataframe = pd.read_csv(io.StringIO(csv_content.decode("latin1")), sep=';')
     # Prepare the files parameter for the upload
     files = {'file': ('AML_DATA_ES.csv', csv_content, 'text/csv')}
     
