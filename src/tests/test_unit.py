@@ -163,17 +163,19 @@ def test_check_schema_dataset():
     # Sample data for testing
     data = {
         "ID": ["ID1", "ID2", "ID3"],
-        "WHO 2016": ["Type1", "Type2", "Type3"],
-        "WHO 2016 label": ["Label1", "Label2", "Label3"],
-        "WHO 2022": ["TypeA", "TypeB", "TypeC"],
-        "WHO 2022 label": ["LabelA", "LabelB", "LabelC"],
-        "ICC 2022": ["Category1", "Category2", "Category3"],
-        "ICC 2022 label": ["CategoryLabel1", "CategoryLabel2", "CategoryLabel3"],
-        "Qualifier": ["Qualifier1", "Qualifier2", "Qualifier3"],
-        "KARYOTYPE": ["Karyotype1", "Karyotype2", "Karyotype3"],
-        "complex": [1, 0, 1],
+        "WHO 2016": [12, 12, 12],
+        "WHO 2016 label": ["AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes ", "AML with myelodysplasia-related changes"],
+        "WHO 2022": [12, 12, 12],
+        "WHO 2022 label": ["Acute myeloid leukaemia, myelodysplasia-related", "Acute myeloid leukaemia, myelodysplasia-related", "Acute myeloid leukaemia, myelodysplasia-related"],
+        "ICC 2022": [14, 14, 14],
+        "ICC 2022 label": ["AML with mutated TP53", "AML with mutated TP53", "AML with mutated TP53"],
+        "Qualifier": ["adverse", "adverse", "adverse"],
+        "KARYOTYPE": ["~44,XX,del(3)(q21),-4,add(5)(q13),add(7)(p22),-15,-17,add(19)(q13),+21", 
+                      "~49,X,add(X)(q28),del(2)(p23),del(7)(q11),na,add(14)(p11),del(16)(p13),add(17)(p11),add(19)(p13),+4mar", 
+                      "~59,X,-X,-X,-1,-3,-4,-5,-6,-7,-12,-14,-16,-17,2xadd(21)(p11),+2mar"],
+        "complex": [1, 0.4, 1],
         "inv3_t3_3": [0, 1, 0],
-        "ASXL1": [0, 1, 0],
+        "ASXL1": [0, 1.9, 0],
         "ATRX": [1, 0, 1]
     }
 
@@ -213,17 +215,19 @@ def test_save_dataframe_as_csv(tmp_path):
     # Create sample data according to the updated schema
     data = {
         "ID": ["ID1", "ID2", "ID3"],
-        "WHO 2016": ["Type1", "Type2", "Type3"],
-        "WHO 2016 label": ["Label1", "Label2", "Label3"],
-        "WHO 2022": ["TypeA", "TypeB", "TypeC"],
-        "WHO 2022 label": ["LabelA", "LabelB", "LabelC"],
-        "ICC 2022": ["Category1", "Category2", "Category3"],
-        "ICC 2022 label": ["CategoryLabel1", "CategoryLabel2", "CategoryLabel3"],
-        "Qualifier": ["Qualifier1", "Qualifier2", "Qualifier3"],
-        "KARYOTYPE": ["Karyotype1", "Karyotype2", "Karyotype3"],
-        "complex": [1, 0, 1],
+        "WHO 2016": [12, 12, 12],
+        "WHO 2016 label": ["AML with myelodysplasia-related changes", "AML with myelodysplasia-related changes ", "AML with myelodysplasia-related changes"],
+        "WHO 2022": [12, 12, 12],
+        "WHO 2022 label": ["Acute myeloid leukaemia, myelodysplasia-related", "Acute myeloid leukaemia, myelodysplasia-related", "Acute myeloid leukaemia, myelodysplasia-related"],
+        "ICC 2022": [14, 14, 14],
+        "ICC 2022 label": ["AML with mutated TP53", "AML with mutated TP53", "AML with mutated TP53"],
+        "Qualifier": ["adverse", "adverse", "adverse"],
+        "KARYOTYPE": ["~44,XX,del(3)(q21),-4,add(5)(q13),add(7)(p22),-15,-17,add(19)(q13),+21", 
+                      "~49,X,add(X)(q28),del(2)(p23),del(7)(q11),na,add(14)(p11),del(16)(p13),add(17)(p11),add(19)(p13),+4mar", 
+                      "~59,X,-X,-X,-1,-3,-4,-5,-6,-7,-12,-14,-16,-17,2xadd(21)(p11),+2mar"],
+        "complex": [1, 0.4, 1],
         "inv3_t3_3": [0, 1, 0],
-        "ASXL1": [0, 1, 0],
+        "ASXL1": [0, 1.9, 0],
         "ATRX": [1, 0, 1]
     }
 
