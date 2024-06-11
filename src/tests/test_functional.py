@@ -14,7 +14,6 @@ def test_upload_dataset():
     with open('tests/example_data/AML_DATA_ES.csv', 'r') as file:
         csv_content = file.read()
     
-    dataframe = pd.read_csv(io.StringIO(csv_content.decode("latin1")), sep=';')
     # Prepare the files parameter for the upload
     files = {'file': ('AML_DATA_ES.csv', csv_content, 'text/csv')}
     
@@ -24,11 +23,18 @@ def test_upload_dataset():
     # Send the request to the endpoint
     response = client.post("/dataset", data=payload, files=files)
     
+    # Debugging: Print out the request payload
+    print("Request Payload:", payload)
+    
+    # Debugging: Print out the response content
+    print("Response Content:", response.content)
+    
     # Check if the response status code is 200
     assert response.status_code == 200
     
     # Check if the response message contains "Dataset uploaded and validated successfully"
     assert "Dataset uploaded and validated successfully" in response.json().get("message")
+
 
 def test_remove_dataset():
     response = client.delete("/dataset", params={"node": "node1", "disease": "AML", "path": "/app/data/dataset/local_datasets/node1/AML_ES.csv"})
