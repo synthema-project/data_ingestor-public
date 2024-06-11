@@ -261,6 +261,8 @@ def test_save_dataframe_as_csv(tmp_path):
     pd.testing.assert_frame_equal(df, saved_df)
 
 def test_create_connection():
-    conn = create_connection()
-    assert conn is not None
-    conn.close()
+    try:
+        conn = create_connection()
+        assert conn is not None
+    except Exception as e:
+        pytest.fail(f"Failed to create connection: {e}")
