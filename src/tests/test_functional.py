@@ -11,7 +11,7 @@ def test_healthcheck():
 
 def test_upload_dataset():
     # Read the CSV file content
-    with open('src/example_data/AML_DATA_ES.csv', 'r') as file:
+    with open('tests/example_data/AML_DATA_ES.csv', 'r') as file:
         csv_content = file.read()
     
     # Prepare the files parameter for the upload
