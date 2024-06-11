@@ -202,14 +202,19 @@ def test_check_schema_dataset():
         "ATRX": data["ATRX"]
     })
 
-    # Assuming check_schema_dataset can handle different DataFrames for each schema section
-    errors_clinical = list(check_schema_dataset(schema["data"]["clinical"], df_clinical))
-    errors_karyotype = list(check_schema_dataset(schema["data"]["karyotype"], df_karyotype))
-    errors_mutations = list(check_schema_dataset(schema["data"]["mutations"], df_mutations))
+    df = pd.concat((df_clinical, df_karyotype), axis=1)
+    df = pd.concat((df, df_mutations), axis=1)
 
-    assert len(errors_clinical) == 0
-    assert len(errors_karyotype) == 0
-    assert len(errors_mutations) == 0
+    errors = list(check_schema_dataset(schema, df))
+    # Assuming check_schema_dataset can handle different DataFrames for each schema section
+    #errors_clinical = list(check_schema_dataset(schema["data"]["clinical"], df_clinical))
+    #errors_karyotype = list(check_schema_dataset(schema["data"]["karyotype"], df_karyotype))
+    #errors_mutations = list(check_schema_dataset(schema["data"]["mutations"], df_mutations))
+
+    #assert len(errors_clinical) == 0
+    #assert len(errors_karyotype) == 0
+    #assert len(errors_mutations) == 0
+    assert len(errors) == 0
 
 def test_save_dataframe_as_csv(tmp_path):
     # Create sample data according to the updated schema
