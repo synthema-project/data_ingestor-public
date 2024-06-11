@@ -10,7 +10,12 @@ def test_healthcheck():
     assert response.json() == {"status": "ok"}
 
 def test_upload_dataset():
-    files = {'file': ('test.csv', 'feature1;feature2\n1;a\n2;b\n3;c', 'text/csv')}
+    # Read the CSV file content
+    with open('example_data/test.csv', 'r') as file:
+        csv_content = file.read()
+    
+    # Prepare the files parameter for the upload
+    files = {'file': ('test.csv', csv_content, 'text/csv')}
     response = client.post("/dataset", data={"node": "node1", "disease": "test_disease"}, files=files)
     assert response.status_code == 200
     assert "Dataset uploaded and validated successfully" in response.json().get("message")
