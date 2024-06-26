@@ -21,7 +21,8 @@ def test_upload_dataset():
     url = "/dataset?node=node1&disease=AML"
     
     # Send the request to the endpoint
-    response = client.post(url, files=files)
+    data = {'node': 'NODE1', 'disease':'AML'}
+    response = client.post(url, data=data, files=files)
     
     # Debugging: Print out the response content
     print("Response Content:", response.content)
