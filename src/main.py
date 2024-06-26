@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Body, File, UploadFile
+from fastapi import FastAPI, HTTPException, Body, File, UploadFile, Form
 from pydantic import BaseModel
 from typing import Dict, List, Union
 from data_ingestion_utils import check_schema_dataset, save_dataframe_as_csv, NodeDatasetInfo, type_keys, create_connection, DatasetSchema, NewDataset, local_datasets
@@ -21,7 +21,7 @@ CATALOGUE_ENDPOINT = "http://49.13.149.57:31591/metadata" #"http://data-catalogu
 
 # create new dataset on database
 @app.post("/dataset", tags=["data-ingestion"])
-async def upload_dataset(node: str, disease: str,  file: UploadFile = File(...)): #dataset: NewDataset,
+async def upload_dataset(node: str=Form(...), disease: str=Form(...),  file: UploadFile = File(...)): #dataset: NewDataset,
     # upload csv file
     if file.filename.endswith(".csv"):
         #dataset = await file.read()
