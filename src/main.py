@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Body, File, UploadFile, Form
 from pydantic import BaseModel
 from typing import Dict, List, Union
-from data_ingestion_utils import check_schema_dataset, save_dataframe_as_csv, NodeDatasetInfo, type_keys, create_connection, DatasetSchema, NewDataset, local_datasets
+from data_ingestion_utils import check_schema_dataset, save_dataframe_as_csv, NodeDatasetInfo, type_keys, create_connection, DatasetSchema, NewDataset, RemoveDatasetObject, local_datasets
 import uvicorn
 import sqlite3
 import os
@@ -69,7 +69,8 @@ async def upload_dataset(node: str=Form(...), disease: str=Form(...),  file: Upl
 
 # remove a dataset from local node and from database
 @app.delete("/dataset", tags=["data-ingestion"])
-async def remove_dataset(node: str, disease: str, path:str):
+async def remove_dataset(RemoveDatasetObject):
+#async def remove_dataset(node: str, disease: str, path:str):
     async with httpx.AsyncClient() as client:
         try:
         # remove dataset from database
