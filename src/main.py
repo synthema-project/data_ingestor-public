@@ -69,18 +69,18 @@ async def upload_dataset(node: str=Form(...), disease: str=Form(...),  file: Upl
 
 # remove a dataset from local node and from database
 @app.delete("/dataset", tags=["data-ingestion"])
-async def remove_dataset(RemoveDatasetObject):
+async def remove_dataset(removedatasetobject : RemoveDatasetObject):
 #async def remove_dataset(node: str, disease: str, path:str):
     async with httpx.AsyncClient() as client:
         try:
         # remove dataset from database
-            response = await client.delete(f"{CATALOGUE_ENDPOINT}", params={"node": node, "disease": disease, "path": path})#remove_dataset_info_from_database(node, disease, path)
+            response = await client.delete(f"{CATALOGUE_ENDPOINT}", params={"node": removedatasetobject.node, "disease": removedatasetobject.disease, "path": removedatasetobject.path})#remove_dataset_info_from_database(node, disease, path)
             response.raise_for_status()
 #        # remove dataset from local node
             for filename, filepath in local_datasets.copy().items():
                 print(filename)
                 print(filepath)
-                if f"{disease}_{node}" in filename and filepath == path:
+                if f"{disease}_{node}" in filename and filepath == removedatasetobject.path:
                     os.remove(filepath)
                     del local_datasets[filename]
         #print(local_datasets)
