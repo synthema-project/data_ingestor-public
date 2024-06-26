@@ -28,6 +28,11 @@ class NewDataset(BaseModel):
     disease: str
     data: Dict[str, Dict[str, List[Union[str, int, float, bool]]]]
 
+class RemoveDatasetObject(BaseModel):
+    node: str
+    disease: str
+    path: str
+
 
 class NodeDatasetInfo(BaseModel):
     node: str
