@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Body, File, UploadFile, Form
+from fastapi import FastAPI, HTTPException, Body, File, UploadFile, Form, Request
 from pydantic import BaseModel
 from typing import Dict, List, Union
 from data_ingestion_utils import check_schema_dataset, save_dataframe_as_csv, NodeDatasetInfo, type_keys, create_connection, DatasetSchema, NewDataset, RemoveDatasetObject, local_datasets
@@ -70,8 +70,9 @@ async def upload_dataset(node: str=Form(...), disease: str=Form(...),  file: Upl
 # remove a dataset from local node and from database
 @app.delete("/dataset", tags=["data-ingestion"])
 #async def remove_dataset(node: str=Form(...), disease:str=Form(...), path:str=Form(...)):
-async def remove_dataset(removedatasetobject : RemoveDatasetObject):
+async def remove_dataset(removedatasetobject : RemoveDatasetObject, request:Request):
 #async def remove_dataset(node: str, disease: str, path:str):
+    logging.info(f"Received request: {await request.json()}")
     async with httpx.AsyncClient() as client:
         try:
         # remove dataset from database
@@ -94,10 +95,17 @@ async def remove_dataset(removedatasetobject : RemoveDatasetObject):
 
             return {"message": "Dataset removed successfully"}, local_datasets
 
-        except httpx.HTTPStatusError as e:
-            raise HTTPException(status_code=e.response.status_code, detail=f"Error removing dataset: {e.response.text}")
+        #except httpx.HTTPStatusError as e:
+        #    raise HTTPException(status_code=e.response.status_code, detail=f"Error removing dataset: {e.response.text}")
+        #except Exception as e:
+        #    raise HTTPException(status_code=500, detail=f"Error removing dataset: {str(e)}")
+        
+        except httpx.HTTPStatusError as exc:
+            logging.error(f"HTTP error occurred: {exc.response.status_code} - {exc.response.text}")
+            raise HTTPException(status_code=exc.response.status_code, detail=exc.response.json())
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error removing dataset: {str(e)}")
+            logging.error(f"An error occurred: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/healthcheck")
 async def healthcheck():
