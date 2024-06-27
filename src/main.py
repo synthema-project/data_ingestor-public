@@ -75,7 +75,7 @@ async def remove_dataset(removedatasetobject : RemoveDatasetObject):
         try:
         # remove dataset from database
             print(removedatasetobject.node, removedatasetobject.disease, removedatasetobject.path)
-            response = await client.delete(f"{CATALOGUE_ENDPOINT}", json={"node": removedatasetobject.node, "disease": removedatasetobject.disease, "path": removedatasetobject.path})#remove_dataset_info_from_database(node, disease, path)
+            response = await client.delete(f"{CATALOGUE_ENDPOINT}", params={"node": removedatasetobject.node, "disease": removedatasetobject.disease, "path": removedatasetobject.path})#remove_dataset_info_from_database(node, disease, path)
             response.raise_for_status()
 #        # remove dataset from local node
             for filename, filepath in local_datasets.copy().items():
