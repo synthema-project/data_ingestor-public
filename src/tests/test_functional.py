@@ -35,6 +35,6 @@ def test_upload_dataset():
 
 
 def test_remove_dataset():
-    response = client.delete("/dataset", removedatasetobject={"node": "node1", "disease": "AML", "path": "/app/data/dataset/local_datasets/node1/AML_ES.csv"})
+    response = client.delete("/dataset", RemoveDatasetObject={"node": "node1", "disease": "AML", "path": "/app/data/dataset/local_datasets/node1/AML_ES.csv"})
     assert response.status_code == 200
     assert "Dataset removed successfully" in response.json().get("message")
