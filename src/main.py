@@ -9,6 +9,7 @@ import json
 import csv
 import io
 import uuid
+import logging
 import httpx
 import pandas as pd
 import numpy as np
