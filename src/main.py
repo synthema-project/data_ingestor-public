@@ -79,9 +79,9 @@ async def remove_dataset(removedatasetobject : RemoveDatasetObject, request:Requ
         # remove dataset from database
             #print(removedatasetobject.node, removedatasetobject.disease, removedatasetobject.path)
             #response = await client.delete(CATALOGUE_ENDPOINT, json={"node": removedatasetobject.node, "disease": removedatasetobject.disease, "path": removedatasetobject.path})#remove_dataset_info_from_database(node, disease, path)
-            response = await client.delete(
+            response = await client.request("DELETE",
                 CATALOGUE_ENDPOINT,
-                data=json.dumps({
+                json=json.dumps({
                     'node': removedatasetobject.node,
                     'disease': removedatasetobject.disease,
                     'path': removedatasetobject.path
