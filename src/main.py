@@ -69,7 +69,7 @@ async def upload_dataset(node: str=Form(...), disease: str=Form(...),  file: Upl
 
 # remove a dataset from local node and from database
 @app.delete("/dataset", tags=["data-ingestion"])
-async def remove_dataset(node: str=Form(...), disease:str=Form(...), path:str=Form(...):
+async def remove_dataset(node: str=Form(...), disease:str=Form(...), path:str=Form(...)):
 #async def remove_dataset(removedatasetobject : RemoveDatasetObject):
 #async def remove_dataset(node: str, disease: str, path:str):
     async with httpx.AsyncClient() as client:
