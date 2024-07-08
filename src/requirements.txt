@@ -5,3 +5,6 @@ uvicorn
 python-multipart
 requests
 pytest
+jsonschema
+sqlalchemy
+sqlmodel
