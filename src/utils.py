@@ -11,7 +11,8 @@ import json
 import math
 from fastapi import HTTPException
 
-LOCAL_DATASETS_DIR = "/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
+#LOCAL_DATASETS_DIR = "/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
+LOCAL_DATASETS_DIR = "/app/data/dataset/local_datasets"
 
 def read_csv(csv_file_path):
     data = []
