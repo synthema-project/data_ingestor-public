@@ -35,12 +35,12 @@ def test_healthcheck():
 
 def test_upload_dataset():
     create_test_db_and_tables()  # Ensure the database is set up before running the test
-    csv_path = current_dir / "test_data" / "sample_dataset.csv"
+    csv_path = current_dir / "example_data" / "AML_DATA_ES.csv"
     with open(csv_path, "rb") as csv_file:
         response = client.post(
             "/dataset",
             data={"node": "node1", "disease": "AML"},
-            files={"file": ("sample_dataset.csv", csv_file, "text/csv")},
+            files={"file": ("AML_DATA_ES.csv", csv_file, "text/csv")},
         )
     assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
     assert "Dataset uploaded and validated successfully" in response.json().get("message", "")
