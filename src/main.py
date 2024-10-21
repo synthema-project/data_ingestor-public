@@ -11,6 +11,7 @@ import os
 import json
 import uuid
 import httpx
+import ssl
 import pandas as pd
 import numpy as np
 from sqlalchemy.orm import Session
@@ -21,6 +22,10 @@ app = FastAPI()
 
 ANNOTATION_ENDPOINT = "https://data-annotation.k8s.synthema.rid-intrasoft.eu:80/schema" #"http://localhost:8001/schema"
 CATALOGUE_ENDPOINT = "https://data-catalogue.k8s.synthema.rid-intrasoft.eu:83/metadata" #"http://localhost:8003/metadata"
+
+# Create a secure SSL contex
+ssl_context = ssl.create_default_context()
+ssl_context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1  # Disabling older versions
 
 current_dir = Path(__file__).resolve().parent
 
@@ -47,7 +52,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
         print('TOCSV')
         dataframe.to_csv(csv_file_path, index=False)
         print('CSVFILEPATH', csv_file_path)
-        async with httpx.AsyncClient(follow_redirects=True) as client:
+        async with httpx.AsyncClient(http2=False, verify=ssl_context) as client:
             try:
                 response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
                 print(f"Annotation response: {response.status_code} - {response.text}")
@@ -83,7 +88,8 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                 save_dataset_to_database(session, new_dataset)
 
                 return {"message": "Dataset uploaded and validated successfully"}
-
+            except httpx.HTTPStatusError as e:
+                raise HTTPException(status_code=e.response.status_code, detail="Error processing file")
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
     else:
