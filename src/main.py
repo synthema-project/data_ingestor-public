@@ -38,11 +38,15 @@ def on_startup():
 @app.post("/dataset", tags=["data-ingestion"])
 async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: UploadFile = File(...), session: Session = Depends(get_session)):
     if file.filename.endswith(".csv"):
+        print('CSV CONTENT')
         csv_content = await file.read()
+        print('DATAFRAME')
         dataframe = pd.read_csv(io.StringIO(csv_content.decode("latin1")), sep=';')
+        print('CSV FILEPATH')
         csv_file_path = f"{LOCAL_DATASETS_DIR}/{uuid.uuid4()}.csv"
+        print('TOCSV')
         dataframe.to_csv(csv_file_path, index=False)
-        print(csv_file_path)
+        print('CSVFILEPATH', csv_file_path)
         async with httpx.AsyncClient() as client:
             try:
                 response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
