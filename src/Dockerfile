@@ -6,5 +6,5 @@ RUN pip install --no-cache-dir -r ./requirements.txt
 COPY . .
 EXPOSE 82
 #ENV DATASET_PATH = /app/data/dataset
-ENV DATABASE_PATH = /app/data/database
+ENV DATABASE_PATH = /app/data/central_node.db #database
 CMD ["python","main.py"]
