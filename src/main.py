@@ -24,7 +24,7 @@ CATALOGUE_ENDPOINT = "http://data-catalogue.k8s.synthema.rid-intrasoft.eu:83" #"
 
 current_dir = Path(__file__).resolve().parent
 
-LOCAL_DATASETS_DIR = current_dir + #"/app/data/dataset/local_datasets" #"/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
+LOCAL_DATASETS_DIR = current_dir / "tests" / "local_datasets" #"/app/data/dataset/local_datasets" #"/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
 local_datasets = {}
 
 # Configure logging
