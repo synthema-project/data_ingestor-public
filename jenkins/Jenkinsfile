@@ -29,11 +29,11 @@ pipeline {
         // **************************
         // *** RUN THE UNIT TESTS ***
         // **************************
-        //stage("Unit_Tests"){
-        //    steps{
-        //        sh 'docker container run -e "PYTHONPATH=/tests" --name ${APP_NAME}_test_$(date +%s) --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit2.py' //-p 80:80
-        //    }
-        //}
+        stage("Unit_Tests"){
+            steps{
+                sh 'docker container run -e "PYTHONPATH=/tests" --name ${APP_NAME}_test_$(date +%s) --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit2.py' //-p 80:80
+            }
+        }
 
         // **************************************
         // *** Functional & Integration Tests ***
