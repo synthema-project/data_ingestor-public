@@ -40,7 +40,7 @@ def test_upload_dataset():
         response = client.post(
             "/dataset",
             data={"node": "node1", "disease": "AML"},
-            files={"file": ("AML_DATA_ES.csv", csv_file, "text/csv")},
+            files={"file": ("dataset_uploaded.csv", csv_file, "text/csv")},
         )
     assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
     assert "Dataset uploaded and validated successfully" in response.json().get("message", "")
