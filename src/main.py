@@ -28,9 +28,9 @@ local_datasets = {}
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
+#@app.on_event("startup")
+#def on_startup():
+#    create_db_and_tables()
 
 @app.post("/dataset", tags=["data-ingestion"])
 async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: UploadFile = File(...), session: Session = Depends(get_session)):
