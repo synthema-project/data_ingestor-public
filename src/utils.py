@@ -10,7 +10,7 @@ from models import DatasetSchema, NodeDatasetInfo
 import json
 import math
 from fastapi import HTTPException
-from filepath import Path
+from pathlib import Path
 
 #LOCAL_DATASETS_DIR = "/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
 
