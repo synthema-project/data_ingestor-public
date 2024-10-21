@@ -5,6 +5,6 @@ COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r ./requirements.txt
 COPY . .
 EXPOSE 82
-ENV DATASET_PATH = /app/data/dataset
+#ENV DATASET_PATH = /app/data/dataset
 ENV DATABASE_PATH = /app/data/database
 CMD ["python","main.py"]
