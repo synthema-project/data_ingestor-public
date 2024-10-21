@@ -53,6 +53,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                 print('RESPONSE')
                 if response.status_code != 200:
                     raise HTTPException(status_code=404, detail="Schema not found")
+                print('SCHEMA1')
                 schema = response.json()["features"]#["schema"]
                 print('SCHEMA')
                 data_dict = csv_to_json_dict(csv_file_path=csv_file_path, schema=schema)
