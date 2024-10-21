@@ -5,6 +5,7 @@ from models import DatasetSchema, NewDataset, RemoveDatasetObject, NodeDatasetIn
 from database import create_db_and_tables, get_session
 from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan#,convert_np_to_native
 #check_schema_dataset,
+from pathlib import Path
 import uvicorn
 import os
 import json
@@ -21,7 +22,9 @@ app = FastAPI()
 ANNOTATION_ENDPOINT = "http://data-annotation.k8s.synthema.rid-intrasoft.eu:80" #"http://localhost:8001/schema"
 CATALOGUE_ENDPOINT = "http://data-catalogue.k8s.synthema.rid-intrasoft.eu:83" #"http://localhost:8003/metadata"
 
-LOCAL_DATASETS_DIR = "/app/data/dataset/local_datasets" #"/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
+current_dir = Path(__file__).resolve().parent
+
+LOCAL_DATASETS_DIR = current_dir + #"/app/data/dataset/local_datasets" #"/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
 local_datasets = {}
 
 # Configure logging
