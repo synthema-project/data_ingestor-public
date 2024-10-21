@@ -21,7 +21,7 @@ app = FastAPI()
 ANNOTATION_ENDPOINT = "http://data-annotation.k8s.synthema.rid-intrasoft.eu:80" #"http://localhost:8001/schema"
 CATALOGUE_ENDPOINT = "http://data-catalogue.k8s.synthema.rid-intrasoft.eu:83" #"http://localhost:8003/metadata"
 
-LOCAL_DATASETS_DIR = "/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
+LOCAL_DATASETS_DIR = "/app/data/dataset/local_datasets" #"/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
 local_datasets = {}
 
 # Configure logging
