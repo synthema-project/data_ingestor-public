@@ -19,8 +19,8 @@ import logging
 
 app = FastAPI()
 
-ANNOTATION_ENDPOINT = "http://data-annotation.k8s.synthema.rid-intrasoft.eu:80/schema" #"http://localhost:8001/schema"
-CATALOGUE_ENDPOINT = "http://data-catalogue.k8s.synthema.rid-intrasoft.eu:83/metadata" #"http://localhost:8003/metadata"
+ANNOTATION_ENDPOINT = "https://data-annotation.k8s.synthema.rid-intrasoft.eu:80/schema" #"http://localhost:8001/schema"
+CATALOGUE_ENDPOINT = "https://data-catalogue.k8s.synthema.rid-intrasoft.eu:83/metadata" #"http://localhost:8003/metadata"
 
 current_dir = Path(__file__).resolve().parent
 
@@ -47,12 +47,14 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
         print('TOCSV')
         dataframe.to_csv(csv_file_path, index=False)
         print('CSVFILEPATH', csv_file_path)
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(follow_redirects=True) as client:
             try:
                 response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
                 print(f"Annotation response: {response.status_code} - {response.text}")
                 response.raise_for_status()
                 print('RESPONSE')
+                if response.status_code == 308:
+                    print(f"Redirected to: {response.headers.get('location')}")
                 if response.status_code != 200:
                     raise HTTPException(status_code=404, detail="Schema not found")
                 print('SCHEMA1')
