@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form, Req
 from pydantic import BaseModel
 from typing import Dict, List, Union
 from models import DatasetSchema, NewDataset, RemoveDatasetObject, NodeDatasetInfo
-#from database import create_db_and_tables, get_session
+from database import create_db_and_tables, get_session
 from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan#,convert_np_to_native
 #check_schema_dataset,
 import uvicorn
@@ -28,9 +28,9 @@ local_datasets = {}
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-#@app.on_event("startup")
-#def on_startup():
-#    create_db_and_tables()
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 @app.post("/dataset", tags=["data-ingestion"])
 async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: UploadFile = File(...), session: Session = Depends(get_session)):
