@@ -49,7 +49,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
         print('CSVFILEPATH', csv_file_path)
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
+                response = await client.get(f"{ANNOTATION_ENDPOINT}/schema/{disease}")
                 print('RESPONSE')
                 if response.status_code != 200:
                     raise HTTPException(status_code=404, detail="Schema not found")
