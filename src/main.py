@@ -26,7 +26,8 @@ CATALOGUE_ENDPOINT = "https://data-catalogue.k8s.synthema.rid-intrasoft.eu:83/me
 
 # Create a secure SSL contex
 ssl_context = ssl.create_default_context()
-ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+ssl_context.set_ciphers('DEFAULT:@SECLEVEL=1')
+#ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
 #ssl_context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1  # Disabling older versions
 
 current_dir = Path(__file__).resolve().parent
