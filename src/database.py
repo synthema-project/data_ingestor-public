@@ -1,4 +1,5 @@
 from sqlmodel import create_engine, SQLModel, Session
+from config import settings
 
 #postgres_arg = "postgres:password_prova@localhost:5432/"
 #postgres_url = f"postgresql://{postgres_arg}"
