@@ -56,32 +56,32 @@ spec:
     - protocol: TCP
       port: 82
 ---
-#apiVersion: networking.k8s.io/v1
-#kind: Ingress
-#metadata:
-#  annotations:
-#    nginx.ingress.kubernetes.io/rewrite-target: /
-#    kubernetes.io/ingress.class: "nginx"
-#    #cert-manager.io/cluster-issuer: "letsencrypt-staging"
-#    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-#  labels:
-#    app: data-ingestor
-#    component: data-ingestor
-#  name: data-ingestor-ingress-rule
-#  namespace: synthema-dev
-#spec:
-#  ingressClassName: nginx
-#  rules:
-#    - host: data-annotation.k8s.synthema.rid-intrasoft.eu
-#      http:
-#        paths:
-#          - backend:
-#              service:
-#                name: data-annotation-service
-#                port:
-#                  number: 80
-#            path: /
-#            pathType: Prefix
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+    #cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  labels:
+    app: data-ingestor
+    component: data-ingestor
+  name: data-ingestor-ingress-rule
+  namespace: synthema-dev
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: data-ingestor.k8s.synthema.rid-intrasoft.eu
+      http:
+        paths:
+          - backend:
+              service:
+                name: data-ingestor-service
+                port:
+                  number: 82
+            path: /
+            pathType: Prefix
 #    - host: data-catalogue.k8s.synthema.rid-intrasoft.eu
 #      http:
 #        paths:
@@ -92,8 +92,9 @@ spec:
 #                  number: 83
 #            path: /
 #            pathType: Prefix
-#  tls:
-#    - hosts:
+  tls:
+    - hosts:
+         - data-ingestor.k8s.synthema.rid-intrasoft.eu
 #        - data-annotation.k8s.synthema.rid-intrasoft.eu
 #        - data-catalogue.k8s.synthema.rid-intrasoft.eu
 #---
