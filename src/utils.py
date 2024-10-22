@@ -106,11 +106,11 @@ def validate_data(data_dict, schema):
     #print(data_dict)
     for idx, record in enumerate(data_dict):
         clinical_data = {key: record[key] for key in record.keys() if
-                         key in schema['properties']['data']['properties']['clinical']['properties']}
+                         key in schema['data']['clinical']} #key in schema['properties']['data']['properties']['clinical']['properties']}
         karyotype_data = {key: record[key] for key in record.keys() if
-                          key in schema['properties']['data']['properties']['karyotype']['properties']}
+                          key in schema['data']['karyotype']}
         mutations_data = {key: record[key] for key in record.keys() if
-                          key in schema['properties']['data']['properties']['mutations']['properties']}
+                          key in schema['data']['mutations']}
 
         data_to_validate = {
             "data": {
