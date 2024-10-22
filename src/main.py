@@ -39,8 +39,9 @@ ssl_context.verify_mode = ssl.CERT_NONE
 
 current_dir = Path(__file__).resolve().parent
 
-#LOCAL_DATASETS_DIR = current_dir / "tests" / "example_data" #"/app/data/dataset/local_datasets" #"/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
-LOCAL_DATASETS_DIR = "/app/data/central_node.db"
+LOCAL_DATASETS_DIR = current_dir / "tests" / "example_data" 
+#"/app/data/dataset/local_datasets" #"/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
+#LOCAL_DATASETS_DIR = "/app/data/central_node.db"
 local_datasets = {}
 
 # Configure logging
@@ -81,8 +82,11 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                 validate_data(data_dict=data_dict, schema=schema)
                 print('VALIDATE')
                 iid = str(uuid.uuid4())
+                print('IID')
                 filename = f"{disease}_{node}_{iid}.csv"
+                print('FILENAME')
                 filepath = save_dataframe_as_csv(dataframe, filename, node)
+                print('FILEPATH')
                 local_datasets[filename] = filepath
                 os.remove(csv_file_path)
                 node_dataset = NodeDatasetInfo(node=node, path=filepath, disease=disease)
