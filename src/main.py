@@ -56,7 +56,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
         print('TOCSV')
         dataframe.to_csv(csv_file_path, index=False)
         print('CSVFILEPATH', csv_file_path)
-        async with httpx.AsyncClient(http2=False, verify=False) as client:
+        async with httpx.AsyncClient(http2=False, verify=False, ssl=ssl_context) as client:
             try:
                 response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
                 print(f"Annotation response: {response.status_code} - {response.text}")
