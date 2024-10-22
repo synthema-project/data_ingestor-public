@@ -20,7 +20,7 @@ import logging
 
 app = FastAPI()
 
-ANNOTATION_ENDPOINT = "https://data-annotation.k8s.synthema.rid-intrasoft.eu:80"#/schema" #"http://localhost:8001/schema"
+ANNOTATION_ENDPOINT = "https://data-annotation.k8s.synthema.rid-intrasoft.eu:80/schema"#/schema" #"http://localhost:8001/schema"
 #ANNOTATION_ENDPOINT = "https://data-annotation-service:80/schema"
 CATALOGUE_ENDPOINT = "https://data-catalogue.k8s.synthema.rid-intrasoft.eu:83/metadata" #"http://localhost:8003/metadata"
 
