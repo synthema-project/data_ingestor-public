@@ -20,9 +20,11 @@ import logging
 
 app = FastAPI()
 
-ANNOTATION_ENDPOINT = "https://data-annotation.k8s.synthema.rid-intrasoft.eu/schema"#/schema" #"http://localhost:8001/schema"
+ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema" 
+#"https://data-annotation.k8s.synthema.rid-intrasoft.eu/schema"#/schema" #"http://localhost:8001/schema"
 #ANNOTATION_ENDPOINT = "https://data-annotation-service:80/schema"
-CATALOGUE_ENDPOINT = "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/metadata" #"http://localhost:8003/metadata"
+CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev/metadata" 
+#"https://data-catalogue.k8s.synthema.rid-intrasoft.eu/metadata" #"http://localhost:8003/metadata"
 
 # Create a secure SSL contex
 #ssl_context = ssl.create_default_context()
