@@ -31,6 +31,8 @@ ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 #ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
 #ssl_context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1  # Disabling older versions
 ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
 
 
 current_dir = Path(__file__).resolve().parent
@@ -59,7 +61,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
         print('TOCSV')
         dataframe.to_csv(csv_file_path, index=False)
         print('CSVFILEPATH', csv_file_path)
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(http2=False,verify=ssl_context) as client:
             try:
                 response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
                 print(f"Annotation response: {response.status_code} - {response.text}")
