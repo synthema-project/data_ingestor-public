@@ -82,32 +82,6 @@ spec:
                   number: 82
             path: /
             pathType: Prefix
-#    - host: data-catalogue.k8s.synthema.rid-intrasoft.eu
-#      http:
-#        paths:
-#          - backend:
-#              service:
-#                name: data-annotation-service
-#                port:
-#                  number: 83
-#            path: /
-#            pathType: Prefix
   tls:
     - hosts:
          - data-ingestor.k8s.synthema.rid-intrasoft.eu
-#        - data-annotation.k8s.synthema.rid-intrasoft.eu
-#        - data-catalogue.k8s.synthema.rid-intrasoft.eu
-#---
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  name: data-ingestor-svc
-#  namespace: synthema-dev
-#spec:
-#  type: NodePort
-#  selector:
-#    app: data-ingestor
-#  ports:
-#    - port: 82
-#      targetPort: 82
-#      protocol: TCP
