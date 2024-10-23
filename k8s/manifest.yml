@@ -25,9 +25,16 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 82
-          env:
-            - name: DATABASE_FILE
-              value: "/app/data/central_node.db"
+          #env:
+          #  - name: DATABASE_FILE
+          #    value: "/app/data/central_node.db"
+          volumeMounts:
+            - mountPath: "/app/datasets"
+              name: local-storage
+      volumes:
+      - name: local-storage
+        persistentVolumeClaim:
+              claimName: local-pvc
           command: ["python", "main.py"]
           resources:
             limits:
