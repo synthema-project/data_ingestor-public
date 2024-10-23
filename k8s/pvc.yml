@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: local-pvc
 spec:
-  storageClassName: local-storage
+  storageClassName: nfs-csi
   accessModes:
     - ReadWriteOnce
   resources:
