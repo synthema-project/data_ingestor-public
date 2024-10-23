@@ -28,7 +28,7 @@ def create_test_db_and_tables():
 client = TestClient(app)
 
 # Base URL for the API (assuming external API endpoints)
-ANNOTATION_ENDPOINT = "http://data-annotation.k8s.synthema.rid-intrasoft.eu:80"
+ANNOTATION_ENDPOINT = "http://data-annotation-service.synthema.rid-intrasoft.eu:80"
 CATALOGUE_ENDPOINT = "http://data-catalogue.k8s.synthema.rid-intrasoft.eu:83"
 
 def test_healthcheck():
