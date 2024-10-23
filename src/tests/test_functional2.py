@@ -11,7 +11,7 @@ engine = create_engine(TEST_DATABASE_URL, echo=True)
 
 # Path for example data
 current_dir = Path(__file__).resolve().parent
-example_data_dir = current_dir / "test_data"
+example_data_dir = current_dir / "example_data"
 
 # Override the session dependency to use the SQLite database instead of PostgreSQL
 def override_get_session():
@@ -38,7 +38,7 @@ def test_healthcheck():
 
 def test_upload_dataset():
     create_test_db_and_tables()
-    csv_path = example_data_dir / "sample_dataset.csv"
+    csv_path = example_data_dir / "AML_ES.csv"
     with open(csv_path, "rb") as csv_file:
         response = client.post(
             "/dataset",
