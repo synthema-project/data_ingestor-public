@@ -21,27 +21,8 @@ import logging
 app = FastAPI()
 
 ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema" 
-#"https://data-annotation.k8s.synthema.rid-intrasoft.eu/schema"#/schema" #"http://localhost:8001/schema"
-#ANNOTATION_ENDPOINT = "https://data-annotation-service:80/schema"
 CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev/metadata" 
-#"https://data-catalogue.k8s.synthema.rid-intrasoft.eu/metadata" #"http://localhost:8003/metadata"
 
-# Create a secure SSL contex
-#ssl_context = ssl.create_default_context()
-ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-#ssl_context.set_ciphers('DEFAULT:@SECLEVEL=1')
-#ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
-#ssl_context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1  # Disabling older versions
-ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
-ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
-
-
-current_dir = Path(__file__).resolve().parent
-
-#LOCAL_DATASETS_DIR = current_dir / "tests" / "example_data" 
-#"/app/data/dataset/local_datasets" #"/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
-#LOCAL_DATASETS_DIR = "/app/data/central_node.db"
 LOCAL_DATASETS_DIR = "/app/datasets"
 local_datasets = {}
 
