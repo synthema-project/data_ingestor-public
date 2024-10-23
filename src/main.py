@@ -90,9 +90,12 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                 print('FILEPATH')
                 local_datasets[filename] = filepath
                 os.remove(csv_file_path)
+                print('REMOVE')
                 node_dataset = NodeDatasetInfo(node=node, path=filepath, disease=disease)
+                print('NODEDATASET')
                 try:
                     response = await client.post(CATALOGUE_ENDPOINT, json=node_dataset.dict())
+                    print('CATALOGUEENDPOINT')
                     response.raise_for_status()
                 except httpx.HTTPStatusError as e:
                     raise HTTPException(status_code=e.response.status_code,
@@ -101,7 +104,9 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                     raise HTTPException(status_code=500, detail=f"Error connecting to data-catalogue: {str(e)}")
 
                 new_dataset = DatasetSchema(disease=disease, data=json.dumps(schema))
+                print('NEWDATASET')
                 save_dataset_to_database(session, new_dataset)
+                print('SAVETOCATALOGUE')
 
                 return {"message": "Dataset uploaded and validated successfully"}
             except httpx.HTTPStatusError as e:
