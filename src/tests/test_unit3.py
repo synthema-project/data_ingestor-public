@@ -62,7 +62,11 @@ def test_upload_dataset(mock_save_csv, mock_os_remove, mock_exists, mock_makedir
             )
 
         # Assertions
-        assert response.status_code == 200
+        # Log or print the response content to inspect the error details
+        print(f"Response Content: {response.content}")
+        
+        # Assertions
+        assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
         mock_makedirs.assert_called_once_with(f"{tmp_dir}/node1", exist_ok=True)
         mock_save_csv.assert_called_once()
 
