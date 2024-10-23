@@ -31,10 +31,6 @@ spec:
           volumeMounts:
             - mountPath: "/app/datasets"
               name: local-storage
-      volumes:
-      - name: local-storage
-        persistentVolumeClaim:
-              claimName: local-pvc
           command: ["python", "main.py"]
           resources:
             limits:
@@ -43,6 +39,10 @@ spec:
             requests:
               cpu: "0.5"
               memory: "1Gi"
+      volumes:
+      - name: local-storage
+        persistentVolumeClaim:
+              claimName: local-pvc
       imagePullSecrets:
         - name: harbor-cred
 
