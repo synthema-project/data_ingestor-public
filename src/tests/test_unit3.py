@@ -29,7 +29,7 @@ def create_test_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
 # Test client for FastAPI
-client = TestClient(app, transport=WSGITransport(app=app))
+client = TestClient(app)#, transport=WSGITransport(app=app))
 
 def test_healthcheck():
     response = client.get("/healthcheck")
