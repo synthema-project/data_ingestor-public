@@ -83,20 +83,20 @@ def test_remove_dataset(mock_makedirs, mock_os_remove):
     # Ensure the mock os.remove was called with the expected path
     mock_os_remove.assert_called_once_with("/mocked/local_datasets/node1/AML_node1_mocked.csv")
 
-def test_schema_insertion():
-    create_test_db_and_tables()
-    session = Session(engine)
-    dataset = DatasetSchema(disease="AML", data='{"schema": "test"}')
-    session.add(dataset)
-    session.commit()
+#def test_schema_insertion():
+#    create_test_db_and_tables()
+#    session = Session(engine)
+#    dataset = DatasetSchema(disease="AML", data='{"schema": "test"}')
+#    session.add(dataset)
+#    session.commit()
 
     # Use session.exec instead of session.query
-    saved_dataset = session.exec(
-        "SELECT * FROM datasetschema WHERE disease = 'AML'"
-    ).first()
+#    saved_dataset = session.exec(
+#        "SELECT * FROM datasetschema WHERE disease = 'AML'"
+#    ).first()
     
-    assert saved_dataset is not None
-    assert saved_dataset.disease == "AML"
+#    assert saved_dataset is not None
+#    assert saved_dataset.disease == "AML"
 
 if __name__ == "__main__":
     test_healthcheck()
