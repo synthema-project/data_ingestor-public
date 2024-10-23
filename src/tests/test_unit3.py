@@ -39,8 +39,9 @@ def test_healthcheck():
 @mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
 @mock.patch("main.os.remove")
 @mock.patch("main.save_dataframe_as_csv")
-@mock.patch("os.makedirs")  # Mock directory creation
-def test_upload_dataset(mock_makedirs, mock_save_csv, mock_os_remove):
+@mock.patch("main.os.makedirs")  # Mock directory creation
+@mock.patch("main.os.path.exists", return_value=True)  # Mock directory exists check
+def test_upload_dataset(mock_makedirs, mock_exists, mock_save_csv, mock_os_remove):
     create_test_db_and_tables()  # Ensure the database is set up before running the test
 
     # Mock the save_dataframe_as_csv to simulate saving to a fake folder
