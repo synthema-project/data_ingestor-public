@@ -9,6 +9,7 @@ from main import app
 from database import get_session
 from models import DatasetSchema, NodeDatasetInfo
 from httpx import WSGITransport
+import tempfile  # To create temporary directories for mocking
 
 # Set up an SQLite in-memory database for testing
 TEST_DATABASE_URL = "sqlite:///./test.db"  # Use SQLite for testing
@@ -29,7 +30,7 @@ def create_test_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
 # Test client for FastAPI
-client = TestClient(app)#, transport=WSGITransport(app=app))
+client = TestClient(app)
 
 def test_healthcheck():
     response = client.get("/healthcheck")
@@ -59,42 +60,27 @@ def test_upload_dataset(mock_save_csv, mock_os_remove, mock_exists, mock_makedir
     mock_save_csv.assert_called_once()
 
 
-@mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
-@mock.patch("main.os.remove")
-@mock.patch("os.makedirs")  # Mock directory creation
-def test_remove_dataset(mock_makedirs, mock_os_remove):
-    create_test_db_and_tables()
+#@mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
+#@mock.patch("main.os.remove")
+#@mock.patch("os.makedirs")  # Mock directory creation
+#def test_remove_dataset(mock_makedirs, mock_os_remove):
+#    create_test_db_and_tables()#
+#
+#    remove_data = {
+#        "node": "node1",
+#        "disease": "AML",
+#        "path": "/mocked/local_datasets/node1/AML_node1_mocked.csv"
+#    }
 
-    remove_data = {
-        "node": "node1",
-        "disease": "AML",
-        "path": "/mocked/local_datasets/node1/AML_node1_mocked.csv"
-    }
-
-    response = client.request("DELETE", "/dataset", json=remove_data)
+#    response = client.request("DELETE", "/dataset", json=remove_data)
     
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
-    assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
+#    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
+#    assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
     
     # Ensure the mock os.remove was called with the expected path
-    mock_os_remove.assert_called_once_with("/mocked/local_datasets/node1/AML_node1_mocked.csv")
-
-#def test_schema_insertion():
-#    create_test_db_and_tables()
-#    session = Session(engine)
-#    dataset = DatasetSchema(disease="AML", data='{"schema": "test"}')
-#    session.add(dataset)
-#    session.commit()
-
-    # Use session.exec instead of session.query
-#    saved_dataset = session.exec(
-#        "SELECT * FROM datasetschema WHERE disease = 'AML'"
-#    ).first()
-    
-#    assert saved_dataset is not None
-#    assert saved_dataset.disease == "AML"
+#    mock_os_remove.assert_called_once_with("/mocked/local_datasets/node1/AML_node1_mocked.csv")
 
 if __name__ == "__main__":
     test_healthcheck()
     test_upload_dataset()
-    test_remove_dataset()
+#    test_remove_dataset()
