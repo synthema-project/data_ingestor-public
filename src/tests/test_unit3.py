@@ -50,7 +50,7 @@ def test_upload_dataset(mock_save_csv, mock_os_remove, mock_exists, mock_makedir
     with open(csv_path, "rb") as csv_file:
         response = client.post(
             "/dataset",
-            data={"node": "node1", "disease": "AML"},
+            data={"node": "node1", "disease": "AML", "local_datasets_dir":"/mocked/local_datasets"},
             files={"file": ("dataset_uploaded.csv", csv_file, "text/csv")},
         )
 
