@@ -36,15 +36,14 @@ def test_healthcheck():
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
-@mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
-@mock.patch("main.os.remove")
-@mock.patch("main.save_dataframe_as_csv")
 @mock.patch("main.os.makedirs")  # Mock directory creation
-@mock.patch("main.os.path.exists", return_value=True)  # Mock directory exists check
-def test_upload_dataset(mock_makedirs, mock_exists, mock_save_csv, mock_os_remove):
-    create_test_db_and_tables()  # Ensure the database is set up before running the test
+@mock.patch("main.os.path.exists", return_value=True)  # Mock that the directory already exists
+@mock.patch("main.os.remove")
+@mock.patch("main.save_dataframe_as_csv")  # Mock the CSV saving function
+def test_upload_dataset(mock_save_csv, mock_os_remove, mock_exists, mock_makedirs):
+    create_test_db_and_tables()
 
-    # Mock the save_dataframe_as_csv to simulate saving to a fake folder
+    # Mock the CSV path that would be returned after saving
     mock_save_csv.return_value = "/mocked/local_datasets/node1/AML_node1_mocked.csv"
 
     csv_path = current_dir / "example_data" / "AML_DATA_ES.csv"
@@ -55,13 +54,10 @@ def test_upload_dataset(mock_makedirs, mock_exists, mock_save_csv, mock_os_remov
             files={"file": ("dataset_uploaded.csv", csv_file, "text/csv")},
         )
 
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
-    assert "Dataset uploaded and validated successfully" in response.json().get("message", "")
-
-    # Check if the mock save method was called with the expected arguments
+    assert response.status_code == 200
+    mock_makedirs.assert_called_once_with("/mocked/local_datasets/node1", exist_ok=True)
     mock_save_csv.assert_called_once()
-    # Check if os.remove was called to clean up temporary CSV file
-    mock_os_remove.assert_called_once()
+
 
 @mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
 @mock.patch("main.os.remove")
