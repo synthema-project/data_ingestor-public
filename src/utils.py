@@ -16,8 +16,8 @@ from pathlib import Path
 
 current_dir = Path(__file__).resolve().parent
 
-LOCAL_DATASETS_DIR = current_dir / "tests" / "example_data"
-
+#LOCAL_DATASETS_DIR = current_dir / "tests" / "example_data"
+LOCAL_DATASETS_DIR = "/app/datasets"
 #LOCAL_DATASETS_DIR = "/app/data/dataset/local_datasets"
 
 def read_csv(csv_file_path):
