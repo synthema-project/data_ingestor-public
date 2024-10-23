@@ -79,7 +79,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                 logger.info(f"Payload: {node_dataset.model_dump()}")  # Log payload data
                 
                 try:
-                    response = await client.post(CATALOGUE_ENDPOINT, json=node_dataset) #node_dataset.dict() .model_dump()
+                    response = await client.post(CATALOGUE_ENDPOINT, json=node_dataset.dict()) #node_dataset.dict() .model_dump()
                     print('CATALOGUEENDPOINT')
                     print('CATALOGUEENDPOINT POST RESPONSE', response.status_code)
                     #response.raise_for_status()
