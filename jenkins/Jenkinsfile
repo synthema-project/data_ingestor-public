@@ -29,47 +29,47 @@ pipeline {
         // **************************
         // *** RUN THE UNIT TESTS ***
         // **************************
-        stage("Unit_Tests"){
-            steps{
-                //sh "curl -v https://data-annotation.k8s.synthema.rid-intrasoft.eu:80/schema"
-                //sh "curl -v https://data-catalogue.k8s.synthema.rid-intrasoft.eu:83/metadata"
-                sh 'docker container run -e "PYTHONPATH=/tests" --name ${APP_NAME}_test_$(date +%s) --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit2.py' //-p 80:80
-            }
-        }
+        //stage("Unit_Tests"){
+        //    steps{
+        //        //sh "curl -v https://data-annotation.k8s.synthema.rid-intrasoft.eu:80/schema"
+        //        //sh "curl -v https://data-catalogue.k8s.synthema.rid-intrasoft.eu:83/metadata"
+        //        sh 'docker container run -e "PYTHONPATH=/tests" --name ${APP_NAME}_test_$(date +%s) --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit2.py' //-p 80:80
+        //   }
+        //}
 
         // **************************************
         // *** Functional & Integration Tests ***
         // **************************************
-        //stage("Func_Tests"){
-        //    steps {
-        //        echo "***** Running Functional Tests *****"
-        //        // Deploy the test image
-        //        withKubeConfig([credentialsId: 'k8s-admin']) {
-        //            sh '''
-        //            cp k8s/manifest.yml k8s/manifest-test.yml
-        //            sed -e 's|DOCKER_TAG|test|g' k8s/manifest-test.yml | kubectl apply -f -
-        //            '''
-        //        }
-        //        sh 'sleep 30'
-        //        // Execute the tests
-        //        script {
-        //           withKubeConfig([credentialsId: 'k8s-admin']) {
-        //                def nodePort = sh(script: 'kubectl get svc mstorage-svc -n synthema-dev -o jsonpath={.spec.ports[0].nodePort}', returnStdout: true).trim()
-        //                #sh "curl -f http://49.13.149.57:${nodePort}/healthcheck"
-        //                sh "curl -f http://data-annotation.k8s.synthema.rid-intrasoft.eu:${nodePort}/healthcheck"
-        //                sh "curl -f http://data-catalogue.k8s.synthema.rid-intrasoft.eu:${nodePort}/healthcheck"
-        //                sh "docker run --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test pytest tests/test_functional2.py"
-        //            }
-        //        }
-        //        // Destroy the deployment
-        //        withKubeConfig([credentialsId: 'k8s-admin']) {
-        //            sh '''
-        //            kubectl delete -f k8s/manifest-test.yaml
-        //            rm k8s/manifest-test.yaml
-        //            '''
-        //       }
-        //   }
-        //}
+        stage("Func_Tests"){
+            steps {
+                echo "***** Running Functional Tests *****"
+                // Deploy the test image
+                withKubeConfig([credentialsId: 'k8s-admin']) {
+                    sh '''
+                    cp k8s/manifest.yml k8s/manifest-test.yml
+                    sed -e 's|DOCKER_TAG|test|g' k8s/manifest-test.yml | kubectl apply -f -
+                    '''
+                }
+                sh 'sleep 30'
+                // Execute the tests
+                script {
+                   withKubeConfig([credentialsId: 'k8s-admin']) {
+                        def nodePort = sh(script: 'kubectl get svc mstorage-svc -n synthema-dev -o jsonpath={.spec.ports[0].nodePort}', returnStdout: true).trim()
+                        #sh "curl -f http://49.13.149.57:${nodePort}/healthcheck"
+                        #sh "curl -f http://data-annotation.k8s.synthema.rid-intrasoft.eu:${nodePort}/healthcheck"
+                        #sh "curl -f http://data-catalogue.k8s.synthema.rid-intrasoft.eu:${nodePort}/healthcheck"
+                        sh "docker run --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test pytest tests/test_functional2.py"
+                    }
+                }
+                // Destroy the deployment
+                withKubeConfig([credentialsId: 'k8s-admin']) {
+                    sh '''
+                    kubectl delete -f k8s/manifest-test.yaml
+                    rm k8s/manifest-test.yaml
+                    '''
+               }
+           }
+        }
 
         // *******************************
         // *** Push Images To Registry ***
