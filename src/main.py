@@ -96,7 +96,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                 try:
                     response = await client.post(CATALOGUE_ENDPOINT, json=node_dataset.dict())
                     print('CATALOGUEENDPOINT')
-                    response.raise_for_status()
+                    #response.raise_for_status()
                 except httpx.HTTPStatusError as e:
                     raise HTTPException(status_code=e.response.status_code,
                                         detail=f"Error saving metadata: {e.response.text}")
