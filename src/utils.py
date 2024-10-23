@@ -17,7 +17,7 @@ from pathlib import Path
 current_dir = Path(__file__).resolve().parent
 
 #LOCAL_DATASETS_DIR = current_dir / "tests" / "example_data"
-LOCAL_DATASETS_DIR = "/app/datasets"
+#LOCAL_DATASETS_DIR = "/app/datasets"
 #LOCAL_DATASETS_DIR = "/app/data/dataset/local_datasets"
 
 def read_csv(csv_file_path):
@@ -144,14 +144,14 @@ def validate_data(data_dict, schema):
 #        print("Data dictionary is invalid according to the schema:", err.message)
 #        raise ValueError(f"Validation error: {err.message}")
 
-def save_dataframe_as_csv(dataset, filename, node):
+def save_dataframe_as_csv(dataset, filename, node, savepath):
     """
     Save the dataframe as a csv and returns the file path
     """
-    if not os.path.exists(LOCAL_DATASETS_DIR+'/'+ str(node)):
-        os.makedirs(LOCAL_DATASETS_DIR+'/'+ str(node))
+    if not os.path.exists(savepath+'/'+ str(node)):
+        os.makedirs(savepath+'/'+ str(node))
 
-    filepath = os.path.join(LOCAL_DATASETS_DIR+'/'+ str(node), filename)
+    filepath = os.path.join(savepath+'/'+ str(node), filename)
 
     # Write the DataFrame to a CSV file
     dataset.to_csv(filepath, index=False)
