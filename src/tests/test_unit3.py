@@ -37,6 +37,8 @@ def test_healthcheck():
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
+import tempfile
+
 @mock.patch("main.os.makedirs")  # Mock directory creation
 @mock.patch("main.os.path.exists", return_value=True)  # Mock that the directory already exists
 @mock.patch("main.os.remove")
@@ -44,21 +46,25 @@ def test_healthcheck():
 def test_upload_dataset(mock_save_csv, mock_os_remove, mock_exists, mock_makedirs):
     create_test_db_and_tables()
 
-    # Mock the CSV path that would be returned after saving
-    mock_save_csv.return_value = "/mocked/local_datasets/node1/AML_node1_mocked.csv"
+    # Use a temporary directory for testing
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        mock_save_csv.return_value = f"{tmp_dir}/node1/AML_node1_mocked.csv"  # Mock the path
+        
+        # Test data file
+        csv_path = current_dir / "example_data" / "AML_DATA_ES.csv"
+        
+        with open(csv_path, "rb") as csv_file:
+            # Post the request with the temporary directory as 'local_datasets_dir'
+            response = client.post(
+                "/dataset",
+                data={"node": "node1", "disease": "AML", "local_datasets_dir": tmp_dir},
+                files={"file": ("dataset_uploaded.csv", csv_file, "text/csv")},
+            )
 
-    csv_path = current_dir / "example_data" / "AML_DATA_ES.csv"
-    with open(csv_path, "rb") as csv_file:
-        response = client.post(
-            "/dataset",
-            data={"node": "node1", "disease": "AML", "local_datasets_dir":"/mocked/local_datasets"},
-            files={"file": ("dataset_uploaded.csv", csv_file, "text/csv")},
-        )
-
-    assert response.status_code == 200
-    mock_makedirs.assert_called_once_with("/mocked/local_datasets/node1", exist_ok=True)
-    mock_save_csv.assert_called_once()
-
+        # Assertions
+        assert response.status_code == 200
+        mock_makedirs.assert_called_once_with(f"{tmp_dir}/node1", exist_ok=True)
+        mock_save_csv.assert_called_once()
 
 #@mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
 #@mock.patch("main.os.remove")
