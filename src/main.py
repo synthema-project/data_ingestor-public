@@ -39,9 +39,10 @@ ssl_context.verify_mode = ssl.CERT_NONE
 
 current_dir = Path(__file__).resolve().parent
 
-LOCAL_DATASETS_DIR = current_dir / "tests" / "example_data" 
+#LOCAL_DATASETS_DIR = current_dir / "tests" / "example_data" 
 #"/app/data/dataset/local_datasets" #"/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
 #LOCAL_DATASETS_DIR = "/app/data/central_node.db"
+LOCAL_DATASETS_DIR = "/app/datasets"
 local_datasets = {}
 
 # Configure logging
