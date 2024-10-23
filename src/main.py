@@ -74,6 +74,10 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                 print('REMOVE')
                 node_dataset = NodeDatasetInfo(node=node, path=filepath, disease=disease)
                 print('NODEDATASET')
+
+                logger.info(f"Sending POST request to: {CATALOGUE_ENDPOINT}")
+                logger.info(f"Payload: {node_dataset.model_dump()}")  # Log payload data
+                
                 try:
                     response = await client.post(CATALOGUE_ENDPOINT, json=node_dataset.model_dump()) #node_dataset.dict()
                     print('CATALOGUEENDPOINT')
