@@ -38,7 +38,7 @@ def test_healthcheck():
 
 def test_upload_dataset():
     create_test_db_and_tables()
-    csv_path = example_data_dir / "AML_ES.csv"
+    csv_path = example_data_dir / "AML_DATA_ES.csv"
     with open(csv_path, "rb") as csv_file:
         response = client.post(
             "/dataset",
@@ -53,7 +53,7 @@ def test_remove_dataset():
     remove_data = {
         "node": "node1",
         "disease": "AML",
-        "path": "/app/data/dataset/local_datasets/node1/AML_node1_xxx.csv"
+        "path": "/app/datasets/node1/AML_node1_xxx.csv"
     }
     response = client.delete("/dataset", json=remove_data)
     assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
