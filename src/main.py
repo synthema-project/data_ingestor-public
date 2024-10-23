@@ -21,7 +21,7 @@ import logging
 app = FastAPI()
 
 ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema" 
-CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev/metadata" 
+CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata" 
 
 LOCAL_DATASETS_DIR = "/app/datasets"
 local_datasets = {}
