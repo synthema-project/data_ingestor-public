@@ -8,6 +8,7 @@ from sqlmodel import SQLModel, create_engine, Session
 from main import app
 from database import get_session
 from models import DatasetSchema, NodeDatasetInfo
+from httpx import WSGITransport
 
 # Set up an SQLite in-memory database for testing
 TEST_DATABASE_URL = "sqlite:///./test.db"  # Use SQLite for testing
@@ -28,7 +29,7 @@ def create_test_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
 # Test client for FastAPI
-client = TestClient(app)
+client = TestClient(app, transport=WSGITransport(app=app))
 
 def test_healthcheck():
     response = client.get("/healthcheck")
@@ -38,7 +39,8 @@ def test_healthcheck():
 @mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
 @mock.patch("main.os.remove")
 @mock.patch("main.save_dataframe_as_csv")
-def test_upload_dataset(mock_save_csv, mock_os_remove):
+@mock.patch("os.makedirs")  # Mock directory creation
+def test_upload_dataset(mock_makedirs, mock_save_csv, mock_os_remove):
     create_test_db_and_tables()  # Ensure the database is set up before running the test
 
     # Mock the save_dataframe_as_csv to simulate saving to a fake folder
@@ -62,7 +64,8 @@ def test_upload_dataset(mock_save_csv, mock_os_remove):
 
 @mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
 @mock.patch("main.os.remove")
-def test_remove_dataset(mock_os_remove):
+@mock.patch("os.makedirs")  # Mock directory creation
+def test_remove_dataset(mock_makedirs, mock_os_remove):
     create_test_db_and_tables()
 
     # Example payload to remove a dataset
@@ -72,7 +75,7 @@ def test_remove_dataset(mock_os_remove):
         "path": "/mocked/local_datasets/node1/AML_node1_mocked.csv"
     }
 
-    response = client.delete("/dataset", json=remove_data)
+    response = client.request("DELETE", "/dataset", json=remove_data)
     
     assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
     assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
@@ -81,11 +84,17 @@ def test_remove_dataset(mock_os_remove):
     mock_os_remove.assert_called_once_with("/mocked/local_datasets/node1/AML_node1_mocked.csv")
 
 def test_schema_insertion():
+    create_test_db_and_tables()
     session = Session(engine)
     dataset = DatasetSchema(disease="AML", data='{"schema": "test"}')
     session.add(dataset)
     session.commit()
-    saved_dataset = session.query(DatasetSchema).filter(DatasetSchema.disease == "AML").first()
+
+    # Use session.exec instead of session.query
+    saved_dataset = session.exec(
+        "SELECT * FROM datasetschema WHERE disease = 'AML'"
+    ).first()
+    
     assert saved_dataset is not None
     assert saved_dataset.disease == "AML"
 
