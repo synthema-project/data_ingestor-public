@@ -69,7 +69,9 @@ def test_upload_dataset(mock_makedirs, mock_exists, mock_save_csv, mock_os_remov
 def test_remove_dataset(mock_makedirs, mock_os_remove):
     create_test_db_and_tables()
 
-    # Example payload to remove a dataset
+    # Insert a record before testing removal
+    insert_dataset("node1", "/mocked/local_datasets/node1/AML_node1_mocked.csv", "AML")
+    
     remove_data = {
         "node": "node1",
         "disease": "AML",
