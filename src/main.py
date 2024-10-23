@@ -72,7 +72,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                 local_datasets[filename] = filepath
                 os.remove(csv_file_path)
                 print('REMOVE')
-                node_dataset = NodeDatasetInfo(node=node, path=filepath, disease=disease)
+                node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
                 print('NODEDATASET')
 
                 logger.info(f"Sending POST request to: {CATALOGUE_ENDPOINT}")
