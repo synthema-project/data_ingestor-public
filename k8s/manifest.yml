@@ -92,3 +92,15 @@ spec:
   tls:
     - hosts:
          - data-ingestor.k8s.synthema.rid-intrasoft.eu
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-pvc
+spec:
+  storageClassName: nfs-csi
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
