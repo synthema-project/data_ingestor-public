@@ -75,14 +75,22 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...), file: 
                 node_dataset = NodeDatasetInfo(node=node, path=filepath, disease=disease)
                 print('NODEDATASET')
                 try:
-                    response = await client.post(CATALOGUE_ENDPOINT, json=node_dataset.dict())
+                    response = await client.post(CATALOGUE_ENDPOINT, json=node_dataset.model_dump()) #node_dataset.dict()
                     print('CATALOGUEENDPOINT')
+                    print('CATALOGUEENDPOINT POST RESPONSE', response.status_code)
                     #response.raise_for_status()
+
                 except httpx.HTTPStatusError as e:
-                    raise HTTPException(status_code=e.response.status_code,
-                                        detail=f"Error saving metadata: {e.response.text}")
+                    logger.error(f"HTTP error when communicating with {CATALOGUE_ENDPOINT}: {e.response.text}")
+                    raise HTTPException(status_code=e.response.status_code, detail=f"Error saving metadata: {e.response.text}")
+
                 except httpx.RequestError as e:
+                    logger.error(f"Request error when connecting to {CATALOGUE_ENDPOINT}: {str(e)}")
                     raise HTTPException(status_code=500, detail=f"Error connecting to data-catalogue: {str(e)}")
+
+                except Exception as e:
+                    logger.exception("Unexpected error during communication with data-catalogue")
+                    raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
 
                 new_dataset = DatasetSchema(disease=disease, data=json.dumps(schema))
                 print('NEWDATASET')
