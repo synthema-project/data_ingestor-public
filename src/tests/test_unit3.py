@@ -102,4 +102,3 @@ if __name__ == "__main__":
     test_healthcheck()
     test_upload_dataset()
     test_remove_dataset()
-    test_schema_insertion()
