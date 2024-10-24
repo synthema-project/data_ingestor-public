@@ -19,16 +19,29 @@ import io
 import logging
 import requests
 
-# Create an SSL context that is designed for client-side connections
-ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+from requests.adapters import HTTPAdapter
+from urllib3.poolmanager import PoolManager
 
-# Force the minimum TLS version to TLS 1.2 if the server requires it
-ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+class SSLAdapter(HTTPAdapter):
+    """An adapter that ensures requests uses the correct SSL version."""
+    def __init__(self, ssl_version=None, **kwargs):
+        self.ssl_version = ssl_version
+        super().__init__(**kwargs)
 
-# You can also disable certificate verification in a testing environment:
-# (DO NOT do this in production!)
-ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
+    def init_poolmanager(self, *args, **kwargs):
+        context = ssl.create_default_context()
+        context.set_ciphers('HIGH:!DH:!aNULL')
+        context.options |= ssl.OP_NO_SSLv2
+        context.options |= ssl.OP_NO_SSLv3
+        context.options |= ssl.OP_NO_TLSv1
+        context.options |= ssl.OP_NO_TLSv1_1
+        kwargs['ssl_context'] = context
+        return super().init_poolmanager(*args, **kwargs)
+
+# Force using TLSv1.2 or higher
+session = requests.Session()
+adapter = SSLAdapter()
+session.mount("https://", adapter)
 
 
 app = FastAPI()
