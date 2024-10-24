@@ -52,10 +52,10 @@ def test_upload_dataset():
 
         # Assertions
         # Log or print the response content to inspect the error details
-        print(f"Response Content: {response.content}")
+    print(f"Response Content: {response.content}")
         
         # Assertions
-        assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
+    assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
 
 
 #@mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
