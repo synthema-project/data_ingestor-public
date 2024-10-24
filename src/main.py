@@ -19,31 +19,6 @@ import io
 import logging
 import requests
 
-from requests.adapters import HTTPAdapter
-from urllib3.poolmanager import PoolManager
-
-class SSLAdapter(HTTPAdapter):
-    """An adapter that ensures requests uses the correct SSL version."""
-    def __init__(self, ssl_version=None, **kwargs):
-        self.ssl_version = ssl_version
-        super().__init__(**kwargs)
-
-    def init_poolmanager(self, *args, **kwargs):
-        context = ssl.create_default_context()
-        context.set_ciphers('HIGH:!DH:!aNULL')
-        context.options |= ssl.OP_NO_SSLv2
-        context.options |= ssl.OP_NO_SSLv3
-        context.options |= ssl.OP_NO_TLSv1
-        context.options |= ssl.OP_NO_TLSv1_1
-        kwargs['ssl_context'] = context
-        return super().init_poolmanager(*args, **kwargs)
-
-# Force using TLSv1.2 or higher
-session = requests.Session()
-adapter = SSLAdapter()
-session.mount("https://", adapter)
-
-
 app = FastAPI()
 
 #ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema" 
