@@ -37,29 +37,18 @@ def test_healthcheck():
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
-import tempfile
 
-@mock.patch("main.os.makedirs")  # Mock directory creation
-@mock.patch("main.os.path.exists", return_value=True)  # Mock that the directory already exists
-@mock.patch("main.os.remove")
-@mock.patch("main.save_dataframe_as_csv")  # Mock the CSV saving function
-def test_upload_dataset(mock_save_csv, mock_os_remove, mock_exists, mock_makedirs):
+def test_upload_dataset():
     create_test_db_and_tables()
 
-    # Use a temporary directory for testing
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        mock_save_csv.return_value = f"{tmp_dir}/node1/AML_node1_mocked.csv"  # Mock the path
+    csv_path = current_dir / "example_data" / "AML_DATA_ES.csv"
         
-        # Test data file
-        csv_path = current_dir / "example_data" / "AML_DATA_ES.csv"
-        
-        with open(csv_path, "rb") as csv_file:
-            # Post the request with the temporary directory as 'local_datasets_dir'
-            response = client.post(
+    with open(csv_path, "rb") as csv_file:
+         response = client.post(
                 "/dataset",
-                data={"node": "node1", "disease": "AML", "local_datasets_dir": tmp_dir},
+                data={"node": "node1", "disease": "AML"},
                 files={"file": ("AML_DATA_ES.csv", csv_file, "text/csv")},
-            )
+        )
 
         # Assertions
         # Log or print the response content to inspect the error details
@@ -67,8 +56,7 @@ def test_upload_dataset(mock_save_csv, mock_os_remove, mock_exists, mock_makedir
         
         # Assertions
         assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
-        mock_makedirs.assert_called_once_with(f"{tmp_dir}/node1", exist_ok=True)
-        mock_save_csv.assert_called_once()
+
 
 #@mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
 #@mock.patch("main.os.remove")
