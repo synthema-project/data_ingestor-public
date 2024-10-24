@@ -17,6 +17,7 @@ import numpy as np
 from sqlalchemy.orm import Session
 import io
 import logging
+import requests
 
 app = FastAPI()
 
@@ -50,7 +51,8 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
         print('CSVFILEPATH', csv_file_path)
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
+                #response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
+                response = await requests.get(f"{ANNOTATION_ENDPOINT}/{disease}",allow_redirects=True)
                 print(f"Annotation response: {response.status_code} - {response.text}")
                 print('RESPONSE')
                 #if response.status_code == 308:
