@@ -56,7 +56,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
                 if response.status_code == 308:
                     print(f"Redirected to: {response.headers.get('location')}")
                 if response.status_code != 200:
-                    raise Exception(f"Schema service error: {annotation_response.status_code}")
+                    raise Exception(f"Schema service error: {response.status_code}")
                     #raise HTTPException(status_code=404, detail="Schema not found")
                 print('SCHEMA1')
                 schema = response.json()["schema"]
