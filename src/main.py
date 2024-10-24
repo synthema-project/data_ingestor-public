@@ -19,6 +19,18 @@ import io
 import logging
 import requests
 
+# Create an SSL context that is designed for client-side connections
+ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+
+# Force the minimum TLS version to TLS 1.2 if the server requires it
+ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+
+# You can also disable certificate verification in a testing environment:
+# (DO NOT do this in production!)
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+
+
 app = FastAPI()
 
 #ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema" 
@@ -51,8 +63,8 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
         print('CSVFILEPATH', csv_file_path)
         async with httpx.AsyncClient() as client:
             try:
-                #response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
-                response = await requests.get(f"{ANNOTATION_ENDPOINT}/{disease}",allow_redirects=True)
+                response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
+                #response = await requests.get(f"{ANNOTATION_ENDPOINT}/{disease}",allow_redirects=True)
                 print(f"Annotation response: {response.status_code} - {response.text}")
                 print('RESPONSE')
                 #if response.status_code == 308:
