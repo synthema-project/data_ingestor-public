@@ -23,7 +23,7 @@ current_dir = Path(__file__).resolve().parent
 #    with Session(engine) as session:
 #        yield session
 
-app.dependency_overrides[get_session] = override_get_session
+#app.dependency_overrides[get_session] = override_get_session
 
 # Create database and tables for the test
 #def create_test_db_and_tables():
