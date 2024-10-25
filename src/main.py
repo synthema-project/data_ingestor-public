@@ -123,9 +123,9 @@ async def remove_dataset(removedatasetobject: RemoveDatasetObject, request: Requ
         try:
     #        if remove_dataset_from_db(session, node=removedatasetobject.node, disease=removedatasetobject.disease, path=removedatasetobject.path):
     #            #print('IF REMOVE DATASET FROM DB IS TRUE')
-             os.remove(removedatasetobject.path)
+            os.remove(removedatasetobject.path)
     #            #return {"message": "Dataset removed successfully"}
-             print("message: Dataset removed successfully")
+            print("message: Dataset removed successfully")
     #        else:
     #            #print('IF REMOVE DATASET FROM DB IS FALSE')
     #            raise HTTPException(status_code=404, detail="Dataset not found in local storage")
