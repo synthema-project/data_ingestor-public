@@ -101,10 +101,10 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
                     logger.exception("Unexpected error during communication with data-catalogue")
                     raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
 
-                new_dataset = DatasetSchema(disease=disease, data=json.dumps(schema))
-                print('NEWDATASET')
-                save_dataset_to_database(session, new_dataset)
-                print('SAVETOCATALOGUE')
+                #new_dataset = DatasetSchema(disease=disease, data=json.dumps(schema))
+                #print('NEWDATASET')
+                #save_dataset_to_database(session, new_dataset)
+                #print('SAVETOCATALOGUE')
 
                 return {"message": "Dataset uploaded and validated successfully"}
             except httpx.HTTPStatusError as e:
