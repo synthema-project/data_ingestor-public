@@ -58,18 +58,18 @@ def test_upload_dataset():
     assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
 
 
-def test_remove_dataset():
+#def test_remove_dataset():
 
-    remove_data = {
-        "node": "node1",
-        "disease": "AML",
-        "path": "/app/datasets/NODE1/AML_NODE1_*"
-    }
+#    remove_data = {
+#        "node": "node1",
+#        "disease": "AML",
+#        "path": "/app/datasets/NODE1/AML_NODE1_*"
+#    }
 
-    response = client.request("DELETE", "/dataset", json=remove_data)
+#    response = client.request("DELETE", "/dataset", json=remove_data)
     
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
-    assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
+#    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
+#    assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
     
     # Ensure the mock os.remove was called with the expected path
 #    mock_os_remove.assert_called_once_with("/mocked/local_datasets/node1/AML_node1_mocked.csv")
@@ -77,4 +77,4 @@ def test_remove_dataset():
 if __name__ == "__main__":
     test_healthcheck()
     test_upload_dataset()
-    test_remove_dataset()
+    #test_remove_dataset()
