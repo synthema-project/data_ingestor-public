@@ -46,7 +46,7 @@ def test_upload_dataset():
     with open(csv_path, "rb") as csv_file:
          response = client.post(
                 "/dataset",
-                data={"node": "node1", "disease": "AML"},
+                data={"node": "NODE1", "disease": "AML"},
                 files={"file": ("AML_DATA_ES.csv", csv_file, "text/csv")},
         )
 
@@ -63,7 +63,7 @@ def test_remove_dataset():
     remove_data = {
         "node": "node1",
         "disease": "AML",
-        "path": "/app/datasets/node1/AML_node1_*"
+        "path": "/app/datasets/NODE1/AML_NODE1_*"
     }
 
     response = client.request("DELETE", "/dataset", json=remove_data)
