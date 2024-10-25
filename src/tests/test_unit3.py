@@ -63,7 +63,7 @@ def test_remove_dataset():
     remove_data = {
         "node": "node1",
         "disease": "AML",
-        "path": "/app/local_datasets/node1/AML_node1_*"
+        "path": "/app/datasets/node1/AML_node1_*"
     }
 
     response = client.request("DELETE", "/dataset", json=remove_data)
