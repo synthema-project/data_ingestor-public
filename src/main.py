@@ -75,6 +75,8 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
                 filepath = save_dataframe_as_csv(dataframe, filename, node, savepath=local_datasets_dir)
                 print('FILEPATH')
                 local_datasets[filename] = filepath
+                print(filepath)
+                print(filename)
                 os.remove(csv_file_path)
                 print('REMOVE')
                 node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
