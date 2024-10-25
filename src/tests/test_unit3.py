@@ -61,19 +61,19 @@ def test_upload_dataset():
 #@mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
 #@mock.patch("main.os.remove")
 #@mock.patch("os.makedirs")  # Mock directory creation
-#def test_remove_dataset(mock_makedirs, mock_os_remove):
+def test_remove_dataset(mock_makedirs, mock_os_remove):
 #    create_test_db_and_tables()#
-#
-#    remove_data = {
-#        "node": "node1",
-#        "disease": "AML",
-#        "path": "/mocked/local_datasets/node1/AML_node1_mocked.csv"
-#    }
 
-#    response = client.request("DELETE", "/dataset", json=remove_data)
+    remove_data = {
+        "node": "node1",
+        "disease": "AML",
+        "path": "/app/local_datasets/node1/AML_node1_*"
+    }
+
+    response = client.request("DELETE", "/dataset", json=remove_data)
     
-#    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
-#    assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
+    assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
     
     # Ensure the mock os.remove was called with the expected path
 #    mock_os_remove.assert_called_once_with("/mocked/local_datasets/node1/AML_node1_mocked.csv")
