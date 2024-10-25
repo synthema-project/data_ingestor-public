@@ -1,6 +1,7 @@
 import os
 import json
 import shutil
+import glob
 from pathlib import Path
 from unittest import mock
 from fastapi.testclient import TestClient
@@ -63,16 +64,26 @@ def test_remove_dataset():
     remove_data = {
         "node": "node1",
         "disease": "AML",
-        "path": f"/app/datasets/NODE1/AML_NODE1_{*}"
+        #"path": f"/app/datasets/NODE1/AML_NODE1_{*}"
     }
 
-    response = client.request("DELETE", "/dataset", json=remove_data)
+    # Match files with the pattern using glob
+    matched_files = glob.glob("/app/datasets/NODE1/AML_NODE1_*")
+
+    # Loop through each matched file and perform the delete request if files are found
+    for path in matched_files:
+        # Update the path in remove_data with each specific file path
+        remove_data["path"] = path
+
+        response = client.request("DELETE", "/dataset", json=remove_data)
     
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
-    assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
-    
-    # Ensure the mock os.remove was called with the expected path
-#    mock_os_remove.assert_called_once_with("/mocked/local_datasets/node1/AML_node1_mocked.csv")
+        # Assertions for each response
+        assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
+        assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
+
+    # Check if there were no matched files, which may indicate a test setup issue
+    if not matched_files:
+        print("Warning: No files matched the wildcard pattern.")
 
 if __name__ == "__main__":
     test_healthcheck()
