@@ -58,11 +58,7 @@ def test_upload_dataset():
     assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
 
 
-#@mock.patch("main.LOCAL_DATASETS_DIR", new="/mocked/local_datasets")
-#@mock.patch("main.os.remove")
-#@mock.patch("os.makedirs")  # Mock directory creation
-def test_remove_dataset(mock_makedirs, mock_os_remove):
-#    create_test_db_and_tables()#
+def test_remove_dataset():
 
     remove_data = {
         "node": "node1",
