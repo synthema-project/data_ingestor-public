@@ -1,19 +1,19 @@
-FastAPI workflow for data ingestion
+# Data ingestor module
 
-Example_data: here we can find an example of dataset to upload (.csv file) and an example of a schema for AML (.json)
+## Description
 
-fastapi: source code to run the FastAPI ingestion workflow
+This project hosts the code for the data ingestor module of real data management workflow in Synthema.
+Data ingestor component is responsible for:
 
-- data_ingestion_utils.py: here the basic functions to connect fastapi and sqlite database are defined
-- main.py: here the CRUD functions for both schemas and datasets are defined.
-- data_ingestion_utils_postgresql.py: here the basic functions to connect fastapi and postgresql database are defined
-- main_postgresql.py: here the CRUD functions for both schemas and datasets are defined.
+* Ingesting a new dataset to the local filesystem
+* Deleting an existing dataset from the local filesystem
 
-To run the data ingestion workflow, make the following steps:
-1) create the conda environment from the environment.yaml file and activate it
-     > conda env create -f environment.yaml
-     
-     > conda activate fastapi
-2) run the main.py function
-     > python main.py
-3) open your browser and go to "http://127.0.0.1:8001/docs" (or change 8001 to the port you indicate in the main.py)
+### Structure
+
+The data-ingestor module is structured in the following folders:
+
+* The folder *src* provides utilities, datasets, models, fastapi, requirements and Dockerfile
+* The folder *k8s* includes kubernetes manifests
+* The folder *jenkins* contains the Jenkinsfile to run unit and functional tests. 
+
+## Data-ingestor deployment
