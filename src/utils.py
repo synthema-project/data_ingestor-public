@@ -168,17 +168,45 @@ def get_schema_from_database(session: Session, disease: str):
     statement = select(DatasetSchema).where(DatasetSchema.disease == disease)
     return session.exec(statement).first()
 
+#def remove_dataset_from_db(session: Session, node: str, disease: str, path: str):
+#    try:
+#        statement = select(NodeDatasetInfo).where(NodeDatasetInfo.disease == disease, NodeDatasetInfo.node == node, NodeDatasetInfo.path == path)
+#        print(statement)
+#        dataset = session.exec(statement).first()
+#        print(dataset)
+#        if dataset:
+#            #session.delete(dataset)
+#            #session.commit()
+#            return True
+#        return False
+#    except Exception as e:
+#        print("Error removing dataset info from database:", e)
+#        raise HTTPException(status_code=500, detail="Internal Server Error")
+
 def remove_dataset_from_db(session: Session, node: str, disease: str, path: str):
     try:
-        statement = select(NodeDatasetInfo).where(NodeDatasetInfo.disease == disease, NodeDatasetInfo.node == node, NodeDatasetInfo.path == path)
-        print(statement)
+        # Query the database for the dataset
+        statement = select(NodeDatasetInfo).where(
+            NodeDatasetInfo.disease == disease,
+            NodeDatasetInfo.node == node,
+            NodeDatasetInfo.path == path
+        )
         dataset = session.exec(statement).first()
-        print(dataset)
+
         if dataset:
-            #session.delete(dataset)
-            #session.commit()
+            # Check if the file exists
+            if os.path.exists(path):
+                os.remove(path)
+            else:
+                print(f"File not found on disk: {path}")
+                raise HTTPException(status_code=404, detail=f"Dataset '{path}' not found on disk.")
+
+            # Remove from database
+            session.delete(dataset)
+            session.commit()
             return True
-        return False
+        else:
+            raise HTTPException(status_code=404, detail=f"Dataset '{path}' not found in database.")
     except Exception as e:
         print("Error removing dataset info from database:", e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
