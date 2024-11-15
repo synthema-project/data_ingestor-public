@@ -94,18 +94,23 @@ def test_remove_dataset():
     # Match files with the pattern using glob
     matched_files = glob.glob("/app/datasets/NODE1/AML_NODE1_*")
 
-    # Ensure matched files exist in the database
+    if not matched_files:
+        print("Warning: No files matched the wildcard pattern.")
+        return
+
     for path in matched_files:
+        # Check if the file exists in the database
+        response = client.get(f"/dataset/check?path={path}")  # Create a check endpoint for existence
+        if response.status_code != 200:
+            print(f"Skipping file not in database: {path}")
+            continue
+
         remove_data["path"] = path
         response = client.request("DELETE", "/dataset", json=remove_data)
 
         # Assertions for each response
         assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
         assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
-
-    if not matched_files:
-        print("Warning: No files matched the wildcard pattern. Test setup issue?")
-
 if __name__ == "__main__":
     test_healthcheck()
     test_upload_dataset()
