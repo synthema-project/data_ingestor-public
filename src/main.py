@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Dict, List, Union
 from models import DatasetSchema, NewDataset, RemoveDatasetObject, NodeDatasetInfo
 from database import create_db_and_tables, get_session
-from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan#,convert_np_to_native
+from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan#,convert_np_to_native, save_node_dataset_info
 #check_schema_dataset,
 from pathlib import Path
 import uvicorn
@@ -81,7 +81,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
                 print('REMOVE')
                 #node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
                 node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
-                #save_node_dataset_info(session, node_dataset)
+                save_node_dataset_info(session, node_dataset)
                 print('NODEDATASET')
 
                 logger.info(f"Sending POST request to: {CATALOGUE_ENDPOINT}")
