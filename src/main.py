@@ -183,11 +183,14 @@ async def remove_dataset(
         # Notify external service
         print('ORA RIMUOVO IL FILE DAL DATABASE DEI METADATA')
         async with httpx.AsyncClient() as client:
-            response = await client.delete(
-                CATALOGUE_ENDPOINT,
-                json=removedatasetobject.dict(),
-                headers={"Content-Type": "application/json"}
-            )
+            #response = await client.delete(
+            #    CATALOGUE_ENDPOINT,
+            #    json=removedatasetobject.dict(),
+            #    headers={"Content-Type": "application/json"}
+            #)
+
+            response = await client.request(CATALOGUE_ENDPOINT, "DELETE", "/metadata", json=removedatasetobject.dict())
+            
             response.raise_for_status()
             logging.info("External service notified successfully.")
 
