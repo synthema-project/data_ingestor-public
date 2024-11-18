@@ -111,7 +111,13 @@ def test_remove_dataset_file_not_found():
         "path": "/nonexistent/path/test_dataset.csv",
     }
 
-    response = client.delete("/dataset", json=remove_data)
+    #response = client.delete("/dataset", json=remove_data)
+
+    response = client.request(
+            "DELETE",
+            "/dataset",
+            json=remove_data
+        )
 
     assert response.status_code == 404
     assert response.json() == {"detail": "File not found in local storage"}
@@ -131,7 +137,13 @@ def test_remove_dataset_external_service_error():
             "Error", request=None, response=type("Response", (), {"status_code": 500, "text": "Service error"})
         )
 
-        response = client.delete("/dataset", json=remove_data)
+        #response = client.delete("/dataset", json=remove_data)
+
+        response = client.request(
+            "DELETE",
+            "/dataset",
+            json=remove_data
+        )
 
         assert response.status_code == 500
         assert "Service error" in response.json().get("detail", "")
@@ -147,7 +159,13 @@ def test_remove_dataset_unexpected_error():
     }
 
     with patch("os.remove", side_effect=Exception("Unexpected error")):
-        response = client.delete("/dataset", json=remove_data)
+        #response = client.delete("/dataset", json=remove_data)
+
+        response = client.request(
+            "DELETE",
+            "/dataset",
+            json=remove_data
+        )
 
         assert response.status_code == 500
         assert "Unexpected error" in response.json().get("detail", "")
