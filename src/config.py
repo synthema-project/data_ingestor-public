@@ -7,7 +7,7 @@ class Settings:
     POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "mstorage-svc")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432") #5432 80
 
-#settings = Settings()
+settings = Settings()
 
 
 #class Settings:
