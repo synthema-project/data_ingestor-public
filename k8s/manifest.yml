@@ -92,6 +92,7 @@ spec:
   tls:
     - hosts:
          - data-ingestor.k8s.synthema.rid-intrasoft.eu
+      secretName: data-ingestor.k8s.synthema.rid-intrasoft.eu-tls
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
