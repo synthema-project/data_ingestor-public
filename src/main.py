@@ -181,6 +181,7 @@ async def remove_dataset(
             raise HTTPException(status_code=404, detail="File not found in local storage")
 
         # Notify external service
+        print('ORA RIMUOVO IL FILE DAL DATABASE DEI METADATA')
         async with httpx.AsyncClient() as client:
             response = await client.delete(
                 CATALOGUE_ENDPOINT,
