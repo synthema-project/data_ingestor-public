@@ -141,11 +141,13 @@ def test_remove_dataset_external_service_error():
             ),
         )
 
-        response = client.request(
-            "DELETE",
-            "/dataset",
-            json=remove_data
-        )
+        #response = client.request(
+        #    "DELETE",
+        #    "/dataset",
+        #    json=remove_data
+        #)
+
+        response = client.delete("/dataset", params=remove_data)
 
         assert response.status_code == 500
         assert response.json()["detail"] == {"error": "Service failure"}
