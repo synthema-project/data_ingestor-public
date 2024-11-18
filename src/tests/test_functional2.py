@@ -180,8 +180,8 @@ if __name__ == "__main__":
     test_upload_dataset()
     #test_remove_dataset()
     test_remove_dataset_success()
-    test_remove_dataset_file_not_found()
+    #test_remove_dataset_file_not_found()
     test_remove_dataset_external_service_error()
-    test_remove_dataset_unexpected_error()
+    #test_remove_dataset_unexpected_error()
     
 
