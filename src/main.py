@@ -68,7 +68,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
                 print('DATADICT')
                 validate_data(data_dict=data_dict, schema=schema)
                 print('VALIDATE')
-                iid = str(uuid.uuid4())
+                iid = uuid.uuid4()#str(uuid.uuid4())
                 print('IID')
                 filename = f"{disease}_{node}_{iid}.csv"
                 print('FILENAME')
