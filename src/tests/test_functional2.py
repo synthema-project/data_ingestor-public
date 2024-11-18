@@ -78,7 +78,7 @@ def teardown_test_file():
 
 # Test case for successful deletion
 def test_remove_dataset_success():
-    setup_test_file()  # Create the test file
+    setup_test_file()  # Ensure file exists
 
     remove_data = {
         "node": "node1",
@@ -90,17 +90,11 @@ def test_remove_dataset_success():
         mock_delete.return_value.status_code = 200
         mock_delete.return_value.json.return_value = {"message": "External service notified"}
 
-        response = client.delete("/dataset", json=remove_data)
+        response = client.delete("/dataset", params=remove_data)
 
-        #response = client.request(
-        #    "DELETE",
-        #    "/dataset",
-        #    json=remove_data
-        #)
-
-        assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+        assert response.status_code == 200
         assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
-        assert not os.path.exists(TEST_FILE_PATH)  # Verify file was deleted
+        assert not os.path.exists(TEST_FILE_PATH)  # File should be deleted
 
     teardown_test_file()
 
