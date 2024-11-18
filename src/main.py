@@ -120,46 +120,46 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
     else:
         raise HTTPException(status_code=400, detail="Only CSV files are accepted")
 
-@app.delete("/dataset/all", tags=["data-ingestion"])
-async def remove_dataset_vecchia(removedatasetobject: RemoveDatasetObject, request: Request, session: Session = Depends(get_session)):
-    logging.info(f"Received request: {await request.json()}")
-    async with httpx.AsyncClient() as client:
-        try:
-    #        if remove_dataset_from_db(session, node=removedatasetobject.node, disease=removedatasetobject.disease, path=removedatasetobject.path):
-    #            #print('IF REMOVE DATASET FROM DB IS TRUE')
-            os.remove(removedatasetobject.path)
-    #            #return {"message": "Dataset removed successfully"}
-            print("message: Dataset removed successfully")
-    #        else:
-    #            #print('IF REMOVE DATASET FROM DB IS FALSE')
-    #            raise HTTPException(status_code=404, detail="Dataset not found in local storage")
+#@app.delete("/dataset/all", tags=["data-ingestion"])
+#async def remove_dataset_vecchia(removedatasetobject: RemoveDatasetObject, request: Request, session: Session = Depends(get_session)):
+#    logging.info(f"Received request: {await request.json()}")
+#    async with httpx.AsyncClient() as client:
+#        try:
+#    #        if remove_dataset_from_db(session, node=removedatasetobject.node, disease=removedatasetobject.disease, path=removedatasetobject.path):
+#    #            #print('IF REMOVE DATASET FROM DB IS TRUE')
+#            os.remove(removedatasetobject.path)
+#    #            #return {"message": "Dataset removed successfully"}
+#            print("message: Dataset removed successfully")
+#    #        else:
+#    #            #print('IF REMOVE DATASET FROM DB IS FALSE')
+#    #            raise HTTPException(status_code=404, detail="Dataset not found in local storage")#
 
-            response = await client.request("DELETE",
-                                            CATALOGUE_ENDPOINT,
-                                            json=removedatasetobject.dict(),
-                                            headers={"Content-Type": "application/json"})
-            response.raise_for_status()
+#            response = await client.request("DELETE",
+#                                            CATALOGUE_ENDPOINT,
+#                                            json=removedatasetobject.dict(),
+#                                            headers={"Content-Type": "application/json"})
+#            response.raise_for_status()
 
-            return {"message": "Dataset removed successfully from both database and local storage"}
-            #print('RESPONSE:', response.raise_for_status())
-            #print('metadata removed')
-            #print(removedatasetobject)
-            #print(removedatasetobject.path)
+#            return {"message": "Dataset removed successfully from both database and local storage"}
+#            #print('RESPONSE:', response.raise_for_status())
+#            #print('metadata removed')
+#            #print(removedatasetobject)
+#            #print(removedatasetobject.path)
 
-            #if remove_dataset_from_db(session, node=removedatasetobject.node, disease=removedatasetobject.disease, path=removedatasetobject.path):
-            #    print('IF REMOVE DATASET FROM DB IS TRUE')
-            #    os.remove(removedatasetobject.path)
-            #    return {"message": "Dataset removed successfully"}
-            ##else:
-            #    print('IF REMOVE DATASET FROM DB IS FALSE')
-            #    raise HTTPException(status_code=404, detail="Dataset not found in local storage")
+#            #if remove_dataset_from_db(session, node=removedatasetobject.node, disease=removedatasetobject.disease, path=removedatasetobject.path):
+#            #    print('IF REMOVE DATASET FROM DB IS TRUE')
+#            #    os.remove(removedatasetobject.path)
+#            #    return {"message": "Dataset removed successfully"}
+#            ##else:
+#            #    print('IF REMOVE DATASET FROM DB IS FALSE')
+#            #    raise HTTPException(status_code=404, detail="Dataset not found in local storage")
 
-        except httpx.HTTPStatusError as exc:
-            print('EXCEPT 1')
-            raise HTTPException(status_code=exc.response.status_code, detail=exc.response.json())
-        except Exception as e:
-            print('EXCEPT 2')
-            raise HTTPException(status_code=500, detail=str(e))
+#        except httpx.HTTPStatusError as exc:
+#            print('EXCEPT 1')
+#            raise HTTPException(status_code=exc.response.status_code, detail=exc.response.json())
+#        except Exception as e:
+#            print('EXCEPT 2')
+#            raise HTTPException(status_code=500, detail=str(e))
 
 @app.delete("/dataset", tags=["data-ingestion"])
 async def remove_dataset(
