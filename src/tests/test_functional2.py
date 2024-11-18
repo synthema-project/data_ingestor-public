@@ -90,13 +90,13 @@ def test_remove_dataset_success():
         mock_delete.return_value.status_code = 200
         mock_delete.return_value.json.return_value = {"message": "External service notified"}
 
-        #response = client.delete("/dataset", json=remove_data)
+        response = client.delete("/dataset", json=remove_data)
 
-        response = client.request(
-            "DELETE",
-            "/dataset",
-            json=remove_data
-        )
+        #response = client.request(
+        #    "DELETE",
+        #    "/dataset",
+        #    json=remove_data
+        #)
 
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
