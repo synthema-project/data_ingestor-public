@@ -169,7 +169,7 @@ async def remove_dataset(
     session: Session = Depends(get_session)
 ):
     logging.info(f"Received request: {await request.json()}")
-    removdatasetobject = RemoveDatasetObject(
+    removdatasetobject = RemoveDatasetObject(node, disease, path)
     #print(removedatasetobject.disease)
     #print(removedatasetobject.node)
     #print(removedatasetobject.path)
