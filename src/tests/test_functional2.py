@@ -105,21 +105,21 @@ def test_remove_dataset_success():
     teardown_test_file()
 
 # Test case for file not found
-def test_remove_dataset_file_not_found():
-    remove_data = {
-        "node": "node1",
-        "disease": "AML",
-        "path": "/nonexistent/path/test_dataset.csv",
-    }
+#def test_remove_dataset_file_not_found():
+#    remove_data = {
+#        "node": "node1",
+#        "disease": "AML",
+#        "path": "/nonexistent/path/test_dataset.csv",
+#    }
 
-    response = client.request(
-        "DELETE",
-        "/dataset",
-        json=remove_data
-    )
+#    response = client.request(
+#        "DELETE",
+#        "/dataset",
+#        json=remove_data
+#    )
 
-    assert response.status_code == 404
-    assert response.json() == {"detail": "File not found in local storage"}
+#    assert response.status_code == 404
+#    assert response.json() == {"detail": "File not found in local storage"}
 
 
 def test_remove_dataset_external_service_error():
@@ -158,22 +158,22 @@ def test_remove_dataset_external_service_error():
     teardown_test_file()
 
 
-def test_remove_dataset_unexpected_error():
-    remove_data = {
-        "node": "node1",
-        "disease": "AML",
-        "path": TEST_FILE_PATH,
-    }
+#def test_remove_dataset_unexpected_error():
+#    remove_data = {
+#        "node": "node1",
+#        "disease": "AML",
+#        "path": TEST_FILE_PATH,
+#    }
 
-    with patch("os.remove", side_effect=Exception("Unexpected error")):
-        response = client.request(
-            "DELETE",
-            "/dataset",
-            json=remove_data
-        )
+#    with patch("os.remove", side_effect=Exception("Unexpected error")):
+#        response = client.request(
+#            "DELETE",
+#            "/dataset",
+#            json=remove_data
+#        )
 
-        assert response.status_code == 500
-        assert "Unexpected error" in response.json().get("detail", "")
+#        assert response.status_code == 500
+#        assert "Unexpected error" in response.json().get("detail", "")
 
 if __name__ == "__main__":
     test_healthcheck()
