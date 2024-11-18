@@ -1,5 +1,6 @@
 import os
 import json
+import requests
 from pathlib import Path
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
@@ -56,7 +57,8 @@ def test_remove_dataset():
         "disease": "AML",
         "path": "/app/datasets/node1/AML_node1_xxx.csv"
     }
-    response = client.delete("/dataset", params=remove_data)#data=json.dumps(remove_data))#json=remove_data)
+    response = requests.delete("http://testserver/dataset", json=remove_data)
+    #response = client.delete("/dataset", params=remove_data)#data=json.dumps(remove_data))#json=remove_data)
     assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
     assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
 
