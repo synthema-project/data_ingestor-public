@@ -50,21 +50,108 @@ def test_upload_dataset():
     assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
     assert "Dataset uploaded and validated successfully" in response.json().get("message", "")
 
-def test_remove_dataset():
-    create_test_db_and_tables()
+#def test_remove_dataset():
+#    create_test_db_and_tables()
+#    remove_data = {
+#        "node": "node1",
+#        "disease": "AML",
+#        "path": "/app/datasets/node1/AML_node1_xxx.csv"
+#    }
+#    response = client.delete("/dataset", data=json.dumps(remove_data))#json=remove_data)
+#    #response = client.delete("/dataset", json=remove_data)
+#    #response = client.delete("/dataset", params=remove_data)#data=json.dumps(remove_data))#json=remove_data)
+#    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
+#    assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
+
+# Create a dummy file for testing
+TEST_FILE_PATH = "/tmp/test_dataset.csv"
+
+def setup_test_file():
+    with open(TEST_FILE_PATH, "w") as f:
+        f.write("sample,test,data\n")
+
+def teardown_test_file():
+    if os.path.exists(TEST_FILE_PATH):
+        os.remove(TEST_FILE_PATH)
+
+# Test case for successful deletion
+def test_remove_dataset_success():
+    setup_test_file()  # Create the test file
+
     remove_data = {
         "node": "node1",
         "disease": "AML",
-        "path": "/app/datasets/node1/AML_node1_xxx.csv"
+        "path": TEST_FILE_PATH,
     }
-    response = client.delete("/dataset", data=json.dumps(remove_data))#json=remove_data)
-    #response = client.delete("/dataset", json=remove_data)
-    #response = client.delete("/dataset", params=remove_data)#data=json.dumps(remove_data))#json=remove_data)
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
-    assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
+
+    with patch("httpx.AsyncClient.delete") as mock_delete:
+        mock_delete.return_value.status_code = 200
+        mock_delete.return_value.json.return_value = {"message": "External service notified"}
+
+        response = client.delete("/dataset", json=remove_data)
+
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+        assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
+        assert not os.path.exists(TEST_FILE_PATH)  # Verify file was deleted
+
+    teardown_test_file()
+
+# Test case for file not found
+def test_remove_dataset_file_not_found():
+    remove_data = {
+        "node": "node1",
+        "disease": "AML",
+        "path": "/nonexistent/path/test_dataset.csv",
+    }
+
+    response = client.delete("/dataset", json=remove_data)
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "File not found in local storage"}
+
+# Test case for external service failure
+def test_remove_dataset_external_service_error():
+    setup_test_file()  # Create the test file
+
+    remove_data = {
+        "node": "node1",
+        "disease": "AML",
+        "path": TEST_FILE_PATH,
+    }
+
+    with patch("httpx.AsyncClient.delete") as mock_delete:
+        mock_delete.side_effect = httpx.HTTPStatusError(
+            "Error", request=None, response=type("Response", (), {"status_code": 500, "text": "Service error"})
+        )
+
+        response = client.delete("/dataset", json=remove_data)
+
+        assert response.status_code == 500
+        assert "Service error" in response.json().get("detail", "")
+
+    teardown_test_file()
+
+# Test case for unexpected error
+def test_remove_dataset_unexpected_error():
+    remove_data = {
+        "node": "node1",
+        "disease": "AML",
+        "path": TEST_FILE_PATH,
+    }
+
+    with patch("os.remove", side_effect=Exception("Unexpected error")):
+        response = client.delete("/dataset", json=remove_data)
+
+        assert response.status_code == 500
+        assert "Unexpected error" in response.json().get("detail", "")
 
 if __name__ == "__main__":
     test_healthcheck()
     test_upload_dataset()
-    test_remove_dataset()
+    #test_remove_dataset()
+    test_remove_dataset_success()
+    test_remove_dataset_file_not_found()
+    test_remove_dataset_external_service_error()
+    test_remove_dataset_unexpected_error()
+    
 
