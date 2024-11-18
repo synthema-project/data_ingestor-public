@@ -168,7 +168,9 @@ async def remove_dataset(
     session: Session = Depends(get_session)
 ):
     logging.info(f"Received request: {await request.json()}")
-    
+    print(removedatasetobject.disease)
+    print(removedatasetobject.node)
+    print(removedatasetobject.path)
     try:
         # Remove the file from local storage
         if os.path.exists(removedatasetobject.path):
