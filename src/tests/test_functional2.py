@@ -112,18 +112,16 @@ def test_remove_dataset_file_not_found():
         "path": "/nonexistent/path/test_dataset.csv",
     }
 
-    #response = client.delete("/dataset", json=remove_data)
-
     response = client.request(
-            "DELETE",
-            "/dataset",
-            json=remove_data
-        )
+        "DELETE",
+        "/dataset",
+        json=remove_data
+    )
 
     assert response.status_code == 404
     assert response.json() == {"detail": "File not found in local storage"}
 
-# Test case for external service failure
+
 def test_remove_dataset_external_service_error():
     setup_test_file()  # Create the test file
 
@@ -135,10 +133,18 @@ def test_remove_dataset_external_service_error():
 
     with patch("httpx.AsyncClient.delete") as mock_delete:
         mock_delete.side_effect = httpx.HTTPStatusError(
-            "Error", request=None, response=type("Response", (), {"status_code": 500, "text": "Service error"})
+            "Error",
+            request=None,
+            response=type(
+                "Response",
+                (),
+                {
+                    "status_code": 500,
+                    "text": "Service error",
+                    "json": lambda: {"error": "Service failure"},
+                },
+            ),
         )
-
-        #response = client.delete("/dataset", json=remove_data)
 
         response = client.request(
             "DELETE",
@@ -147,11 +153,11 @@ def test_remove_dataset_external_service_error():
         )
 
         assert response.status_code == 500
-        assert "Service error" in response.json().get("detail", "")
+        assert response.json()["detail"] == {"error": "Service failure"}
 
     teardown_test_file()
 
-# Test case for unexpected error
+
 def test_remove_dataset_unexpected_error():
     remove_data = {
         "node": "node1",
@@ -160,8 +166,6 @@ def test_remove_dataset_unexpected_error():
     }
 
     with patch("os.remove", side_effect=Exception("Unexpected error")):
-        #response = client.delete("/dataset", json=remove_data)
-
         response = client.request(
             "DELETE",
             "/dataset",
