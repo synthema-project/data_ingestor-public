@@ -83,7 +83,7 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
                 node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
                 print('nodedatasetinfo')
                 print(NodeDatasetInfo)
-                save_node_dataset_info(session, node_dataset)
+                #save_node_dataset_info(session, node_dataset)
                 print('NODEDATASET')
 
                 logger.info(f"Sending POST request to: {CATALOGUE_ENDPOINT}")
