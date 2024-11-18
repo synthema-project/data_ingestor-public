@@ -219,12 +219,14 @@ async def remove_dataset(
     request: Request,
     session: Session = Depends(get_session)
 ):
+    print('ENTER DELETE')
     logging.info(f"Received request: {await request.json()}")
     removedatasetobject = RemoveDatasetObject(node=node, disease=disease, path=path)
-
+    print('REMOVEDATASETOBJECT')
     try:
         # Remove the file from local storage
         if os.path.exists(removedatasetobject.path):
+            print('REMOVE')
             os.remove(removedatasetobject.path)
             logging.info(f"File {removedatasetobject.path} successfully removed.")
         else:
@@ -233,6 +235,7 @@ async def remove_dataset(
 
         # Notify external service
         logging.info("Notifying external service to remove metadata.")
+        print('REMOVE METADATA')
         async with httpx.AsyncClient() as client:
             url = f"{CATALOGUE_ENDPOINT}/metadata"
             response = await client.delete(
