@@ -85,6 +85,7 @@ def test_remove_dataset_success():
         "disease": "AML",
         "path": TEST_FILE_PATH,
     }
+    print(json.dumps(remove_data))
 
     with patch("httpx.AsyncClient.delete") as mock_delete:
         mock_delete.return_value.status_code = 200
