@@ -163,14 +163,16 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
 
 @app.delete("/dataset", tags=["data-ingestion"])
 async def remove_dataset(
-    removedatasetobject: RemoveDatasetObject,
+    node:str, disease:str, path:str,
+    #removedatasetobject: RemoveDatasetObject,
     request: Request,
     session: Session = Depends(get_session)
 ):
     logging.info(f"Received request: {await request.json()}")
-    print(removedatasetobject.disease)
-    print(removedatasetobject.node)
-    print(removedatasetobject.path)
+    removdatasetobject = RemoveDatasetObject(
+    #print(removedatasetobject.disease)
+    #print(removedatasetobject.node)
+    #print(removedatasetobject.path)
     try:
         # Remove the file from local storage
         if os.path.exists(removedatasetobject.path):
