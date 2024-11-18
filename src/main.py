@@ -81,6 +81,8 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
                 print('REMOVE')
                 #node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
                 node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
+                print('nodedatasetinfo')
+                print(NodeDatasetInfo)
                 save_node_dataset_info(session, node_dataset)
                 print('NODEDATASET')
 
