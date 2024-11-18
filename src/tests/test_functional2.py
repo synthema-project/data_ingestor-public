@@ -85,13 +85,13 @@ def test_remove_dataset_success():
         "disease": "AML",
         "path": TEST_FILE_PATH,
     }
-    print(json.dumps(remove_data))
+    #print(json.dumps(remove_data))
 
     with patch("httpx.AsyncClient.delete") as mock_delete:
         mock_delete.return_value.status_code = 200
         mock_delete.return_value.json.return_value = {"message": "External service notified"}
 
-        response = client.delete("/dataset", params=json.dumps(remove_data))
+        response = client.delete("/dataset", params=remove_data)
 
         assert response.status_code == 200
         assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
