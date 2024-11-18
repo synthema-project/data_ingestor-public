@@ -188,8 +188,8 @@ async def remove_dataset(
             #    json=removedatasetobject.dict(),
             #    headers={"Content-Type": "application/json"}
             #)
-
-            response = await client.request(CATALOGUE_ENDPOINT, "DELETE", "/metadata", json=removedatasetobject.dict())
+            URL = f"{CATALOGUE_ENDPOINT}/metadata"
+            response = await client.request("DELETE", URL, json=removedatasetobject.model_dump()) #.dict()
             
             response.raise_for_status()
             logging.info("External service notified successfully.")
