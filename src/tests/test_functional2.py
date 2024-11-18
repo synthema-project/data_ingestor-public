@@ -90,7 +90,7 @@ def test_remove_dataset_success():
         mock_delete.return_value.status_code = 200
         mock_delete.return_value.json.return_value = {"message": "External service notified"}
 
-        response = client.delete("/dataset", params={"node":remove_data.node, "disease":remove_data.disease,"path":remove_data.path})
+        response = client.delete("/dataset", params={"node":remove_data["node"], "disease":remove_data["disease"],"path":remove_data["path"]})
 
         assert response.status_code == 200
         assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
