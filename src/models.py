@@ -20,6 +20,7 @@
 from sqlmodel import SQLModel, Field
 from typing import Dict, List, Union
 import json
+import uuid as uuid_pkg
 
 class DatasetSchema(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -39,7 +40,9 @@ class RemoveDatasetObject(SQLModel):
     path: str
 
 class NodeDatasetInfo(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
+    #id: int = Field(default=None, primary_key=True)
+    Optional[uuid_pkg.UUID] = Field(default_factory=uuid_pkg.uuid4,
+                                             primary_key=True)
     node: str
     path: str
     disease: str
