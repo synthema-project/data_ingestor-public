@@ -21,6 +21,7 @@ from sqlmodel import SQLModel, Field
 from typing import Dict, List, Union
 import json
 import uuid as uuid_pkg
+from typing import Optional
 
 class DatasetSchema(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
