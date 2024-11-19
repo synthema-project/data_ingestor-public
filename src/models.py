@@ -42,7 +42,7 @@ class RemoveDatasetObject(SQLModel):
 
 class NodeDatasetInfo(SQLModel, table=True):
     #id: int = Field(default=None, primary_key=True)
-    Optional[uuid_pkg.UUID] = Field(default_factory=uuid_pkg.uuid4,
+    id: Optional[uuid_pkg.UUID] = Field(default_factory=uuid_pkg.uuid4,
                                              primary_key=True)
     node: str
     path: str
