@@ -38,7 +38,8 @@ def on_startup():
     create_db_and_tables()
 
 @app.post("/dataset", tags=["data-ingestion"])
-async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_datasets_dir: str = Form(default="/app/datasets"), file: UploadFile = File(...), session: Session = Depends(get_session)): #local_datasets_dir: str = Form(default="/app/datasets")
+#async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_datasets_dir: str = Form(default="/app/datasets"), file: UploadFile = File(...), session: Session = Depends(get_session)): #local_datasets_dir: str = Form(default="/app/datasets")
+async def upload_dataset(node: str, disease: str,local_datasets_dir: str = Form(default="/app/datasets"), file: UploadFile = File(...), session: Session = Depends(get_session)):    
     if file.filename.endswith(".csv"):
         print('CSV CONTENT')
         csv_content = await file.read()
