@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
 from unittest.mock import patch, AsyncMock
-from app import app  # Import your FastAPI app
+from main import app  # Import your FastAPI app
 import os
 
 # Set up temporary paths and constants for testing
