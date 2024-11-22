@@ -241,9 +241,9 @@ async def remove_dataset(
             url = f"{CATALOGUE_ENDPOINT}/metadata"
             response = await client.delete(
                 url,
-                #params=removedatasetobject.model_dump(),
+                params=removedatasetobject.model_dump(),
                 #content=json.dumps(removedatasetobject.model_dump()),
-                params={"node": node, "disease": disease, "path": path},
+                #params={"node": node, "disease": disease, "path": path},
                 headers={"Content-Type": "application/json"}
             )
             response.raise_for_status()
