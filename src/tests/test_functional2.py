@@ -34,7 +34,8 @@ client = TestClient(app)
 
 # Base URL for the API (assuming external API endpoints)
 ANNOTATION_ENDPOINT = "http://data-annotation-service.synthema-dev/schema" 
-CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata" 
+#CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata"
+CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev/metadata"
 
 def test_healthcheck():
     response = client.get("/healthcheck")
@@ -100,7 +101,7 @@ def teardown_test_file():
 
 #    teardown_test_file()
 
-@patch("path.to.your.module.CATALOGUE_ENDPOINT", "https://data-catalogue.k8s.synthema.rid-intrasoft.eu")
+@patch(CATALOGUE_ENDPOINT, "https://data-catalogue.k8s.synthema.rid-intrasoft.eu")
 def test_remove_dataset_success():
     setup_test_file()  # Ensure file exists
 
