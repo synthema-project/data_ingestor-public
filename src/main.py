@@ -240,7 +240,7 @@ async def remove_dataset(
         async with httpx.AsyncClient() as client:
             url = f"{CATALOGUE_ENDPOINT}/metadata"
             response = await client.delete(
-                url,
+                CATALOGUE_ENDPOINT,#url,
                 params=removedatasetobject.model_dump(),
                 #content=json.dumps(removedatasetobject.model_dump()),
                 #params={"node": node, "disease": disease, "path": path},
