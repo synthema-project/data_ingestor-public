@@ -99,7 +99,8 @@ def teardown_test_file():
 
 #    teardown_test_file()
 
-def test_remove_dataset_success():
+@patch("path.to.your.module.CATALOGUE_ENDPOINT", "https://data-catalogue.k8s.synthema.rid-intrasoft.eu")
+def test_remove_dataset_success(mock_catalogue_endpoint):
     setup_test_file()  # Ensure file exists
 
     remove_data = {
@@ -109,21 +110,20 @@ def test_remove_dataset_success():
     }
 
     with patch("httpx.AsyncClient.delete", new_callable=AsyncMock) as mock_delete:
-        # Configure the mock response for the /metadata call
+        # Mock /metadata response
         mock_delete.return_value.status_code = 200
         mock_delete.return_value.json.return_value = {"message": "External service notified"}
 
         response = client.delete("/dataset", params=remove_data)
 
-        # Assertions for /dataset response
         assert response.status_code == 200
         assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
         assert not os.path.exists(TEST_FILE_PATH)  # File should be deleted
 
         # Verify /metadata was called with the correct arguments
         mock_delete.assert_awaited_once_with(
-            CATALOGUE_ENDPOINT,#f"{CATALOGUE_ENDPOINT}/metadata",
-            json=remove_data,  # Ensure the expected payload matches your /metadata endpoint logic
+            "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/metadata",
+            json={"node": "node1", "disease": "AML", "path": TEST_FILE_PATH},
             headers={"Content-Type": "application/json"}
         )
 
