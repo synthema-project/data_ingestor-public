@@ -242,7 +242,8 @@ async def remove_dataset(
             response = await client.delete(
                 url,
                 #params=removedatasetobject.model_dump(),
-                content=json.dumps(removedatasetobject.model_dump()),
+                #content=json.dumps(removedatasetobject.model_dump()),
+                json={"node": node, "disease": disease, "path": path},
                 headers={"Content-Type": "application/json"}
             )
             response.raise_for_status()
