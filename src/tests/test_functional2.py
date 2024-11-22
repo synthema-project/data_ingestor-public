@@ -100,7 +100,7 @@ def teardown_test_file():
 #    teardown_test_file()
 
 @patch("path.to.your.module.CATALOGUE_ENDPOINT", "https://data-catalogue.k8s.synthema.rid-intrasoft.eu")
-def test_remove_dataset_success(mock_catalogue_endpoint):
+def test_remove_dataset_success():
     setup_test_file()  # Ensure file exists
 
     remove_data = {
