@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
 from main import app
 from database import get_session
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 # Set up an SQLite in-memory database for testing
 TEST_DATABASE_URL = "sqlite:///./test.db"  # Use SQLite for testing
