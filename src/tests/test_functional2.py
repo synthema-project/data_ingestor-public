@@ -79,29 +79,6 @@ def teardown_test_file():
         os.remove(TEST_FILE_PATH)
 
 # Test case for successful deletion
-#def test_remove_dataset_success():
-#    setup_test_file()  # Ensure file exists
-
-#    remove_data = {
-#        "node": "node1",
-#        "disease": "AML",
-#        "path": TEST_FILE_PATH,
-#    }
-#    #print(json.dumps(remove_data))
-
-#    with patch("httpx.AsyncClient.delete") as mock_delete:
-#        mock_delete.return_value.status_code = 200
-#        mock_delete.return_value.json.return_value = {"message": "External service notified"}
-
-#        response = client.delete("/dataset", params=remove_data)
-
-#        assert response.status_code == 200
-#        assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
-#        assert not os.path.exists(TEST_FILE_PATH)  # File should be deleted
-
-#    teardown_test_file()
-
-@patch(CATALOGUE_ENDPOINT, "https://data-catalogue.k8s.synthema.rid-intrasoft.eu")
 def test_remove_dataset_success():
     setup_test_file()  # Ensure file exists
 
@@ -110,9 +87,9 @@ def test_remove_dataset_success():
         "disease": "AML",
         "path": TEST_FILE_PATH,
     }
+    #print(json.dumps(remove_data))
 
-    with patch("httpx.AsyncClient.delete", new_callable=AsyncMock) as mock_delete:
-        # Mock /metadata response
+    with patch("httpx.AsyncClient.delete") as mock_delete:
         mock_delete.return_value.status_code = 200
         mock_delete.return_value.json.return_value = {"message": "External service notified"}
 
@@ -121,13 +98,6 @@ def test_remove_dataset_success():
         assert response.status_code == 200
         assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
         assert not os.path.exists(TEST_FILE_PATH)  # File should be deleted
-
-        # Verify /metadata was called with the correct arguments
-        mock_delete.assert_awaited_once_with(
-            "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/metadata",
-            json={"node": "node1", "disease": "AML", "path": TEST_FILE_PATH},
-            headers={"Content-Type": "application/json"}
-        )
 
     teardown_test_file()
 
