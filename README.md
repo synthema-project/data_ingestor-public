@@ -39,10 +39,9 @@ This project extends and uses the following Open Softwares, which are compliant 
 * psycopg2-binary: PostgreSQL License
 * Uvicorn: BSD License
 * python-multipart: MIT License
-* python-jose: MIT License
-* passlib: BSD License
 * pytest: MIT License
 * jsonschema: MIT License
 * sqlalchemy: MIT License
 * sqlmodel: MIT License
 * requests: Apache 2.0 License
+* httpx: BSD License
