@@ -49,7 +49,7 @@ pipeline {
         //            cp k8s/manifest.yml k8s/manifest-test.yml
         //            sed -e 's|DOCKER_TAG|test|g' k8s/manifest-test.yml | kubectl apply -f -
         //            '''
-        / /       }
+        //       }
         //        sh 'sleep 10'
         //        // Execute the tests
         //        script {
