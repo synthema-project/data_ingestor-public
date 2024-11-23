@@ -217,7 +217,7 @@ async def remove_dataset(
     node: str,
     disease: str,
     path: str,
-    request: Request,
+    #request: Request,
     session: Session = Depends(get_session)
 ):
     print('ENTER DELETE')
@@ -242,7 +242,8 @@ async def remove_dataset(
             url = f"{CATALOGUE_ENDPOINT}/metadata"
             response = await client.delete(
                 CATALOGUE_ENDPOINT,#url,
-                params=removedatasetobject.model_dump(),
+                json={"node": node, "disease": disease, "path": path},
+                #params=removedatasetobject.model_dump(),
                 #content=json.dumps(removedatasetobject.model_dump()),
                 #params={"node": node, "disease": disease, "path": path},
                 headers={"Content-Type": "application/json"}
