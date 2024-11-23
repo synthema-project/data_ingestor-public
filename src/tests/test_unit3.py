@@ -47,7 +47,7 @@ def test_upload_dataset():
     with open(csv_path, "rb") as csv_file:
          response = client.post(
                 "/dataset",
-                data={"node": "NODE1", "disease": "AML"},
+                data={"node": "NODE-TEST", "disease": "AML"},
                 files={"file": ("AML_DATA_ES.csv", csv_file, "text/csv")},
         )
 
@@ -87,12 +87,12 @@ def test_upload_dataset():
 
 def test_remove_dataset():
     remove_data = {
-        "node": "node1",
+        "node": "NODE-TEST",
         "disease": "AML",
     }
 
     # Match files with the pattern using glob
-    matched_files = glob.glob("/app/datasets/NODE1/AML_NODE1_*")
+    matched_files = glob.glob("/app/datasets/NODE-TEST/AML_NODE-TEST_*")
 
     if not matched_files:
         print("Warning: No files matched the wildcard pattern.")
