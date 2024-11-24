@@ -162,55 +162,55 @@ async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_d
 #            print('EXCEPT 2')
 #            raise HTTPException(status_code=500, detail=str(e))
 
-@app.delete("/dataset/a", tags=["data-ingestion"])
-async def remove_dataset_2(
-    node:str, disease:str, path:str,
-    #removedatasetobject: RemoveDatasetObject,
-    request: Request,
-    session: Session = Depends(get_session)
-):
-    logging.info(f"Received request: {await request.json()}")
-    removdatasetobject = RemoveDatasetObject(node, disease, path)
-    #print(removedatasetobject.disease)
-    #print(removedatasetobject.node)
-    #print(removedatasetobject.path)
-    try:
-        # Remove the file from local storage
-        if os.path.exists(removedatasetobject.path):
-            os.remove(removedatasetobject.path)
-            logging.info(f"File {removedatasetobject.path} successfully removed.")
-        else:
-            logging.warning(f"File {removedatasetobject.path} not found.")
-            raise HTTPException(status_code=404, detail="File not found in local storage")
+#@app.delete("/dataset/a", tags=["data-ingestion"])
+#async def remove_dataset_2(
+#    node:str, disease:str, path:str,
+#    #removedatasetobject: RemoveDatasetObject,
+#    request: Request,
+#    session: Session = Depends(get_session)
+#):
+#    logging.info(f"Received request: {await request.json()}")
+#    removdatasetobject = RemoveDatasetObject(node, disease, path)
+#    #print(removedatasetobject.disease)
+#    #print(removedatasetobject.node)
+#    #print(removedatasetobject.path)
+#    try:
+#        # Remove the file from local storage
+#        if os.path.exists(removedatasetobject.path):
+#            os.remove(removedatasetobject.path)
+#            logging.info(f"File {removedatasetobject.path} successfully removed.")
+#        else:
+#            logging.warning(f"File {removedatasetobject.path} not found.")
+#            raise HTTPException(status_code=404, detail="File not found in local storage")#
 
         # Notify external service
-        print('ORA RIMUOVO IL FILE DAL DATABASE DEI METADATA')
-        async with httpx.AsyncClient() as client:
-            #response = await client.delete(
-            #    CATALOGUE_ENDPOINT,
-            #    json=removedatasetobject.dict(),
-            #    headers={"Content-Type": "application/json"}
-            #)
-            URL = f"{CATALOGUE_ENDPOINT}/metadata"
-            response = await client.request("DELETE", URL, json=removedatasetobject.model_dump()) #.dict()
+#        print('ORA RIMUOVO IL FILE DAL DATABASE DEI METADATA')
+#        async with httpx.AsyncClient() as client:
+#            #response = await client.delete(
+#            #    CATALOGUE_ENDPOINT,
+#            #    json=removedatasetobject.dict(),
+#            #    headers={"Content-Type": "application/json"}
+#            #)
+#            URL = f"{CATALOGUE_ENDPOINT}/metadata"
+#            response = await client.request("DELETE", URL, json=removedatasetobject.model_dump()) #.dict()
             
-            response.raise_for_status()
-            logging.info("External service notified successfully.")
+#            response.raise_for_status()
+#            logging.info("External service notified successfully.")
 
         # Return success response
-        return {"message": "Dataset removed successfully from both database and local storage"}
+#        return {"message": "Dataset removed successfully from both database and local storage"}
 
-    except httpx.HTTPStatusError as exc:
-        logging.error(f"External service error: {exc.response.status_code} - {exc.response.text}")
-        raise HTTPException(status_code=exc.response.status_code, detail=exc.response.json())
+#    except httpx.HTTPStatusError as exc:
+#        logging.error(f"External service error: {exc.response.status_code} - {exc.response.text}")
+#        raise HTTPException(status_code=exc.response.status_code, detail=exc.response.json())
     
-    except FileNotFoundError:
-        logging.error(f"File {removedatasetobject.path} not found.")
-        raise HTTPException(status_code=404, detail="File not found in local storage")
+#    except FileNotFoundError:
+#        logging.error(f"File {removedatasetobject.path} not found.")
+#        raise HTTPException(status_code=404, detail="File not found in local storage")
 
-    except Exception as e:
-        logging.exception("An unexpected error occurred.")
-        raise HTTPException(status_code=500, detail="An internal server error occurred")
+#    except Exception as e:
+#        logging.exception("An unexpected error occurred.")
+#        raise HTTPException(status_code=500, detail="An internal server error occurred")
 
 @app.delete("/dataset", tags=["data-ingestion"])
 async def remove_dataset(
