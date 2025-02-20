@@ -9,3 +9,4 @@ jsonschema
 sqlalchemy
 sqlmodel
 httpx
+minio
