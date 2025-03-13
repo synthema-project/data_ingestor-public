@@ -59,27 +59,6 @@ spec:
 
 ---
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: minio-config
-  namespace: synthema-dev
-data:
-  MINIO_ENDPOINT: "http://minio.synthema-dev.svc.cluster.local:9000"
-  MINIO_BUCKET_NAME: "your-bucket-name"
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: minio-secret
-  namespace: synthema-dev
-type: Opaque
-data:
-  MINIO_ACCESS_KEY: "your-base64-access-key"  # Run: echo -n "your-access-key" | base64
-  MINIO_SECRET_KEY: "your-base64-secret-key"  # Run: echo -n "your-secret-key" | base64
-
----
-apiVersion: v1
 kind: Service
 metadata:
   labels:
