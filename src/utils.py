@@ -11,6 +11,9 @@ import json
 import math
 from fastapi import HTTPException
 from pathlib import Path
+from minio.error import S3Error
+from storage import minio_client, upload_file, download_file
+from config import settings
 
 #LOCAL_DATASETS_DIR = "/mnt/c/users/lenovo/desktop/data-ingestion/local_datasets"
 
@@ -236,3 +239,40 @@ def save_node_dataset_info(session: Session, info: NodeDatasetInfo):
     except Exception as e:
         session.rollback()  # Rollback in case of any errors
         raise Exception(f"Error saving dataset info to the database: {str(e)}")
+
+### MINIO INTEGRATION
+
+def save_dataframe_to_minio(dataset: pd.DataFrame, filename: str, node: str):
+    """
+    Save the dataframe as a CSV file to MinIO.
+    """
+    csv_buffer = io.BytesIO()
+    dataset.to_csv(csv_buffer, index=False)
+    csv_buffer.seek(0)
+
+    minio_path = f"{node}/{filename}"
+
+    try:
+        minio_client.put_object(
+            settings.MINIO_BUCKET_NAME,
+            minio_path,
+            data=csv_buffer,
+            length=csv_buffer.getbuffer().nbytes,
+            content_type='text/csv'
+        )
+        return minio_path
+    except S3Error as e:
+        raise Exception(f"Failed to upload dataset to MinIO: {str(e)}")
+
+
+def remove_dataset_from_minio(node: str, filename: str):
+    """
+    Remove a dataset file from MinIO storage.
+    """
+    minio_path = f"{node}/{filename}"
+
+    try:
+        minio_client.remove_object(settings.MINIO_BUCKET_NAME, minio_path)
+        return True
+    except S3Error as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete dataset from MinIO: {str(e)}")
