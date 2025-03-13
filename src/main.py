@@ -5,6 +5,7 @@ from models import DatasetSchema, NewDataset, RemoveDatasetObject, NodeDatasetIn
 from database import create_db_and_tables, get_session
 from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan,save_node_dataset_info#,convert_np_to_native, 
 #check_schema_dataset,
+from utils import save_dataframe_to_minio, remove_dataset_from_minio
 from pathlib import Path
 import uvicorn
 import os
@@ -39,7 +40,12 @@ def on_startup():
 
 @app.post("/dataset", tags=["data-ingestion"])
 #async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_datasets_dir: str = Form(default="/app/datasets"), file: UploadFile = File(...), session: Session = Depends(get_session)): #local_datasets_dir: str = Form(default="/app/datasets")
-async def upload_dataset(node: str, disease: str, local_datasets_dir: str = Form(default="/app/datasets"), file: UploadFile = File(...), session: Session = Depends(get_session)):    
+async def upload_dataset(
+    node: str, 
+    disease: str, 
+    #local_datasets_dir: str = Form(default="/app/datasets"), 
+    file: UploadFile = File(...), 
+    session: Session = Depends(get_session)):    
     if file.filename.endswith(".csv"):
         print('CSV CONTENT')
         csv_content = await file.read()
@@ -73,15 +79,16 @@ async def upload_dataset(node: str, disease: str, local_datasets_dir: str = Form
                 print('IID')
                 filename = f"{disease}_{node}_{iid}.csv"
                 print('FILENAME')
-                filepath = save_dataframe_as_csv(dataframe, filename, node, savepath=local_datasets_dir)
+                ##filepath = save_dataframe_as_csv(dataframe, filename, node, savepath=local_datasets_dir)
+                minio_filepath = save_dataframe_to_minio(dataframe, filename, node)
                 print('FILEPATH')
-                local_datasets[filename] = filepath
-                print(filepath)
+                local_datasets[filename] = minio_filepath
+                ##print(minio_filepath)
                 print(filename)
                 os.remove(csv_file_path)
                 print('REMOVE')
                 #node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
-                node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
+                node_dataset = NodeDatasetInfo(id=iid, node=node, path=minio_filepath, disease=disease)
                 print('nodedatasetinfo')
                 print(NodeDatasetInfo)
                 #save_node_dataset_info(session, node_dataset)
@@ -216,25 +223,32 @@ async def upload_dataset(node: str, disease: str, local_datasets_dir: str = Form
 async def remove_dataset(
     node: str,
     disease: str,
-    path: str,
+    filename: str,
+    #path: str,
     #request: Request,
     session: Session = Depends(get_session)
 ):
     print('ENTER DELETE')
     #logging.info(f"Received request: {await request.json()}")
-    logging.info(f"Received query parameters: node={node}, disease={disease}, path={path}")
-    removedatasetobject = RemoveDatasetObject(node=node, disease=disease, path=path)
+    logging.info(f"Received query parameters: node={node}, disease={disease}, path={filename}")
+    ##removedatasetobject = RemoveDatasetObject(node=node, disease=disease, path=path)
     print('REMOVEDATASETOBJECT')
     try:
-        # Remove the file from local storage
-        if os.path.exists(removedatasetobject.path):
-            print('REMOVE')
-            os.remove(removedatasetobject.path)
-            logging.info(f"File {removedatasetobject.path} successfully removed.")
-        else:
-            logging.warning(f"File {removedatasetobject.path} not found.")
-            raise HTTPException(status_code=404, detail="File not found in local storage")
+        ## Remove the file from local storage
+        ##if os.path.exists(removedatasetobject.path):
+        ##    print('REMOVE')
+        ##    os.remove(removedatasetobject.path)
+        ##    logging.info(f"File {removedatasetobject.path} successfully removed.")
+        ##else:
+        ##    logging.warning(f"File {removedatasetobject.path} not found.")
+        ##    raise HTTPException(status_code=404, detail="File not found in local storage")
 
+        success = remove_dataset_from_minio(node, filename)
+
+        if not success:
+            raise HTTPException(status_code=404, detail='Dataset not found in MinIO')
+
+        
         # Notify external service
         logging.info("Notifying external service to remove metadata.")
         print('REMOVE METADATA')
