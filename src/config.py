@@ -1,11 +1,18 @@
 import os
 
 class Settings:
+    #PostgreSQL settings
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "dataset_catalogue")
     POSTGRES_USER: str = os.getenv("POSTGRES_USER","fcasadei")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD","7IGc540zOTX04ET")
     POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "mstorage-svc")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432") #5432 80
+
+    # MinIO settings
+    MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "localhost:9000")
+    MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minio_cesco")
+    MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY","minio_secret_key")
+    MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME", "cesco-bucket")
 
 settings = Settings()
 
