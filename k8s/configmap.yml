@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minio-config
+  namespace: synthema-dev
+data:
+  MINIO_ENDPOINT: "http://minio.synthema-dev.svc.cluster.local:9000"
+  MINIO_BUCKET_NAME: "bucket-name"
