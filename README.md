@@ -5,8 +5,8 @@
 This project hosts the code for the data ingestor module of real data management workflow in Synthema.
 Data ingestor component is responsible for:
 
-* Ingesting a new dataset to the local filesystem
-* Deleting an existing dataset from the local filesystem
+* Ingesting a new dataset and saving it to a MinIO bucket
+* Deleting an existing dataset from the MinIO bucket
 
 ### Structure
 
@@ -45,3 +45,4 @@ This project extends and uses the following Open Softwares, which are compliant 
 * sqlmodel: MIT License
 * requests: Apache 2.0 License
 * httpx: BSD License
+* MinIO: GNU AGPL v3
