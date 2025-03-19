@@ -9,10 +9,10 @@ class Settings:
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432") #5432 80
 
     # MinIO settings
-    MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "localhost:9000")
-    MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minio_cesco")
-    MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY","minio_secret_key")
-    MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME", "cesco-bucket")
+    MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "obstorageapi.k8s.synthema.rid-intrasoft.eu")
+    MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "mqcqwECvoga6pkDRhOUz")
+    MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY","EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9")
+    MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME", "data-annotation")
 
 settings = Settings()
 
