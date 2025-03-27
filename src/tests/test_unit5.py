@@ -10,6 +10,12 @@ from models import NodeDatasetInfo
 from sqlmodel import SQLModel, create_engine, Session as TestSession
 from tempfile import TemporaryDirectory
 
+from storage import minio_client
+
+def test_bucket_exists():
+    assert minio_client.bucket_exists("data-annotation") is True
+
+
 # Test Client for the FastAPI app
 client = TestClient(app)
 
