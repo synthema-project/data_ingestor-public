@@ -13,6 +13,7 @@ from tempfile import TemporaryDirectory
 from storage import minio_client
 
 def test_bucket_exists():
+    print('BUCKET EXISTS')
     assert minio_client.bucket_exists("data-annotation") is True
 
 
