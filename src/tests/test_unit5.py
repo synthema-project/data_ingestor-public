@@ -48,7 +48,7 @@ class TestDataIngestor:
     @pytest.fixture
     def setup_database(self, mock_db):
         """Set up a sample database entry for testing."""
-        dataset = NodeDatasetInfo(node="test_node", disease="test_disease", path="test-bucket/test.csv")
+        dataset = NodeDatasetInfo(node="test_node", disease="test_disease", path="example_data/AML_DATA_ES.csv")
         mock_db.add(dataset)
         mock_db.commit()
         return dataset
@@ -69,7 +69,7 @@ class TestDataIngestor:
         assert response.json() == {"message": "Dataset removed successfully from both database and MinIO storage."}
 
         # Verify MinIO deletion
-        mock_remove_object.assert_called_once_with(MOCK_MINIO_BUCKET, "test.csv")
+        mock_remove_object.assert_called_once_with(MOCK_MINIO_BUCKET, "AML_DATA_ES.csv")
 
     @pytest.mark.asyncio
     @patch("data_ingestor.Minio.put_object")
@@ -79,14 +79,14 @@ class TestDataIngestor:
         """
         mock_put_object.return_value = None  # Simulate a successful upload
 
-        file_path = os.path.join(temp_dir, "test.csv")
+        file_path = os.path.join(temp_dir, "AML_DATA_ES.csv")
         with open(file_path, "w") as file:
             file.write("column1,column2\nvalue1,value2")
 
         with open(file_path, "rb") as file:
             response = client.post(
                 "/dataset",
-                files={"file": ("test.csv", file, "text/csv")},
+                files={"file": ("AML_DATA_ES.csv", file, "text/csv")},
                 data={"node": "test_node", "disease": "test_disease"},
             )
 
