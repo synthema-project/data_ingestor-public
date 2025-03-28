@@ -33,7 +33,7 @@ pipeline {
             steps{
                 //sh "curl -v https://data-annotation.k8s.synthema.rid-intrasoft.eu:80/schema"
                 //sh "curl -v https://data-catalogue.k8s.synthema.rid-intrasoft.eu:83/metadata"
-                sh 'docker container run -e "PYTHONPATH=/tests" -e MINIO_ENDPOINT="obstorageapi.k8s.synthema.rid-intrasoft.eu" -e MINIO_ACCESS_KEY="mqcqwECvoga6pkDRhOUz" -e MINIO_SECRET_KEY="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9" -e MINIO_BUCKET_NAME="data-annotation" --name ${APP_NAME}_test_$(date +%s) --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit5.py' //-p 80:80
+                sh 'docker container run -e "PYTHONPATH=/tests" -e MINIO_ENDPOINT="obstorageapi.k8s.synthema.rid-intrasoft.eu" -e MINIO_ACCESS_KEY="mqcqwECvoga6pkDRhOUz" -e MINIO_SECRET_KEY="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9" -e MINIO_BUCKET_NAME="data-annotation" --name ${APP_NAME}_test_$(date +%s) --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test //python -m pytest tests/test_unit5.py' //-p 80:80
            }
         }
 
