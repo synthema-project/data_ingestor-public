@@ -17,7 +17,7 @@ def test_bucket_exists():
     assert minio_client.bucket_exists("data-annotation") is True
 
 
- Test Client for the FastAPI app
+#Test Client for the FastAPI app
 client = TestClient(app)
 
 # MinIO Mock Setup
