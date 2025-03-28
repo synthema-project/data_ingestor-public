@@ -4,5 +4,5 @@ metadata:
   name: minio-config
   namespace: synthema-dev
 data:
-  MINIO_ENDPOINT: "obstorageapi.k8s.synthema.rid-intrasoft.eu:9000"
+  MINIO_ENDPOINT: "http://obstorageapi.k8s.synthema.rid-intrasoft.eu:9000"
   MINIO_BUCKET_NAME: "data-annotation"
