@@ -34,7 +34,7 @@ spec:
             - name: MINIO_BUCKET_NAME
               valueFrom:
                 secretKeyRef:
-                  name: minio-config
+                  name: minio-secret
                   key: MINIO_BUCKET_NAME
             - name: MINIO_ACCESS_KEY
               valueFrom:
