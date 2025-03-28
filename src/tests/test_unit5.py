@@ -26,7 +26,7 @@ MOCK_MINIO_BUCKET = "test-bucket"
 @pytest.fixture
 def mock_minio():
     """Mock MinIO client."""
-    with patch("data_ingestor.Minio") as mock:
+    with patch("main.Minio") as mock:
         mock_client = MagicMock()
         mock.return_value = mock_client
         yield mock_client
