@@ -12,13 +12,13 @@ from tempfile import TemporaryDirectory
 
 from storage import minio_client
 
-#def test_bucket_exists():
-#    print('BUCKET EXISTS')
-#    assert minio_client.bucket_exists("data-annotation") is True
+def test_bucket_exists():
+    print('BUCKET EXISTS')
+    assert minio_client.bucket_exists("data-annotation") is True
 
 
-# Test Client for the FastAPI app
-#client = TestClient(app)
+ Test Client for the FastAPI app
+client = TestClient(app)
 
 # MinIO Mock Setup
 #MOCK_MINIO_BUCKET = "test-bucket"
