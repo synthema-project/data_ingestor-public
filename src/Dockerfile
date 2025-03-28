@@ -7,7 +7,7 @@ COPY . .
 EXPOSE 82
 #ENV DATASET_PATH = /app/data/dataset
 #ENV DATASET_PATH = /app/datasets
-ENV PYTOHONPATH = /app/src
+ENV PYTHONPATH = /app/src
 VOLUME /app/datasets
 #ENV DATABASE_PATH = /app/data/central_node.db #database
 CMD ["python","main.py"]
