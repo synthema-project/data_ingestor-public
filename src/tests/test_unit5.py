@@ -56,7 +56,7 @@ class TestDataIngestor:
 
     #@pytest.mark.asyncio
     #@patch("data_ingestor.Minio.put_object")
-    def test_upload_dataset_success(self, mock_minio, temp_dir='./example_data'):
+    def test_upload_dataset_success(self, mock_minio, temp_dir='./example_data/'):
         """
         Test successful dataset upload to MinIO.
         """
