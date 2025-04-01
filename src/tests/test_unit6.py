@@ -16,10 +16,15 @@ TEST_FILENAME = "DATA.csv"
 TEST_NODE = "test-node"
 TEST_DATA_PATH = "tests/example_data/DATA.csv"
 
-@pytest.fixture
 def minio_client_mock():
-    """Mock di un client MinIO."""
-    return MagicMock()
+    """Real MinIO client."""
+    client = Minio(
+        "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
+        access_key="mqcqwECvoga6pkDRhOUz",
+        secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
+        secure=True  # Change to True if using HTTPS
+    )
+    return client
 
 def test_save_dataframe_to_minio_success(minio_client_mock):
     """Testa il salvataggio del dataframe su MinIO con successo usando DATA.csv."""
