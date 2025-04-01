@@ -56,7 +56,7 @@ def test_put_object_success(minio_client, example_dataframe):
     csv_buffer.seek(0)
     
     #with patch("minio.Minio", return_value=minio_client_mock):
-    minio_client.put_object(
+    minio_client.fput_object(
             TEST_BUCKET,
             f"{TEST_NODE}/{TEST_FILENAME}",
             data=csv_buffer,
