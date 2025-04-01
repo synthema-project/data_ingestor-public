@@ -56,11 +56,11 @@ class TestDataIngestor:
 
     #@pytest.mark.asyncio
     #@patch("data_ingestor.Minio.put_object")
-    def test_upload_dataset_success(self, mock_put_object, mock_minio, temp_dir='example_data'):
+    def test_upload_dataset_success(self, mock_minio, temp_dir='example_data'):
         """
         Test successful dataset upload to MinIO.
         """
-        mock_put_object.return_value = None  # Simulate a successful upload
+        mock_minio.return_value = None  # Simulate a successful upload
 
         file_path = os.path.join(temp_dir, "AML_DATA_ES.csv")
         with open(file_path, "w") as file:
@@ -81,11 +81,11 @@ class TestDataIngestor:
 
 
     #@patch("data_ingestor.Minio.remove_object")
-    def test_remove_dataset_success(self, mock_remove_object, mock_minio):#, mock_db, setup_database):
+    def test_remove_dataset_success(self, mock_minio):#, mock_db, setup_database):
         """
         Test successful dataset removal from MinIO and database.
         """
-        mock_remove_object.return_value = None  # Simulate successful removal##
+        mock_minio.return_value = None  # Simulate successful removal##
 
         response = client.delete(
             "/dataset",
