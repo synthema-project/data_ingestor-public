@@ -20,20 +20,24 @@ TEST_BUCKET = "data-annotation"
 #TEST_NODE = "test-node"
 #TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
 
-@pytest.fixture
-def minio_client_mock():
-    """Real MinIO client."""
-    client = Minio(
-        "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
-        access_key="mqcqwECvoga6pkDRhOUz",
-        secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
-        secure=True  # Change to True if using HTTPS
-    )
+def test_bucket_exists():
+    print('BUCKET EXISTS')
+    assert minio_client.bucket_exists("data-annotation") is True
 
-    if not client.bucket_exists(TEST_BUCKET):
-        client.make_bucket(TEST_BUCKET)
+#@pytest.fixture
+#def minio_client_mock():
+#    """Real MinIO client."""
+#    client = Minio(
+#        "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
+#        access_key="mqcqwECvoga6pkDRhOUz",
+#        secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
+#        secure=True  # Change to True if using HTTPS
+#    )
+
+#    if not client.bucket_exists(TEST_BUCKET):
+#        client.make_bucket(TEST_BUCKET)
     
-    return client
+#    return client
 
 @pytest.fixture
 def example_dataframe():
@@ -45,24 +49,24 @@ def example_dataframe():
     }
     return pd.DataFrame(data)
 
-#def test_put_object_success(minio_client_mock, example_dataframe):
-#    """Testa la chiamata a put_object di MinIO con successo."""
-#    csv_buffer = io.BytesIO()
-#    example_dataframe.to_csv(csv_buffer, index=False)
-#    csv_buffer.seek(0)
-#    
-#    #with patch("minio.Minio", return_value=minio_client_mock):
-#    minio_client_mock.put_object(
-#            TEST_BUCKET,
-#            f"{TEST_NODE}/{TEST_FILENAME}",
-#            data=csv_buffer,
-#            length=csv_buffer.getbuffer().nbytes,
-#            content_type='text/csv'
-#    )
-#    
-#    #minio_client_mock.put_object.assert_called_once()
-#    found = minio_client_mock.stat_object(TEST_BUCKET, f"{TEST_NODE}/{TEST_FILENAME}")
-#    assert found
+def test_put_object_success(minio_client, example_dataframe):
+    """Testa la chiamata a put_object di MinIO con successo."""
+    csv_buffer = io.BytesIO()
+    example_dataframe.to_csv(csv_buffer, index=False)
+    csv_buffer.seek(0)
+    
+    #with patch("minio.Minio", return_value=minio_client_mock):
+    minio_client.put_object(
+            TEST_BUCKET,
+            f"{TEST_NODE}/{TEST_FILENAME}",
+            data=csv_buffer,
+            length=csv_buffer.getbuffer().nbytes,
+            content_type='text/csv'
+    )
+    
+    #minio_client_mock.put_object.assert_called_once()
+    found = minio_client.stat_object(TEST_BUCKET, f"{TEST_NODE}/{TEST_FILENAME}")
+    assert found
 
 #def test_put_object_failure(minio_client_mock, example_dataframe):
 #    """Testa il fallimento della chiamata a put_object di MinIO."""
