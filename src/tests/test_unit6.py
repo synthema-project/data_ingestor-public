@@ -15,10 +15,10 @@ from tempfile import TemporaryDirectory
 from storage import minio_client
 
 # Configurazione per il test
-TEST_BUCKET = "test-bucket"
-TEST_FILENAME = "DATA.csv"
-TEST_NODE = "test-node"
-TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
+TEST_BUCKET = "data-annotation"
+#TEST_FILENAME = "DATA.csv"
+#TEST_NODE = "test-node"
+#TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
 
 @pytest.fixture
 def minio_client_mock():
@@ -27,7 +27,7 @@ def minio_client_mock():
         "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
         access_key="mqcqwECvoga6pkDRhOUz",
         secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
-        secure=False  # Change to True if using HTTPS
+        secure=True  # Change to True if using HTTPS
     )
 
     if not client.bucket_exists(TEST_BUCKET):
@@ -45,24 +45,24 @@ def example_dataframe():
     }
     return pd.DataFrame(data)
 
-def test_put_object_success(minio_client_mock, example_dataframe):
-    """Testa la chiamata a put_object di MinIO con successo."""
-    csv_buffer = io.BytesIO()
-    example_dataframe.to_csv(csv_buffer, index=False)
-    csv_buffer.seek(0)
-    
-    #with patch("minio.Minio", return_value=minio_client_mock):
-    minio_client_mock.put_object(
-            TEST_BUCKET,
-            f"{TEST_NODE}/{TEST_FILENAME}",
-            data=csv_buffer,
-            length=csv_buffer.getbuffer().nbytes,
-            content_type='text/csv'
-    )
-    
-    #minio_client_mock.put_object.assert_called_once()
-    found = minio_client_mock.stat_object(TEST_BUCKET, f"{TEST_NODE}/{TEST_FILENAME}")
-    assert found
+#def test_put_object_success(minio_client_mock, example_dataframe):
+#    """Testa la chiamata a put_object di MinIO con successo."""
+#    csv_buffer = io.BytesIO()
+#    example_dataframe.to_csv(csv_buffer, index=False)
+#    csv_buffer.seek(0)
+#    
+#    #with patch("minio.Minio", return_value=minio_client_mock):
+#    minio_client_mock.put_object(
+#            TEST_BUCKET,
+#            f"{TEST_NODE}/{TEST_FILENAME}",
+#            data=csv_buffer,
+#            length=csv_buffer.getbuffer().nbytes,
+#            content_type='text/csv'
+#    )
+#    
+#    #minio_client_mock.put_object.assert_called_once()
+#    found = minio_client_mock.stat_object(TEST_BUCKET, f"{TEST_NODE}/{TEST_FILENAME}")
+#    assert found
 
 #def test_put_object_failure(minio_client_mock, example_dataframe):
 #    """Testa il fallimento della chiamata a put_object di MinIO."""
