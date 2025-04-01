@@ -28,6 +28,6 @@ def test_upload_dataset():
                 data={"node": "test_node", "disease": "test_disease"},
             )
 
-        assert response.status_code == 200
-        assert "Dataset uploaded and validated successfully" in response.json()["message"]
+    assert response.status_code == 200
+    assert "Dataset uploaded and validated successfully" in response.json()["message"]
 
