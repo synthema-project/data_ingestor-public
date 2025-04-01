@@ -29,6 +29,10 @@ def minio_client_mock():
         secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
         secure=True  # Change to True if using HTTPS
     )
+
+    if not client.bucket_exists(TEST_BUCKET):
+        client.make_bucket(TEST_BUCKET)
+    
     return client
 
 @pytest.fixture
@@ -47,16 +51,18 @@ def test_put_object_success(minio_client_mock, example_dataframe):
     example_dataframe.to_csv(csv_buffer, index=False)
     csv_buffer.seek(0)
     
-    with patch("minio.Minio", return_value=minio_client_mock):
-        minio_client_mock.put_object(
+    #with patch("minio.Minio", return_value=minio_client_mock):
+    minio_client_mock.put_object(
             TEST_BUCKET,
             f"{TEST_NODE}/{TEST_FILENAME}",
             data=csv_buffer,
             length=csv_buffer.getbuffer().nbytes,
             content_type='text/csv'
-        )
+    )
     
-    minio_client_mock.put_object.assert_called_once()
+    #minio_client_mock.put_object.assert_called_once()
+    found = minio_client_mock.stat_object(TEST_BUCKET, f"{TEST_NODE}/{TEST_FILENAME}")
+    assert found
 
 #def test_put_object_failure(minio_client_mock, example_dataframe):
 #    """Testa il fallimento della chiamata a put_object di MinIO."""
