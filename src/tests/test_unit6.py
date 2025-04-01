@@ -70,3 +70,17 @@ def test_put_object_failure():
                 TEST_DATA_PATH,
                 content_type='text/csv'
             )
+
+def test_remove_object_success():
+    """Test successful deletion of an object from MinIO."""
+    minio_client.remove_object(TEST_BUCKET, "test-dataframe")
+
+    # Check if object exists (it should not)
+    with pytest.raises(S3Error):
+        minio_client.stat_object(TEST_BUCKET, "test-dataframe")
+
+def test_remove_object_failure():
+    """Test failure when trying to delete a non-existent object from MinIO."""
+    with patch.object(minio_client, "remove_object", side_effect=S3Error("NoSuchKey", "MockedError", "ReqID", "HostID", "BucketName", MagicMock())):
+        with pytest.raises(S3Error):
+            minio_client.remove_object(TEST_BUCKET, "nonexistent-file.csv")
