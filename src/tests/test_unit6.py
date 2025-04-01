@@ -66,7 +66,7 @@ def test_put_object_success():#(minio_client, example_dataframe):
             TEST_BUCKET,
             f"{TEST_NODE}/{TEST_FILENAME}",
             example_dataframe,
-            length=csv_buffer.getbuffer().nbytes,
+            #length=csv_buffer.getbuffer().nbytes,
             content_type='text/csv'
     )
     
