@@ -18,7 +18,11 @@ from tempfile import TemporaryDirectory
 TEST_BUCKET = "data-annotation"
 TEST_FILENAME = "DATA.csv"
 TEST_NODE = "test-node"
-TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
+
+current_dir = Path(__file__).resolve().parent
+
+TEST_DATA_PATH = current_dir + "/example_data/DATA.csv"
+
 
 #@pytest.fixture#
 #def minio_client():
