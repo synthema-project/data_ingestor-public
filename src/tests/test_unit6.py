@@ -40,16 +40,22 @@ def test_bucket_exists():
     assert minio_client.bucket_exists("data-annotation") is True
 
 #@pytest.fixture
-def example_dataframe():
-    """Crea un dataframe di esempio."""
-    data = {
+#def example_dataframe():
+#    """Crea un dataframe di esempio."""
+#    data = {
+#        "id": [1, 2, 3],
+#        "name": ["Alice", "Bob", "Charlie"],
+#        "age": [25, 30, 35]
+#    }
+#    return pd.DataFrame(data)
+
+example_dataframe = pd.DataFrame({
         "id": [1, 2, 3],
         "name": ["Alice", "Bob", "Charlie"],
         "age": [25, 30, 35]
-    }
-    return pd.DataFrame(data)
+    })
 
-def test_put_object_success(minio_client, example_dataframe):
+def test_put_object_success():#(minio_client, example_dataframe):
     """Testa la chiamata a put_object di MinIO con successo."""
     csv_buffer = io.BytesIO()
     example_dataframe.to_csv(csv_buffer, index=False)
