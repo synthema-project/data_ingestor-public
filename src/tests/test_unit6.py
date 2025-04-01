@@ -16,7 +16,7 @@ from storage import minio_client
 TEST_BUCKET = "test-bucket"
 TEST_FILENAME = "DATA.csv"
 TEST_NODE = "test-node"
-TEST_DATA_PATH = "/app/src/tests/example_data/DATA.csv"
+TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
 
 @pytest.fixture
 def minio_client_mock():
