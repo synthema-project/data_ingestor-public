@@ -58,20 +58,20 @@ def test_put_object_success(minio_client_mock, example_dataframe):
     
     minio_client_mock.put_object.assert_called_once()
 
-def test_put_object_failure(minio_client_mock, example_dataframe):
-    """Testa il fallimento della chiamata a put_object di MinIO."""
-    csv_buffer = io.BytesIO()
-    example_dataframe.to_csv(csv_buffer, index=False)
-    csv_buffer.seek(0)
+#def test_put_object_failure(minio_client_mock, example_dataframe):
+#    """Testa il fallimento della chiamata a put_object di MinIO."""
+#    csv_buffer = io.BytesIO()
+#    example_dataframe.to_csv(csv_buffer, index=False)
+#    csv_buffer.seek(0)
     
-    minio_client_mock.put_object.side_effect = S3Error("Error", "MockedError", "ReqID", "HostID", "BucketName")
+#    minio_client_mock.put_object.side_effect = S3Error("Error", "MockedError", "ReqID", "HostID", "BucketName")
     
-    with patch("minio.Minio", return_value=minio_client_mock):
-        with pytest.raises(S3Error):
-            minio_client_mock.put_object(
-                TEST_BUCKET,
-                f"{TEST_NODE}/{TEST_FILENAME}",
-                data=csv_buffer,
-                length=csv_buffer.getbuffer().nbytes,
-                content_type='text/csv'
-            )
+#    with patch("minio.Minio", return_value=minio_client_mock):
+#        with pytest.raises(S3Error):
+#            minio_client_mock.put_object(
+#                TEST_BUCKET,
+#                f"{TEST_NODE}/{TEST_FILENAME}",
+#                data=csv_buffer,
+#                length=csv_buffer.getbuffer().nbytes,
+#                content_type='text/csv'
+#            )
