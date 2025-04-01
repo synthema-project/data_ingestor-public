@@ -39,7 +39,7 @@ def test_bucket_exists():
     
 #    return client
 
-@pytest.fixture
+#@pytest.fixture
 def example_dataframe():
     """Crea un dataframe di esempio."""
     data = {
