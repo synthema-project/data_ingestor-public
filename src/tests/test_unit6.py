@@ -16,6 +16,7 @@ TEST_FILENAME = "DATA.csv"
 TEST_NODE = "test-node"
 TEST_DATA_PATH = "tests/example_data/DATA.csv"
 
+@pytest.fixture
 def minio_client_mock():
     """Real MinIO client."""
     client = Minio(
