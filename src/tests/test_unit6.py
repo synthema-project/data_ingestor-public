@@ -1,5 +1,6 @@
 import os
 import pytest
+import pandas as pd
 from pathlib import Path 
 from unittest.mock import patch, AsyncMock, MagicMock
 from fastapi.testclient import TestClient
