@@ -16,8 +16,8 @@ from tempfile import TemporaryDirectory
 
 # Configurazione per il test
 TEST_BUCKET = "data-annotation"
-#TEST_FILENAME = "DATA.csv"
-#TEST_NODE = "test-node"
+TEST_FILENAME = "DATA.csv"
+TEST_NODE = "test-node"
 #TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
 
 #@pytest.fixture#
