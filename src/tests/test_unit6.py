@@ -18,7 +18,7 @@ from tempfile import TemporaryDirectory
 TEST_BUCKET = "data-annotation"
 TEST_FILENAME = "DATA.csv"
 TEST_NODE = "test-node"
-#TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
+TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
 
 #@pytest.fixture#
 #def minio_client():
@@ -65,7 +65,7 @@ def test_put_object_success():#(minio_client, example_dataframe):
     minio_client.fput_object(
             TEST_BUCKET,
             example_dataframe,
-            f"{TEST_NODE}/{TEST_FILENAME}",
+            TEST_DATA_PATH, #f"{TEST_NODE}/{TEST_FILENAME}",
             #length=csv_buffer.getbuffer().nbytes,
             content_type='text/csv'
     )
