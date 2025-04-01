@@ -21,19 +21,19 @@ TEST_BUCKET = "data-annotation"
 #TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
 
 #@pytest.fixture#
-def minio_client():
-    """Real MinIO client."""
-    client = Minio(
+#def minio_client():
+#    """Real MinIO client."""
+minio_client = Minio(
         "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
         access_key="mqcqwECvoga6pkDRhOUz",
         secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
         secure=True  # Change to True if using HTTPS
     )
 
-    if not client.bucket_exists(TEST_BUCKET):
-        client.make_bucket(TEST_BUCKET)
+#    if not client.bucket_exists(TEST_BUCKET):
+#        client.make_bucket(TEST_BUCKET)
     
-    return client
+#return client
 
 def test_bucket_exists():
     print('BUCKET EXISTS')
