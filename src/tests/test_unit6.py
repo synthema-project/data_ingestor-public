@@ -64,10 +64,10 @@ def test_put_object_success():#(minio_client, example_dataframe):
     #with patch("minio.Minio", return_value=minio_client_mock):
     minio_client.fput_object(
             TEST_BUCKET,
-            csv_buffer,
             f"{TEST_NODE}/{TEST_FILENAME}",
-            #length=csv_buffer.getbuffer().nbytes,
-            #content_type='text/csv'
+            example_dataframe,
+            length=csv_buffer.getbuffer().nbytes,
+            content_type='text/csv'
     )
     
     #minio_client_mock.put_object.assert_called_once()
