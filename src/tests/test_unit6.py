@@ -10,25 +10,35 @@ from sqlmodel import SQLModel, create_engine, Session as TestSession
 from tempfile import TemporaryDirectory
 from storage import minio_client
 
-# Get the directory path of the current script
-current_dir = Path(__file__).resolve().parent
+# Configurazione per il test
+TEST_BUCKET = "test-bucket"
+TEST_FILENAME = "DATA.csv"
+TEST_NODE = "test-node"
+TEST_DATA_PATH = "tests/example_data/DATA.csv"
 
-def test_bucket_exists():
-    print('BUCKET EXISTS')
-    assert minio_client.bucket_exists("data-annotation") is True
+@pytest.fixture
+def minio_client_mock():
+    """Mock di un client MinIO."""
+    return MagicMock()
 
-#Test Client for the FastAPI app
-client = TestClient(app)
+def test_save_dataframe_to_minio_success(minio_client_mock):
+    """Testa il salvataggio del dataframe su MinIO con successo usando DATA.csv."""
+    df = pd.read_csv(TEST_DATA_PATH, sep=';')
+    
+    with patch("src.utils.minio_client", minio_client_mock):
+        minio_path = save_dataframe_to_minio(df, TEST_FILENAME, TEST_NODE)
+    
+    expected_path = f"{TEST_NODE}/{TEST_FILENAME}"
+    minio_client_mock.put_object.assert_called_once()
+    assert minio_path == expected_path
 
-def test_upload_dataset():
-    file_path = current_dir / "example_data" / "AML_DATASET_ES.csv"   
-    with open(file_path, "rb") as file:
-      response = client.post(
-          "/dataset",
-          files={"file": ("AML_DATA_ES.csv", file, "text/csv")},
-          data={"node": "test_node", "disease": "test_disease"},
-      )
-
-    assert response.status_code == 200
-    assert "Dataset uploaded and validated successfully" in response.json()["message"]
+def test_save_dataframe_to_minio_failure(minio_client_mock):
+    """Testa il fallimento dell'upload su MinIO usando DATA.csv."""
+    df = pd.read_csv(TEST_DATA_PATH, sep=';')
+    
+    minio_client_mock.put_object.side_effect = S3Error("Error", "MockedError", "ReqID", "HostID", "BucketName")
+    
+    with patch("src.utils.minio_client", minio_client_mock):
+        with pytest.raises(Exception, match="Failed to upload dataset to MinIO"):
+            save_dataframe_to_minio(df, TEST_FILENAME, TEST_NODE)
 
