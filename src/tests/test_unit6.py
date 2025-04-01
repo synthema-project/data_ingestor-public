@@ -20,13 +20,13 @@ def test_bucket_exists():
 client = TestClient(app)
 
 def test_upload_dataset():
-  file_path = current_dir / "example_data" / "AML_DATASET_ES.csv"
-  with open(file_path, "rb") as file:
-            response = client.post(
-                "/dataset",
-                files={"file": ("AML_DATA_ES.csv", file, "text/csv")},
-                data={"node": "test_node", "disease": "test_disease"},
-            )
+    file_path = current_dir / "example_data" / "AML_DATASET_ES.csv"   
+    with open(file_path, "rb") as file:
+      response = client.post(
+          "/dataset",
+          files={"file": ("AML_DATA_ES.csv", file, "text/csv")},
+          data={"node": "test_node", "disease": "test_disease"},
+      )
 
     assert response.status_code == 200
     assert "Dataset uploaded and validated successfully" in response.json()["message"]
