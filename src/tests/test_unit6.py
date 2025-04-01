@@ -21,7 +21,7 @@ TEST_NODE = "test-node"
 
 current_dir = Path(__file__).resolve().parent
 
-TEST_DATA_PATH = current_dir + "/example_data/DATA.csv"
+TEST_DATA_PATH = schema_path = current_dir / "example_data" / "AML_DATA_ES.csv"
 
 
 #@pytest.fixture#
