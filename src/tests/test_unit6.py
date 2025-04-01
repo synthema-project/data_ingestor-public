@@ -55,10 +55,18 @@ def test_put_object_failure():
     minio_client.fput_object.side_effect = S3Error("Error", "MockedError", "ReqID", "HostID", "BucketName")
     
 #    with patch("minio.Minio", return_value=minio_client_mock):
-    with pytest.raises(S3Error):
+    #with pytest.raises(S3Error):
+    #        minio_client.fput_object(
+    #        TEST_BUCKET,
+    #        "test-dataframe",
+    #        TEST_DATA_PATH, #f"{TEST_NODE}/{TEST_FILENAME}",
+    #        content_type='text/csv'
+    #        )
+    with patch.object(minio_client, "fput_object", side_effect=S3Error("AccessDenied", "MockedError", "ReqID", "HostID", "BucketName", MagicMock())):
+        with pytest.raises(S3Error):
             minio_client.fput_object(
-            TEST_BUCKET,
-            "test-dataframe",
-            TEST_DATA_PATH, #f"{TEST_NODE}/{TEST_FILENAME}",
-            content_type='text/csv'
+                TEST_BUCKET,
+                "test-dataframe",
+                TEST_DATA_PATH,
+                content_type='text/csv'
             )
