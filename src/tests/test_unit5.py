@@ -23,24 +23,24 @@ client = TestClient(app)
 # MinIO Mock Setup
 MOCK_MINIO_BUCKET = "test-bucket"
 
-#@pytest.fixture
-#def mock_minio():
-#    """Mock MinIO client."""
-#    with patch("data_ingestor.Minio") as mock:
-#        mock_client = MagicMock()
-#        mock.return_value = mock_client
-#        yield mock_client
-
 @pytest.fixture
 def mock_minio():
-    """Real MinIO client."""
-    client = Minio(
-        "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
-        access_key="mqcqwECvoga6pkDRhOUz",
-        secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
-        secure=True  # Change to True if using HTTPS
-    )
-    return client
+    """Mock MinIO client."""
+    with patch("data_ingestor.Minio") as mock:
+        mock_client = MagicMock()
+        mock.return_value = mock_client
+        yield mock_client
+
+#@pytest.fixture
+#def mock_minio():
+#    """Real MinIO client."""
+#    client = Minio(
+#        "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
+#        access_key="mqcqwECvoga6pkDRhOUz",
+#        secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
+#        secure=True  # Change to True if using HTTPS
+#    )
+#    return client
 
 @pytest.mark.asyncio
 class TestDataIngestor:
