@@ -54,11 +54,11 @@ def test_bucket_exists():
 #    }
 #    return pd.DataFrame(data)
 
-#example_dataframe = pd.DataFrame({
-#        "id": [1, 2, 3],
-#        "name": ["Alice", "Bob", "Charlie"],
-#        "age": [25, 30, 35]
-#    })
+example_dataframe = pd.DataFrame({
+        "id": [1, 2, 3],
+        "name": ["Alice", "Bob", "Charlie"],
+        "age": [25, 30, 35]
+    })
 
 def test_put_object_success():#(minio_client, example_dataframe):
     """Testa la chiamata a put_object di MinIO con successo."""
