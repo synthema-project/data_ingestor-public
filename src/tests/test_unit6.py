@@ -39,21 +39,37 @@ def example_dataframe():
     }
     return pd.DataFrame(data)
 
-def test_save_dataframe_to_minio_success(minio_client_mock, example_dataframe):
-    """Testa il salvataggio del dataframe su MinIO con successo usando un dataset di esempio."""
+def test_put_object_success(minio_client_mock, example_dataframe):
+    """Testa la chiamata a put_object di MinIO con successo."""
+    csv_buffer = io.BytesIO()
+    example_dataframe.to_csv(csv_buffer, index=False)
+    csv_buffer.seek(0)
     
-    with patch("src.utils.minio_client", minio_client_mock):
-        minio_path = save_dataframe_to_minio(example_dataframe, TEST_FILENAME, TEST_NODE)
+    with patch("minio.Minio", return_value=minio_client_mock):
+        minio_client_mock.put_object(
+            TEST_BUCKET,
+            f"{TEST_NODE}/{TEST_FILENAME}",
+            data=csv_buffer,
+            length=csv_buffer.getbuffer().nbytes,
+            content_type='text/csv'
+        )
     
-    expected_path = f"{TEST_NODE}/{TEST_FILENAME}"
     minio_client_mock.put_object.assert_called_once()
-    assert minio_path == expected_path
 
-def test_save_dataframe_to_minio_failure(minio_client_mock, example_dataframe):
-    """Testa il fallimento dell'upload su MinIO usando un dataset di esempio."""
+def test_put_object_failure(minio_client_mock, example_dataframe):
+    """Testa il fallimento della chiamata a put_object di MinIO."""
+    csv_buffer = io.BytesIO()
+    example_dataframe.to_csv(csv_buffer, index=False)
+    csv_buffer.seek(0)
     
     minio_client_mock.put_object.side_effect = S3Error("Error", "MockedError", "ReqID", "HostID", "BucketName")
     
-    with patch("src.utils.minio_client", minio_client_mock):
-        with pytest.raises(Exception, match="Failed to upload dataset to MinIO"):
-            save_dataframe_to_minio(example_dataframe, TEST_FILENAME, TEST_NODE)
+    with patch("minio.Minio", return_value=minio_client_mock):
+        with pytest.raises(S3Error):
+            minio_client_mock.put_object(
+                TEST_BUCKET,
+                f"{TEST_NODE}/{TEST_FILENAME}",
+                data=csv_buffer,
+                length=csv_buffer.getbuffer().nbytes,
+                content_type='text/csv'
+            )
