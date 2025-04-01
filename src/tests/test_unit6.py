@@ -12,7 +12,7 @@ from minio.error import S3Error
 from models import NodeDatasetInfo
 from sqlmodel import SQLModel, create_engine, Session as TestSession
 from tempfile import TemporaryDirectory
-from storage import minio_client
+#from storage import minio_client
 
 # Configurazione per il test
 TEST_BUCKET = "data-annotation"
@@ -20,24 +20,24 @@ TEST_BUCKET = "data-annotation"
 #TEST_NODE = "test-node"
 #TEST_DATA_PATH = "/app/tests/example_data/DATA.csv"
 
+#@pytest.fixture#
+def minio_client():
+    """Real MinIO client."""
+    client = Minio(
+        "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
+        access_key="mqcqwECvoga6pkDRhOUz",
+        secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
+        secure=True  # Change to True if using HTTPS
+    )
+
+    if not client.bucket_exists(TEST_BUCKET):
+        client.make_bucket(TEST_BUCKET)
+    
+    return client
+
 def test_bucket_exists():
     print('BUCKET EXISTS')
     assert minio_client.bucket_exists("data-annotation") is True
-
-#@pytest.fixture
-#def minio_client_mock():
-#    """Real MinIO client."""
-#    client = Minio(
-#        "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
-#        access_key="mqcqwECvoga6pkDRhOUz",
-#        secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
-#        secure=True  # Change to True if using HTTPS
-#    )
-
-#    if not client.bucket_exists(TEST_BUCKET):
-#        client.make_bucket(TEST_BUCKET)
-    
-#    return client
 
 #@pytest.fixture
 def example_dataframe():
