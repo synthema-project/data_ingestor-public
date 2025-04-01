@@ -43,14 +43,11 @@ def test_put_object_success():#(minio_client, example_dataframe):
             content_type='text/csv'
     )
     
-    #found = minio_client.stat_object(TEST_BUCKET, TEST_DATA_PATH)
-    #assert found
+    found = minio_client.stat_object(TEST_BUCKET, "test-dataframe")
+    assert found
 
 def test_put_object_failure():
 #    """Testa il fallimento della chiamata a put_object di MinIO."""
-#    csv_buffer = io.BytesIO()
-#    example_dataframe.to_csv(csv_buffer, index=False)
-#    csv_buffer.seek(0)
     
     minio_client.fput_object.side_effect = S3Error("Error", "MockedError", "ReqID", "HostID", "BucketName")
     
