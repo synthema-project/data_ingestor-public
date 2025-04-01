@@ -54,11 +54,11 @@ def test_bucket_exists():
 #    }
 #    return pd.DataFrame(data)
 
-example_dataframe = pd.DataFrame({
-        "id": [1, 2, 3],
-        "name": ["Alice", "Bob", "Charlie"],
-        "age": [25, 30, 35]
-    })
+#example_dataframe = pd.DataFrame({
+#        "id": [1, 2, 3],
+#        "name": ["Alice", "Bob", "Charlie"],
+#        "age": [25, 30, 35]
+#    })
 
 def test_put_object_success():#(minio_client, example_dataframe):
     """Testa la chiamata a put_object di MinIO con successo."""
@@ -69,7 +69,7 @@ def test_put_object_success():#(minio_client, example_dataframe):
     #with patch("minio.Minio", return_value=minio_client_mock):
     minio_client.fput_object(
             TEST_BUCKET,
-            example_dataframe,
+            "test-dataframe",#example_dataframe,
             TEST_DATA_PATH, #f"{TEST_NODE}/{TEST_FILENAME}",
             #length=csv_buffer.getbuffer().nbytes,
             content_type='text/csv'
