@@ -29,24 +29,31 @@ def minio_client_mock():
     )
     return client
 
-def test_save_dataframe_to_minio_success(minio_client_mock):
-    """Testa il salvataggio del dataframe su MinIO con successo usando DATA.csv."""
-    df = pd.read_csv(TEST_DATA_PATH, sep=';')
+@pytest.fixture
+def example_dataframe():
+    """Crea un dataframe di esempio."""
+    data = {
+        "id": [1, 2, 3],
+        "name": ["Alice", "Bob", "Charlie"],
+        "age": [25, 30, 35]
+    }
+    return pd.DataFrame(data)
+
+def test_save_dataframe_to_minio_success(minio_client_mock, example_dataframe):
+    """Testa il salvataggio del dataframe su MinIO con successo usando un dataset di esempio."""
     
     with patch("src.utils.minio_client", minio_client_mock):
-        minio_path = save_dataframe_to_minio(df, TEST_FILENAME, TEST_NODE)
+        minio_path = save_dataframe_to_minio(example_dataframe, TEST_FILENAME, TEST_NODE)
     
     expected_path = f"{TEST_NODE}/{TEST_FILENAME}"
     minio_client_mock.put_object.assert_called_once()
     assert minio_path == expected_path
 
-def test_save_dataframe_to_minio_failure(minio_client_mock):
-    """Testa il fallimento dell'upload su MinIO usando DATA.csv."""
-    df = pd.read_csv(TEST_DATA_PATH, sep=';')
+def test_save_dataframe_to_minio_failure(minio_client_mock, example_dataframe):
+    """Testa il fallimento dell'upload su MinIO usando un dataset di esempio."""
     
     minio_client_mock.put_object.side_effect = S3Error("Error", "MockedError", "ReqID", "HostID", "BucketName")
     
     with patch("src.utils.minio_client", minio_client_mock):
         with pytest.raises(Exception, match="Failed to upload dataset to MinIO"):
-            save_dataframe_to_minio(df, TEST_FILENAME, TEST_NODE)
-
+            save_dataframe_to_minio(example_dataframe, TEST_FILENAME, TEST_NODE)
