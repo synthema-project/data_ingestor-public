@@ -43,7 +43,7 @@ def mock_minio():
     return client
 
 
-@pytest.mark.asyncio
+#@pytest.mark.asyncio
 class TestDataIngestor:
 
     #@pytest.fixture
@@ -54,9 +54,9 @@ class TestDataIngestor:
     #    mock_db.commit()
     #    return dataset
 
-    @pytest.mark.asyncio
+    #@pytest.mark.asyncio
     @patch("data_ingestor.Minio.put_object")
-    async def test_upload_dataset_success(self, mock_put_object, mock_minio, temp_dir='example_data'):
+    def test_upload_dataset_success(self, mock_put_object, mock_minio, temp_dir='example_data'):
         """
         Test successful dataset upload to MinIO.
         """
@@ -81,7 +81,7 @@ class TestDataIngestor:
 
 
     @patch("data_ingestor.Minio.remove_object")
-    async def test_remove_dataset_success(self, mock_remove_object, mock_minio):#, mock_db, setup_database):
+    def test_remove_dataset_success(self, mock_remove_object, mock_minio):#, mock_db, setup_database):
         """
         Test successful dataset removal from MinIO and database.
         """
