@@ -76,8 +76,8 @@ def test_put_object_success():#(minio_client, example_dataframe):
     )
     
     #minio_client_mock.put_object.assert_called_once()
-    #found = minio_client.stat_object(TEST_BUCKET, f"{TEST_NODE}/{TEST_FILENAME}")
-    #assert found
+    found = minio_client.stat_object(TEST_BUCKET, TEST_DATA_PATH)
+    assert found
 
 #def test_put_object_failure(minio_client_mock, example_dataframe):
 #    """Testa il fallimento della chiamata a put_object di MinIO."""
