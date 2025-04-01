@@ -27,7 +27,7 @@ def minio_client_mock():
         "obstorageapi.k8s.synthema.rid-intrasoft.eu",  # Update with your MinIO endpoint
         access_key="mqcqwECvoga6pkDRhOUz",
         secret_key="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9",
-        secure=True  # Change to True if using HTTPS
+        secure=False  # Change to True if using HTTPS
     )
 
     if not client.bucket_exists(TEST_BUCKET):
