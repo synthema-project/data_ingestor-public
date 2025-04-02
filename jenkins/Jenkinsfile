@@ -12,7 +12,7 @@ pipeline {
         DOCKER_REPO = "/synthema/"
         DOCKER_REG_CREDS = "harbor-jenkins-creds"
         K8S_NAMESPACE = "synthema-dev"
-        MINIO_URL = "obstorageapi.k8s.synthema.rid-intrasoft.eu"
+        MINIO_ENDPOINT = "obstorageapi.k8s.synthema.rid-intrasoft.eu"
         MINIO_ACCESS_KEY = "mqcqwECvoga6pkDRhOUz" //credentials("MINIO_ACCESS_KEY")
         MINIO_SECRET_KEY = "EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9" //credentials("MINIO_SECRET_KEY")
         MINIO_BUCKET_NAME = "data-annotation"
@@ -39,7 +39,7 @@ pipeline {
                 //sh "curl -v https://data-annotation.k8s.synthema.rid-intrasoft.eu:80/schema"
                 //sh "curl -v https://data-catalogue.k8s.synthema.rid-intrasoft.eu:83/metadata"
                 //sh 'ping obstorageapi.k8s.synthema.rid-intrasoft.eu'
-                sh 'docker container run -e "PYTHONPATH=/tests" -e MINIO_ENDPOINT="${MINIO_URL}" -e MINIO_ACCESS_KEY="${MINIO_ACCESS_KEY}" -e MINIO_SECRET_KEY="${MINIO_SECRET_KEY}" -e MINIO_BUCKET_NAME="${MINIO_BUCKET_NAME}" --name ${APP_NAME}_test_$(date +%s) --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit6.py' //-p 80:80 -e MINIO_ENDPOINT="obstorageapi.k8s.synthema.rid-intrasoft.eu" -e MINIO_ACCESS_KEY="mqcqwECvoga6pkDRhOUz" -e MINIO_SECRET_KEY="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9" -e MINIO_BUCKET_NAME="data-annotation"
+                sh 'docker container run -e "PYTHONPATH=/tests" -e MINIO_ENDPOINT="${MINIO_ENDPOINT}" -e MINIO_ACCESS_KEY="${MINIO_ACCESS_KEY}" -e MINIO_SECRET_KEY="${MINIO_SECRET_KEY}" -e MINIO_BUCKET_NAME="${MINIO_BUCKET_NAME}" --name ${APP_NAME}_test_$(date +%s) --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/test_unit6.py' //-p 80:80 -e MINIO_ENDPOINT="obstorageapi.k8s.synthema.rid-intrasoft.eu" -e MINIO_ACCESS_KEY="mqcqwECvoga6pkDRhOUz" -e MINIO_SECRET_KEY="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9" -e MINIO_BUCKET_NAME="data-annotation"
            }
         }
 
