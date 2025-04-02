@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: minio-config
-  #namespace: synthema-dev
+  namespace: synthema-dev
 data:
   MINIO_ENDPOINT: "obstorageapi.k8s.synthema.rid-intrasoft.eu"
   MINIO_BUCKET_NAME: "data-annotation"
