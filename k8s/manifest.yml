@@ -33,8 +33,8 @@ spec:
                   key: MINIO_ENDPOINT
             - name: MINIO_BUCKET_NAME
               valueFrom:
-                secretKeyRef:
-                  name: minio-secret
+                configMapKeyRef:
+                  name: minio-config
                   key: MINIO_BUCKET_NAME
             - name: MINIO_ACCESS_KEY
               valueFrom:
