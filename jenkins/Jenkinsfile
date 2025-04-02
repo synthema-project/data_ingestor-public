@@ -13,8 +13,8 @@ pipeline {
         DOCKER_REG_CREDS = "harbor-jenkins-creds"
         K8S_NAMESPACE = "synthema-dev"
         MINIO_URL = "obstorageapi.k8s.synthema.rid-intrasoft.eu"
-        MINIO_ACCESS_KEY = "mqcqwECvoga6pkDRhOUz" #credentials("MINIO_ACCESS_KEY")
-        MINIO_SECRET_KEY = credentials("MINIO_SECRET_KEY")
+        MINIO_ACCESS_KEY = "mqcqwECvoga6pkDRhOUz" //credentials("MINIO_ACCESS_KEY")
+        MINIO_SECRET_KEY = "EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9" //credentials("MINIO_SECRET_KEY")
         MINIO_BUCKET_NAME = "data-annotation"
     }
 
