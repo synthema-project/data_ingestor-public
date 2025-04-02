@@ -50,7 +50,7 @@ pipeline {
                 // Deploy the test image
                 withKubeConfig([credentialsId: 'k8s-admin']) {
                     sh '''
-                    kubectl cluster-info
+                    kubectl cluster-info dump
                     cp k8s/manifest.yml k8s/manifest-test.yml
                     sed -e 's|DOCKER_TAG|test|g' k8s/manifest-test.yml | kubectl apply -f k8s/manifest-test.yml -n ${K8S_NAMESPACE}
                     '''
