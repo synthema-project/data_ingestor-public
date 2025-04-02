@@ -61,8 +61,8 @@ pipeline {
                 }
             }
         }
-        //stage("Func_Tests"){
-        //   steps {
+        stage("Func_Tests"){
+           steps {
           //      echo "***** Running Functional Tests *****"
             //    // Deploy the test image
               //  withKubeConfig([credentialsId: 'k8s-admin']) {
