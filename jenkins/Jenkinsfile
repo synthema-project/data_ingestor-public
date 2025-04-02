@@ -54,10 +54,11 @@ pipeline {
                 withKubeConfig([credentialsId: 'k8s-admin']) {
                     sh '''
                     cp k8s/manifest.yml k8s/manifest-test.yml
-                    sed -e 's|DOCKER_TAG|test|g' k8s/manifest-test.yml | kubectl apply -f -
+                    sed -i 's|DOCKER_TAG|test|g' k8s/manifest-test.yml
+                    kubectl apply -f k8s/manifest-test.yml -n synthema-dev
                     '''
                }
-                sh 'sleep 10'
+                sh 'sleep 30'
                 // Execute the tests
                 script {
                    withKubeConfig([credentialsId: 'k8s-admin']) {
@@ -71,7 +72,7 @@ pipeline {
                 // Destroy the deployment
                 withKubeConfig([credentialsId: 'k8s-admin']) {
                     sh '''
-                    kubectl delete -f k8s/manifest-test.yml
+                    kubectl delete -f k8s/manifest-test.yml -n synthema-dev
                     rm k8s/manifest-test.yml
                     '''
                }
