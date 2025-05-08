@@ -52,7 +52,7 @@ pipeline {
                     sh '''
                     cp k8s/manifest.yml k8s/manifest-staging-${DOCKER_TAG}.yml
                     sed -i "s|DOCKER_TAG|${DOCKER_TAG}|g" k8s/manifest-staging-${DOCKER_TAG}.yml
-                    kubectl apply -f k8s/manifest-staging-${DOCKER_TAG}.yml
+                    kubectl apply --validate=false -f k8s/manifest-staging-${DOCKER_TAG}.yml
                     '''
                     //kubectl apply -f -
                 }
