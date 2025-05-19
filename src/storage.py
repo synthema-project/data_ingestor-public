@@ -11,6 +11,7 @@ minio_client = Minio(
 
 # Ensure the bucket exists
 def ensure_bucket():
+    print(f"Bucket name: '{settings.MINIO_BUCKET_NAME}'")
     if not minio_client.bucket_exists(settings.MINIO_BUCKET_NAME):
         minio_client.make_bucket(settings.MINIO_BUCKET_NAME)
         print(f"Bucket '{settings.MINIO_BUCKET_NAME}' created successfully.")
