@@ -11,7 +11,8 @@ MOCK_MINIO_URL = "http://minio.synthema-dev.svc.cluster.local:9000"
 @pytest.fixture(scope="module")
 def mock_minio():
     """Mock MinIO client."""
-    with patch("data_ingestor.Minio") as mock:
+    #with patch("data_ingestor.Minio") as mock:
+    with patch("storage.minio_client") as mock:
         mock_client = MagicMock()
         mock.return_value = mock_client
         yield mock_client
