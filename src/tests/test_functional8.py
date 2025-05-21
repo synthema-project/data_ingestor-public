@@ -43,7 +43,7 @@ def test_upload_and_delete_dataset_from_minio():
 
     json_response = upload_response.json()
     filename = json_response.get("filename")
-    #filename = str(node + "/" + filename)
+    filename = str(node + "/" + filename)
     assert filename is not None, f"Upload response missing filename: {json_response}"
     print(f"✅ Uploaded filename: {filename}")
 
