@@ -122,7 +122,7 @@ async def upload_dataset(
                 #save_dataset_to_database(session, new_dataset)
                 #print('SAVETOCATALOGUE')
 
-                return {"message": "Dataset uploaded and validated successfully"}
+                return {"message": "Dataset uploaded and validated successfully"}, iid
             except httpx.HTTPStatusError as e:
                 raise HTTPException(status_code=e.response.status_code, detail="Error processing file")
             except Exception as e:
