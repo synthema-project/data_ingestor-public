@@ -5,7 +5,7 @@ import pandas as pd
 import uuid
 import io
 
-#client = TestClient(app)
+client = TestClient(app)
 
 #def test_upload_and_delete_dataset_from_minio():
 #    # Create dummy DataFrame
