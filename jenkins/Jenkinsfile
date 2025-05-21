@@ -61,7 +61,7 @@ pipeline {
                     //'''
                     //kubectl apply -f -
                 }
-                sh 'sleep 30'
+                sh 'sleep 10'
                 // Execute the tests
                 script {
                    withKubeConfig([credentialsId: 'k8s-admin']) {
