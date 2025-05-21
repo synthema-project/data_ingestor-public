@@ -271,7 +271,7 @@ def remove_dataset_from_minio(node: str, filename: str):
     """
     Remove a dataset file from MinIO storage.
     """
-    minio_path = f"{node}/{filename}"
+    minio_path = filename #f"{node}/{filename}"
 
     try:
         minio_client.remove_object(settings.MINIO_BUCKET_NAME, minio_path)
