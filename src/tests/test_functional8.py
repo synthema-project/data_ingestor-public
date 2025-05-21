@@ -40,6 +40,8 @@ def test_upload_dataset_to_real_minio():
     f"/dataset?node={node}&disease={disease}",
     files=files
 )
+    print("🔁 Response Status:", response.status_code)
+    print("📄 Response Body:", response.text)
 
 
     assert response.status_code == 200, response.text
