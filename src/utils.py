@@ -79,7 +79,8 @@ def replace_none_with_nan(data_dict):
 #    print("Data dictionary is valid according to the schema.")
 
 def csv_to_json_dict(csv_file_path, schema):
-    df = pd.read_csv(csv_file_path)
+    ##df = pd.read_csv(csv_file_path)
+    df = csv_file_path
     df = df.replace({np.nan: None})
     data = df.to_dict(orient='records')
     return data
