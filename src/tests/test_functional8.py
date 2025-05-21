@@ -74,11 +74,10 @@ def test_upload_and_delete_dataset_from_minio():
         "file": (filename, csv_buffer.getvalue(), "text/csv"),
     }
 
-    upload_response, iid = client.post(
+    upload_response = client.post(
         f"/dataset?node={node}&disease={disease}",
         files=files
     )
-    print(iid)
     assert upload_response.status_code == 200, f"Upload failed: {upload_response.text}"
     print("✅ Upload successful")
 
