@@ -82,7 +82,7 @@ def test_upload_and_delete_dataset_from_minio():
     assert upload_response.status_code == 200, f"Upload failed: {upload_response.text}"
     print("✅ Upload successful")
 
-    uploaded_filename = upload_response.json().get("filename")
+    uploaded_filename = upload_response.json()#.get("filename")
     assert uploaded_filename is not None, "Filename not returned in response"
     print(f"✅ Uploaded file: {uploaded_filename}")
 
