@@ -37,7 +37,8 @@ def test_upload_dataset_endpoint():
 
     # Change this URL to match your real endpoint
     #url = "http://localhost:82/dataset"  # or your staging IP:PORT
-    url = "data-ingestor.k8s.synthema.rid-intrasoft.eu:82"
+    #url = "data-ingestor.k8s.synthema.rid-intrasoft.eu:82"
+    url = "http://data-ingestor.k8s.synthema.rid-intrasoft.eu:82"
     # Send the request
     logging.info(f"Uploading dataset to {url}")
     response = requests.post(url, data=data, files=files)
