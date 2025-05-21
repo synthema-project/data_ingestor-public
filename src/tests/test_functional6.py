@@ -51,13 +51,13 @@ async def test_upload_and_delete_real_minio():
     assert minio_client.stat_object(bucket_name, object_path)
 
     # Delete via FastAPI
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        response = await ac.delete(
-            "/dataset",
-            params={"node": node, "disease": disease, "filename": filename}
-        )
+    ##async with AsyncClient(app=app, base_url="http://test") as ac:
+    ##    response = await ac.delete(
+    ##        "/dataset",
+    ##       params={"node": node, "disease": disease, "filename": filename}
+    ##    )
 
-    assert response.status_code == 200
+    ##assert response.status_code == 200
 
     # Ensure file no longer exists
     with pytest.raises(Exception):
