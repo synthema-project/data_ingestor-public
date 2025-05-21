@@ -260,6 +260,7 @@ def save_dataframe_to_minio(dataset: pd.DataFrame, filename: str, node: str):
             length=csv_buffer.getbuffer().nbytes,
             content_type='text/csv'
         )
+        print(f"Uploading to bucket: {settings.MINIO_BUCKET_NAME}, path: {minio_path}")
         return minio_path
     except S3Error as e:
         raise Exception(f"Failed to upload dataset to MinIO: {str(e)}")
