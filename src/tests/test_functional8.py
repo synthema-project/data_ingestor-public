@@ -35,7 +35,12 @@ def test_upload_dataset_to_real_minio():
     }
 
     # POST to FastAPI endpoint
-    response = client.post("/dataset", data=data, files=files)
+    #response = client.post("/dataset", data=data, files=files)
+    response = client.post(
+    f"/dataset?node={node}&disease={disease}",
+    files=files
+)
+
 
     assert response.status_code == 200, response.text
     print("✅ File uploaded to MinIO via FastAPI endpoint")
