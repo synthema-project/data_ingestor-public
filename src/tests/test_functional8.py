@@ -81,8 +81,13 @@ def test_upload_and_delete_dataset_from_minio():
     print("✅ Upload successful")
 
     # Delete the file
+    #delete_response = client.delete(
+    #    f"/dataset?node={node}&disease={disease}&filename={filename}"
+    #)
+
     delete_response = client.delete(
-        f"/dataset?node={node}&disease={disease}&filename={filename}"
+        "/dataset",
+        params={"node": node, "disease": disease, "filename": filename}
     )
 
     assert delete_response.status_code == 200, f"Delete failed: {delete_response.text}"
