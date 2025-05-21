@@ -72,8 +72,8 @@ pipeline {
                 // Destroy the deployment
                 withKubeConfig([credentialsId: 'k8s-admin']) {
                     sh '''
-                    kubectl delete -f k8s/manifest-test.yml -n synthema-dev
-                    rm k8s/manifest-test.yml
+                    kubectl delete -f k8s/manifest-staging.yml -n synthema-dev
+                    rm k8s/manifest-staging.yml
                     '''
                }
            }
