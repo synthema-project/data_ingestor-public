@@ -28,6 +28,7 @@ CATALOGUE_ENDPOINT =  "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/meta
 #CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata" 
 
 LOCAL_DATASETS_DIR = "/app/datasets"
+local_datasets_dir = "/app/datasets"
 local_datasets = {}
 
 # Configure logging
