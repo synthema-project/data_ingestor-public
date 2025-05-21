@@ -53,10 +53,10 @@ async def upload_dataset(
         print('DATAFRAME')
         dataframe = pd.read_csv(io.StringIO(csv_content.decode("latin1")), sep=';')
         print('CSV FILEPATH')
-        csv_file_path = f"{local_datasets_dir}/{uuid.uuid4()}.csv"
-        print('TOCSV')
-        dataframe.to_csv(csv_file_path, index=False)
-        print('CSVFILEPATH', csv_file_path)
+        ##csv_file_path = f"{local_datasets_dir}/{uuid.uuid4()}.csv"
+        ##print('TOCSV')
+        ##dataframe.to_csv(csv_file_path, index=False)
+        ##print('CSVFILEPATH', csv_file_path)
         async with httpx.AsyncClient() as client:
             try:
                 response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
@@ -72,7 +72,8 @@ async def upload_dataset(
                 schema = response.json()["schema"]
                 print(schema)
                 print('SCHEMA')
-                data_dict = csv_to_json_dict(csv_file_path=csv_file_path, schema=schema)
+                #data_dict = csv_to_json_dict(csv_file_path=csv_file_path, schema=schema)
+                data_dict = csv_to_json_dict(csv_file_path=dataframe, schema=schema)
                 print('DATADICT')
                 validate_data(data_dict=data_dict, schema=schema)
                 print('VALIDATE')
