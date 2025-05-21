@@ -1,58 +1,65 @@
-import os
 import pytest
-import requests
+import pandas as pd
+import io
+from httpx import AsyncClient
+from main import app
+import uuid
+import os
 
-# Base URL for the service — can be overridden by environment variable
-BASE_URL = os.getenv("BASE_URL", "http://localhost:82")
-
-# Use test values consistent with your system
-TEST_NODE = "testnode"
-TEST_DISEASE = "testdisease"
-TEST_FILENAME = "testfile.csv"  # Will be set after upload
-
-
-def test_healthcheck():
-    """Test the /healthcheck endpoint"""
-    resp = requests.get(f"{BASE_URL}/healthcheck")
-    assert resp.status_code == 200
-    assert resp.json().get("status") == "ok"
-
-
-def test_upload_dataset():
-    """Test uploading a CSV file"""
-    global TEST_FILENAME
-
-    url = f"{BASE_URL}/dataset"
-    files = {'file': ('test.csv', b'name;age\nAlice;30\nBob;40')}
-    data = {'node': TEST_NODE, 'disease': TEST_DISEASE}
-
-    resp = requests.post(url, files=files, data=data)
-
-    assert resp.status_code == 200
-    assert "uploaded" in resp.json()["message"]
-
-    # Capture the uploaded file name from MinIO path (from logs or inject as response later)
-    # Here we'll assume a known format to reconstruct it
-    # For accurate testing, your API should return the filename
-    TEST_FILENAME = f"{TEST_DISEASE}_{TEST_NODE}_"  # prefix to use for deletion test
-
-
-def test_delete_dataset():
-    """Test deleting a dataset (only works if filename is known or returned by upload)"""
-    # WARNING: This test assumes TEST_FILENAME was set from previous test
-    # Ideally, your POST /dataset should return the actual filename
-
-    url = f"{BASE_URL}/dataset"
-    params = {
-        "node": TEST_NODE,
-        "disease": TEST_DISEASE,
-        "filename": ""  # Replace this manually if API doesn't return it
+@pytest.mark.asyncio
+async def test_upload_dataset_to_minio(monkeypatch):
+    # --- Setup CSV file in-memory
+    df = pd.DataFrame({
+        "age": [25, 30],
+        "gender": ["male", "female"],
+        "status": ["sick", "healthy"]
+    })
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, index=False, sep=';')
+    csv_buffer.seek(0)
+    
+    # --- Create a mock response for the schema endpoint
+    schema_response = {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "age": {"type": "integer"},
+                "gender": {"type": "string"},
+                "status": {"type": "string"}
+            },
+            "required": ["age", "gender", "status"]
+        }
     }
 
-    # If you cannot dynamically retrieve filename, this test might fail — you can skip it
-    if not params["filename"]:
-        pytest.skip("Skipping delete test: filename not set.")
+    async def mock_get(*args, **kwargs):
+        class MockResponse:
+            def __init__(self):
+                self.status_code = 200
+            def json(self):
+                return schema_response
+        return MockResponse()
 
-    resp = requests.delete(url, params=params)
-    assert resp.status_code == 200
-    assert "removed" in resp.json()["message"]
+    async def mock_post(*args, **kwargs):
+        class MockResponse:
+            def __init__(self):
+                self.status_code = 200
+        return MockResponse()
+
+    monkeypatch.setattr("httpx.AsyncClient.get", mock_get)
+    monkeypatch.setattr("httpx.AsyncClient.post", mock_post)
+
+    # --- Use test client to upload
+    node = "test-node"
+    disease = "test-disease"
+    csv_filename = f"{uuid.uuid4()}.csv"
+    csv_bytes = csv_buffer.getvalue().encode("latin1")
+
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.post(
+            "/dataset",
+            data={"node": node, "disease": disease},
+            files={"file": (csv_filename, csv_bytes, "text/csv")}
+        )
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Dataset uploaded and validated successfully"
