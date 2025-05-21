@@ -87,7 +87,7 @@ async def upload_dataset(
                 local_datasets[filename] = minio_filepath
                 ##print(minio_filepath)
                 print(filename)
-                os.remove(csv_file_path)
+                ##os.remove(csv_file_path)
                 print('REMOVE')
                 #node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
                 node_dataset = NodeDatasetInfo(id=iid, node=node, path=minio_filepath, disease=disease)
