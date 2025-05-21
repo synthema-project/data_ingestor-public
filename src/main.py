@@ -233,7 +233,8 @@ async def remove_dataset(
     print('ENTER DELETE')
     #logging.info(f"Received request: {await request.json()}")
     logging.info(f"Received query parameters: node={node}, disease={disease}, path={filename}")
-    removedatasetobject = RemoveDatasetObject(node=node, disease=disease, path=path)
+    ##removedatasetobject = RemoveDatasetObject(node=node, disease=disease, path=path)
+    removedatasetobject = RemoveDatasetObject(node=node, disease=disease, path=filename)
     print('REMOVEDATASETOBJECT')
     try:
         ## Remove the file from local storage
