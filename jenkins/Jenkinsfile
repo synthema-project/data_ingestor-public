@@ -51,11 +51,14 @@ pipeline {
                 withKubeConfig([credentialsId: 'k8s-admin']) {
                     //sh 'echo "KUBECONFIG is set to: $KUBECONFIG"'
                     //sh 'kubectl config view'
+                    //staging-${DOCKER_TAG}.yml
                     sh '''
-                    cp k8s/manifest.yml k8s/manifest-staging-${DOCKER_TAG}.yml
-                    sed -i "s|DOCKER_TAG|${DOCKER_TAG}|g" k8s/manifest-staging-${DOCKER_TAG}.yml
-                    kubectl apply --validate=false -f k8s/manifest-staging-${DOCKER_TAG}.yml
+                    cp k8s/manifest.yml k8s/manifest-test.yml
+                    sed -e 's|DOCKER_TAG|test|g' k8s/manifest-test.yml | kubectl apply -f -
                     '''
+                    //sed -i "s|DOCKER_TAG|${DOCKER_TAG}|g" k8s/manifest-staging-${DOCKER_TAG}.yml
+                    //kubectl apply --validate=false -f k8s/manifest-staging-${DOCKER_TAG}.yml
+                    //'''
                     //kubectl apply -f -
                 }
                 sh 'sleep 30'
@@ -71,9 +74,13 @@ pipeline {
                 }
                 // Destroy the deployment
                 withKubeConfig([credentialsId: 'k8s-admin']) {
+                    //sh '''
+                    //kubectl delete -f k8s/manifest-staging-${DOCKER_TAG}.yml -n synthema-dev
+                    //rm k8s/manifest-staging-${DOCKER_TAG}.yml
+                    //'''
                     sh '''
-                    kubectl delete -f k8s/manifest-staging-${DOCKER_TAG}.yml -n synthema-dev
-                    rm k8s/manifest-staging-${DOCKER_TAG}.yml
+                    kubectl delete -f k8s/manifest-test.yml -n synthema-dev
+                    rm k8s/manifest-test.yml
                     '''
                }
            }
