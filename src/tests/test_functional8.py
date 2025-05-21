@@ -21,7 +21,7 @@ def test_upload_dataset_to_real_minio():
     csv_buffer.seek(0)
 
     # Set metadata
-    disease = "test-disease"
+    disease = "AML"
     node = "test-node"
     filename = f"{disease}_{node}_{uuid.uuid4()}.csv"
 
