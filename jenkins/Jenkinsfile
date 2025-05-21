@@ -66,7 +66,7 @@ pipeline {
                         //sh "curl -f http://49.13.149.57:${nodePort}/healthcheck"
                         //sh "curl -f http://data-annotation.k8s.synthema.rid-intrasoft.eu:${nodePort}/healthcheck"
                         //sh "curl -f http://data-catalogue.k8s.synthema.rid-intrasoft.eu:${nodePort}/healthcheck"
-                        sh "docker run --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test pytest tests/test_functional7.py"
+                        sh "docker run --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test pytest tests/test_functional8.py"
                     }
                 }
                 // Destroy the deployment
