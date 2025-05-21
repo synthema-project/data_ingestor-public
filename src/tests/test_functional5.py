@@ -63,3 +63,41 @@ async def test_upload_dataset_to_minio(monkeypatch):
 
     assert response.status_code == 200
     assert response.json()["message"] == "Dataset uploaded and validated successfully"
+
+@pytest.mark.asyncio
+async def test_remove_dataset_from_minio(monkeypatch):
+    node = "test-node"
+    disease = "test-disease"
+    filename = "testfile.csv"
+
+    # --- Mock remove_dataset_from_minio function
+    async def mock_remove_dataset_from_minio(n, f):
+        assert n == node
+        assert f == filename
+        return True
+
+    # --- Mock catalogue deletion response
+    async def mock_httpx_delete(*args, **kwargs):
+        class MockResponse:
+            def __init__(self):
+                self.status_code = 200
+            def raise_for_status(self):
+                pass
+        return MockResponse()
+
+    # Apply monkeypatching
+    monkeypatch.setattr("utils.remove_dataset_from_minio", mock_remove_dataset_from_minio)
+    monkeypatch.setattr("httpx.AsyncClient.delete", mock_httpx_delete)
+
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.delete(
+            "/dataset",
+            params={
+                "node": node,
+                "disease": disease,
+                "filename": filename,
+            }
+        )
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Dataset removed successfully from both database and local storage"
