@@ -65,7 +65,9 @@ def test_upload_and_delete_dataset_from_minio():
     # Set metadata
     disease = "AML"
     node = "test-node"
-    filename = f"{disease}_{node}_{uuid.uuid4()}.csv"
+    fixed_uuid = "d7976598-eb08-4d3a-b5ad-9481f6ad0db7"
+    filename = f"{disease}_{node}_{fixed_uuid}.csv"
+    #filename = f"{disease}_{node}_{uuid.uuid4()}.csv"
 
     # Upload the file
     files = {
