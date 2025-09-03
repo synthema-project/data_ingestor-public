@@ -182,10 +182,45 @@ async def remove_dataset(
         logging.exception("An unexpected error occurred.")
         raise HTTPException(status_code=500, detail="An internal server error occurred")
 
+@app.get("/dataset", tags=["data-ingestion"])
+async def get_dataset(
+    node: str,
+    disease: str,
+    filename: str,
+    #as_file: bool = Query(default=False, description="Return as downloadable CSV if True"),
+):
+    """
+    Retrieve a dataset from MinIO.
+    - If `as_file=False` → returns JSON records.
+    - If `as_file=True` → returns downloadable CSV file.
+    """
+    try:
+        dataframe = get_dataset_from_minio(node, filename)
+
+        #if as_file:
+        csv_buffer = io.StringIO()
+        dataframe.to_csv(csv_buffer, index=False)
+        csv_buffer.seek(0)
+
+        return StreamingResponse(
+                iter([csv_buffer.getvalue()]),
+                media_type="text/csv",
+                headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+
+        # Default: return JSON
+        #return {"filename": filename, "data": dataframe.to_dict(orient="records")}
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving dataset: {str(e)}")
+
 @app.get("/healthcheck")
 async def healthcheck():
     return {"status": "ok"}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
