@@ -6,6 +6,14 @@ POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD","7IGc540zOTX04ET")
 POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "mstorage-svc")
 POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432") #5432 80
 
+POSTGRES DB (dataset schema)
+
+POSTGRES_DB: str = os.getenv("POSTGRES_DB", "dataset_schema")
+POSTGRES_USER: str = os.getenv("POSTGRES_USER","fcasadei")
+POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD","7IGc540zOTX04ET")
+POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "mstorage-svc")
+POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432") #5432 80
+
 MINIO BUCKET (dataset storage)
     
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "obstorageapi.k8s.synthema.rid-intrasoft.eu")
@@ -13,3 +21,7 @@ MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "mqcqwECvoga6pkDRhOUz")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY","EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9")
 MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME", "data-annotation")
 
+other env variables:
+
+- local node ID: I don't know whether using Node1, Node2, rather than the name of each institution
+- UC: I don't know which use cases will be enabled, maybe we can start with a trial (SYNTHETIC_AML)? or sth like that
