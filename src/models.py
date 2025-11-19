@@ -25,19 +25,19 @@ from typing import Optional
 
 class DatasetSchema(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    disease: str
+    disease: str # to change into use_case
     data: str  # JSON string
 
     def data_dict(self):
         return json.loads(self.data)
 
 class NewDataset(SQLModel):
-    disease: str
+    disease: str # to change into use_case
     data: Dict[str, Dict[str, List[Union[str, int, float, bool]]]]
 
 class RemoveDatasetObject(SQLModel):
     node: str
-    disease: str
+    disease: str # to change into use_case
     path: str
 
 class NodeDatasetInfo(SQLModel, table=True):
@@ -47,3 +47,4 @@ class NodeDatasetInfo(SQLModel, table=True):
     node: str
     path: str
     disease: str
+
