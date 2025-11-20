@@ -47,8 +47,8 @@ def on_startup():
 #async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_datasets_dir: str = Form(default="/app/datasets"), file: UploadFile = File(...), session: Session = Depends(get_session)): #local_datasets_dir: str = Form(default="/app/datasets")
 async def upload_dataset(
     node: str, 
-    disease: str, 
-    #use_case: str,
+    use_case: str, 
+    #disease: str,
     #local_datasets_dir: str = Form(default="/app/datasets"), 
     file: UploadFile = File(...), 
     session: Session = Depends(get_session)):    
@@ -71,8 +71,8 @@ async def upload_dataset(
         
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
-                #response = await client.get(f"{ANNOTATION_ENDPOINT}/{use_case}")
+                #response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
+                response = await client.get(f"{ANNOTATION_ENDPOINT}/{use_case}")
                 #response = await requests.get(f"{ANNOTATION_ENDPOINT}/{disease}",allow_redirects=True)
                 print(f"Annotation response: {response.status_code} - {response.text}")
                 print('RESPONSE')
@@ -96,8 +96,8 @@ async def upload_dataset(
                 
                 iid = str(uuid.uuid4()) #int(uuid.uuid4())#str(uuid.uuid4())
                 print('IID')
-                filename = f"{disease}_{node}_{iid}.csv"
-                #filename = f"{use_case}_{NODE_NAME}_{iid}.csv"
+                #filename = f"{disease}_{node}_{iid}.csv"
+                filename = f"{use_case}_{NODE_NAME}_{iid}.csv"
                 print('FILENAME')
                 ##filepath = save_dataframe_as_csv(dataframe, filename, node, savepath=local_datasets_dir)
                 minio_filepath = save_dataframe_to_minio(dataframe, filename, node)
@@ -112,9 +112,10 @@ async def upload_dataset(
                 #node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
                 node_dataset = NodeDatasetInfo(
                     id=iid, 
-                    node=node, #NODE_NAME
+                    node=NODE_NAME, #node
                     path=minio_filepath, 
-                    disease=disease #use_case=use_case
+                    #disease=disease #
+                    use_case=use_case
                 )
                 print('nodedatasetinfo')
                 print(NodeDatasetInfo)
@@ -250,6 +251,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
