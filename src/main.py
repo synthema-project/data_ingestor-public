@@ -20,12 +20,16 @@ import io
 import logging
 import requests
 
+
 app = FastAPI()
 
 #ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema" 
+#CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata" 
+
+NODE_NAME = "NODE1" #os.getenv("NODE_NAME")  # NEW
 ANNOTATION_ENDPOINT =  "https://data-annotation.k8s.synthema.rid-intrasoft.eu/schema"
 CATALOGUE_ENDPOINT =  "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/metadata"
-#CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata" 
+
 
 LOCAL_DATASETS_DIR = "/app/datasets"
 local_datasets_dir = "/app/datasets"
@@ -44,53 +48,74 @@ def on_startup():
 async def upload_dataset(
     node: str, 
     disease: str, 
+    #use_case: str,
     #local_datasets_dir: str = Form(default="/app/datasets"), 
     file: UploadFile = File(...), 
     session: Session = Depends(get_session)):    
+    
+    if not file.filename.endswith(".csv"):
+        raise HTTPException(status_code=400, detail="Only CSV files are accepted")
+        
     if file.filename.endswith(".csv"):
+        
         print('CSV CONTENT')
         csv_content = await file.read()
         print('DATAFRAME')
         dataframe = pd.read_csv(io.StringIO(csv_content.decode("latin1")), sep=';')
         print('CSV FILEPATH')
+        
         ##csv_file_path = f"{local_datasets_dir}/{uuid.uuid4()}.csv"
         ##print('TOCSV')
         ##dataframe.to_csv(csv_file_path, index=False)
         ##print('CSVFILEPATH', csv_file_path)
+        
         async with httpx.AsyncClient() as client:
             try:
                 response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
+                #response = await client.get(f"{ANNOTATION_ENDPOINT}/{use_case}")
                 #response = await requests.get(f"{ANNOTATION_ENDPOINT}/{disease}",allow_redirects=True)
                 print(f"Annotation response: {response.status_code} - {response.text}")
                 print('RESPONSE')
                 #if response.status_code == 308:
                 #    print(f"Redirected to: {response.headers.get('location')}")
+                
                 if response.status_code != 200:
                     raise Exception(f"Schema service error: {response.status_code}")
                     #raise HTTPException(status_code=404, detail="Schema not found")
+                
                 print('SCHEMA1')
                 schema = response.json()["schema"]
                 print(schema)
                 print('SCHEMA')
+                
                 #data_dict = csv_to_json_dict(csv_file_path=csv_file_path, schema=schema)
                 data_dict = csv_to_json_dict(csv_file_path=dataframe, schema=schema)
                 print('DATADICT')
                 validate_data(data_dict=data_dict, schema=schema)
                 print('VALIDATE')
+                
                 iid = str(uuid.uuid4()) #int(uuid.uuid4())#str(uuid.uuid4())
                 print('IID')
                 filename = f"{disease}_{node}_{iid}.csv"
+                #filename = f"{use_case}_{NODE_NAME}_{iid}.csv"
                 print('FILENAME')
                 ##filepath = save_dataframe_as_csv(dataframe, filename, node, savepath=local_datasets_dir)
                 minio_filepath = save_dataframe_to_minio(dataframe, filename, node)
+                #minio_filepath = save_dataframe_to_minio(dataframe, filename, NODE_NAME)
                 print('FILEPATH')
                 local_datasets[filename] = minio_filepath
                 ##print(minio_filepath)
                 print(filename)
                 ##os.remove(csv_file_path)
                 print('REMOVE')
+                
                 #node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
-                node_dataset = NodeDatasetInfo(id=iid, node=node, path=minio_filepath, disease=disease)
+                node_dataset = NodeDatasetInfo(
+                    id=iid, 
+                    node=node, #NODE_NAME
+                    path=minio_filepath, 
+                    disease=disease #use_case=use_case
+                )
                 print('nodedatasetinfo')
                 print(NodeDatasetInfo)
                 #save_node_dataset_info(session, node_dataset)
@@ -100,7 +125,10 @@ async def upload_dataset(
                 logger.info(f"Payload: {node_dataset.model_dump()}")  # Log payload data
                 
                 try:
-                    response = await client.post(CATALOGUE_ENDPOINT, json=node_dataset.model_dump()) #node_dataset.dict() .model_dump()
+                    # Send metadata to catalogue
+                    response = await client.post(CATALOGUE_ENDPOINT, 
+                                                 json=node_dataset.model_dump()
+                                                ) #node_dataset.dict() .model_dump()
                     print('CATALOGUEENDPOINT')
                     print('CATALOGUEENDPOINT POST RESPONSE', response.status_code)
                     #response.raise_for_status()
@@ -222,5 +250,6 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
