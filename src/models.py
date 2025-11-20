@@ -25,19 +25,19 @@ import uuid as uuid_pkg
 
 class DatasetSchema(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    disease: str # to change into use_case
+    use_case: str # to change into use_case
     data: str  # JSON string
 
     def data_dict(self):
         return json.loads(self.data)
 
 class NewDataset(SQLModel):
-    disease: str # to change into use_case
+    use_case: str # to change into use_case
     data: Dict[str, Dict[str, List[Union[str, int, float, bool]]]]
 
 class RemoveDatasetObject(SQLModel):
     node: str
-    disease: str # to change into use_case
+    use_case: str # to change into use_case
     path: str
 
 class NodeDatasetInfo(SQLModel, table=True):
@@ -46,6 +46,7 @@ class NodeDatasetInfo(SQLModel, table=True):
                                              primary_key=True)
     node: str
     path: str
-    disease: str #to change into use_case
+    use_case: str #to change into use_case
+
 
 
