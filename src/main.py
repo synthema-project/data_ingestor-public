@@ -46,13 +46,15 @@ def on_startup():
 @app.post("/dataset", tags=["data-ingestion"])
 #async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_datasets_dir: str = Form(default="/app/datasets"), file: UploadFile = File(...), session: Session = Depends(get_session)): #local_datasets_dir: str = Form(default="/app/datasets")
 async def upload_dataset(
-    node: str, 
+    #node: str, 
     use_case: str, 
     #disease: str,
     #local_datasets_dir: str = Form(default="/app/datasets"), 
     file: UploadFile = File(...), 
     session: Session = Depends(get_session)):    
-    
+
+    node = NODE_NAME
+        
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are accepted")
         
@@ -251,6 +253,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
