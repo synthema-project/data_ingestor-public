@@ -18,10 +18,10 @@
 #    schema: str
 
 from sqlmodel import SQLModel, Field
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 import json
 import uuid as uuid_pkg
-from typing import Optional
+
 
 class DatasetSchema(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -46,5 +46,6 @@ class NodeDatasetInfo(SQLModel, table=True):
                                              primary_key=True)
     node: str
     path: str
-    disease: str
+    disease: str #to change into use_case
+
 
