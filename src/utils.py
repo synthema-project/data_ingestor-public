@@ -281,7 +281,8 @@ def remove_dataset_from_minio(filename: str):
     except S3Error as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete dataset from MinIO: {str(e)}")
 
-def get_dataset_from_minio(node: str, filename: str) -> pd.DataFrame:
+#def get_dataset_from_minio(node: str, filename: str) -> pd.DataFrame:
+def get_dataset_from_minio(filename: str) -> pd.DataFrame:
     """
     Retrieve a dataset file from MinIO and return it as a pandas dataframe.
     """
@@ -299,6 +300,7 @@ def get_dataset_from_minio(node: str, filename: str) -> pd.DataFrame:
         raise HTTPException(status_code=404, detail=f"Dataset not found in MinIO: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve dataset: {str(e)}")
+
 
 
 
