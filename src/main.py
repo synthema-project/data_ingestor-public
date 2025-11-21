@@ -114,7 +114,7 @@ async def upload_dataset(
                 #node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
                 node_dataset = NodeDatasetInfo(
                     id=iid, 
-                    node=NODE_NAME, #node
+                    node=node, #NODE_NAME, #node
                     path=minio_filepath, 
                     #disease=disease #
                     use_case=use_case
@@ -161,6 +161,7 @@ async def upload_dataset(
     else:
         raise HTTPException(status_code=400, detail="Only CSV files are accepted")
 
+'''
 @app.delete("/dataset", tags=["data-ingestion"])
 async def remove_dataset(
     node: str,
@@ -212,7 +213,28 @@ async def remove_dataset(
     except Exception as e:
         logging.exception("An unexpected error occurred.")
         raise HTTPException(status_code=500, detail="An internal server error occurred")
+'''
+@app.delete("/dataset", tags=["data-ingestion"])
+async def delete_dataset(filename: str):
+    """
+    Remove a dataset from MinIO and notify data-catalogue to remove metadata.
+    """
 
+    # Remove from MinIO
+    success = remove_dataset_from_minio(filename)
+    if not success:
+        raise HTTPException(status_code=404, detail="Dataset not found in MinIO")
+
+    # Notify catalogue that metadata must be deleted
+    async with httpx.AsyncClient() as client:
+        response = await client.delete(
+            f"{CATALOGUE_ENDPOINT}",
+            params={"path": filename}
+        )
+        response.raise_for_status()
+
+    return {"message": "Dataset removed successfully"}
+'''
 @app.get("/dataset", tags=["data-ingestion"])
 async def get_dataset(
     node: str,
@@ -246,6 +268,24 @@ async def get_dataset(
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving dataset: {str(e)}")
+'''
+@app.get("/dataset", tags=["data-ingestion"])
+async def get_dataset(filename: str):
+    """
+    Retrieve a dataset from MinIO as CSV.
+    """
+
+    dataframe = get_dataset_from_minio(filename)
+
+    csv_buffer = io.StringIO()
+    dataframe.to_csv(csv_buffer, index=False)
+    csv_buffer.seek(0)
+
+    return StreamingResponse(
+        iter([csv_buffer.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
 
 @app.get("/healthcheck")
 async def healthcheck():
@@ -253,6 +293,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
