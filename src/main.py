@@ -99,10 +99,10 @@ async def upload_dataset(
                 iid = str(uuid.uuid4()) #int(uuid.uuid4())#str(uuid.uuid4())
                 print('IID')
                 #filename = f"{disease}_{node}_{iid}.csv"
-                filename = f"{use_case}_{NODE_NAME}_{iid}.csv"
+                filename = f"{use_case}_{node}_{iid}.csv"
                 print('FILENAME')
                 ##filepath = save_dataframe_as_csv(dataframe, filename, node, savepath=local_datasets_dir)
-                minio_filepath = save_dataframe_to_minio(dataframe, filename, node)
+                minio_filepath = save_dataframe_to_minio(dataframe, filename)#, node)
                 #minio_filepath = save_dataframe_to_minio(dataframe, filename, NODE_NAME)
                 print('FILEPATH')
                 local_datasets[filename] = minio_filepath
@@ -253,6 +253,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
