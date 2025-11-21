@@ -243,7 +243,8 @@ def save_node_dataset_info(session: Session, info: NodeDatasetInfo):
 
 ### MINIO INTEGRATION
 
-def save_dataframe_to_minio(dataset: pd.DataFrame, filename: str, node: str):
+#def save_dataframe_to_minio(dataset: pd.DataFrame, filename: str, node: str):
+def save_dataframe_to_minio(dataset: pd.DataFrame, filename: str):
     """
     Save the dataframe as a CSV file to MinIO.
     """
@@ -297,3 +298,4 @@ def get_dataset_from_minio(node: str, filename: str) -> pd.DataFrame:
         raise HTTPException(status_code=404, detail=f"Dataset not found in MinIO: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve dataset: {str(e)}")
+
