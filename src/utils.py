@@ -268,7 +268,8 @@ def save_dataframe_to_minio(dataset: pd.DataFrame, filename: str):
         raise Exception(f"Failed to upload dataset to MinIO: {str(e)}")
 
 
-def remove_dataset_from_minio(node: str, filename: str):
+#def remove_dataset_from_minio(node: str, filename: str):
+def remove_dataset_from_minio(filename: str):
     """
     Remove a dataset file from MinIO storage.
     """
@@ -298,5 +299,6 @@ def get_dataset_from_minio(node: str, filename: str) -> pd.DataFrame:
         raise HTTPException(status_code=404, detail=f"Dataset not found in MinIO: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve dataset: {str(e)}")
+
 
 
