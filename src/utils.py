@@ -252,7 +252,7 @@ def save_dataframe_to_minio(dataset: pd.DataFrame, filename: str):
     dataset.to_csv(csv_buffer, index=False)
     csv_buffer.seek(0)
 
-    minio_path = f"{node}/{filename}"
+    minio_path = filename #f"{node}/{filename}"
 
     try:
         minio_client.put_object(
@@ -298,4 +298,5 @@ def get_dataset_from_minio(node: str, filename: str) -> pd.DataFrame:
         raise HTTPException(status_code=404, detail=f"Dataset not found in MinIO: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve dataset: {str(e)}")
+
 
