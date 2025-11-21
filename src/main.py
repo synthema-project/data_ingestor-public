@@ -222,6 +222,7 @@ async def delete_dataset(filename: str):
 
     # Remove from MinIO
     success = remove_dataset_from_minio(filename)
+    print('DATA REMOVED FROM MINIO')
     if not success:
         raise HTTPException(status_code=404, detail="Dataset not found in MinIO")
 
@@ -232,6 +233,7 @@ async def delete_dataset(filename: str):
             params={"path": filename}
         )
         response.raise_for_status()
+        print('DATA REMOVED FROM CATALOGUE')
 
     return {"message": "Dataset removed successfully"}
 '''
@@ -293,6 +295,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
