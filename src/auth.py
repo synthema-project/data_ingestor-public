@@ -36,7 +36,7 @@ keycloak = FastAPIKeycloak(
 keycloak = KeycloakOpenID(
 server_url=KEYCLOAK_SERVER_URL,
 client_id=KEYCLOAK_CLIENT_ID,
-realm_name=KEYCLOAK_REALM
+realm_name=KEYCLOAK_REALM_NAME
 )
 
 # OAuth2 Configuration
