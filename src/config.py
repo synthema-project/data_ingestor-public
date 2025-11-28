@@ -24,15 +24,18 @@ class Settings:
 settings = Settings()
 
 # Keycloak
-KEYCLOAK_SERVER_URL = get_env_variable("KEYCLOAK_SERVER_URL")
-KEYCLOAK_CLIENT_ID = get_env_variable("KEYCLOAK_CLIENT_ID")
-KEYCLOAK_CLIENT_SECRET = get_env_variable("KEYCLOAK_CLIENT_SECRET")
-KEYCLOAK_REALM_NAME = get_env_variable("KEYCLOAK_REALM_NAME")
-KEYCLOAK_REDIRECT_URI = get_env_variable("KEYCLOAK_REDIRECT_URI")
-KEYCLOAK_AUTHORIZED_ROLE = get_env_variable("KEYCLOAK_AUTHORIZED_ROLE")
-KEYCLOAK_AUTHORIZED_GROUP = get_env_variable("KEYCLOAK_AUTHORIZED_GROUP") # Keycloak uses `/` prefix for group paths
-KEYCLOAK_ROLE_NAME_PLATFORM_ADMIN = get_env_variable("KEYCLOAK_ROLE_NAME_PLATFORM_ADMIN")
-KEYCLOAK_ROLE_NAME_ML_RESEARCHER = "MLResearcher"
+KEYCLOAK_SERVER_URL="https://users.k8s.synthema.rid-intrasoft.eu"#os.getenv("KEYCLOAK_SERVER_URL", "https://users.k8s.synthema.rid-intrasoft.eu" )
+KEYCLOAK_CLIENT_ID="synthema"#os.getenv("KEYCLOAK_CLIENT_ID", "synthema")
+KEYCLOAK_REALM_NAME="Synthema"#os.getenv("KEYCLOAK_REALM", "Synthema")
+#KEYCLOAK_SERVER_URL = get_env_variable("KEYCLOAK_SERVER_URL")
+#KEYCLOAK_CLIENT_ID = get_env_variable("KEYCLOAK_CLIENT_ID")
+#KEYCLOAK_CLIENT_SECRET = get_env_variable("KEYCLOAK_CLIENT_SECRET")
+#KEYCLOAK_REALM_NAME = get_env_variable("KEYCLOAK_REALM_NAME")
+#KEYCLOAK_REDIRECT_URI = get_env_variable("KEYCLOAK_REDIRECT_URI")
+#KEYCLOAK_AUTHORIZED_ROLE = get_env_variable("KEYCLOAK_AUTHORIZED_ROLE")
+#KEYCLOAK_AUTHORIZED_GROUP = get_env_variable("KEYCLOAK_AUTHORIZED_GROUP") # Keycloak uses `/` prefix for group paths
+#KEYCLOAK_ROLE_NAME_PLATFORM_ADMIN = get_env_variable("KEYCLOAK_ROLE_NAME_PLATFORM_ADMIN")
+#KEYCLOAK_ROLE_NAME_ML_RESEARCHER = "MLResearcher"
 
 
 #class Settings:
