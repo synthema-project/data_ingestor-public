@@ -16,9 +16,9 @@ import requests
 #KEYCLOAK_AUTHORIZED_GROUP = config.KEYCLOAK_AUTHORIZED_GROUP
 #KEYCLOAK_AUTHORIZED_ROLE = config.KEYCLOAK_AUTHORIZED_ROLE
 
-KEYCLOAK_SERVER_URL=os.getenv("KEYCLOAK_SERVER_URL", "https://users.k8s.synthema.rid-intrasoft.eu" )
-KEYCLOAK_CLIENT_ID=os.getenv("KEYCLOAK_CLIENT_ID", "synthema")
-KEYCLOAK_REALM_NAME=os.getenv("KEYCLOAK_REALM", "Synthema")
+KEYCLOAK_SERVER_URL="https://users.k8s.synthema.rid-intrasoft.eu"#os.getenv("KEYCLOAK_SERVER_URL", "https://users.k8s.synthema.rid-intrasoft.eu" )
+KEYCLOAK_CLIENT_ID="synthema"#os.getenv("KEYCLOAK_CLIENT_ID", "synthema")
+KEYCLOAK_REALM_NAME="Synthema"#os.getenv("KEYCLOAK_REALM", "Synthema")
 
 # Initialize Keycloak Authentication
 keycloak = FastAPIKeycloak(
