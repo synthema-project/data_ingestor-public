@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2AuthorizationCodeBearer
 import config
-from fastapi_keycloak import FastAPIKeycloak
+from fastapi_keycloak import FastAPIKeycloak, KeycloakOpenID
 import requests
 
 
@@ -21,6 +21,7 @@ KEYCLOAK_CLIENT_ID="synthema"#os.getenv("KEYCLOAK_CLIENT_ID", "synthema")
 KEYCLOAK_REALM_NAME="Synthema"#os.getenv("KEYCLOAK_REALM", "Synthema")
 
 # Initialize Keycloak Authentication
+'''
 keycloak = FastAPIKeycloak(
     server_url=KEYCLOAK_SERVER_URL,
     client_id=KEYCLOAK_CLIENT_ID,
@@ -29,6 +30,12 @@ keycloak = FastAPIKeycloak(
     admin_client_secret="pqEnP3qqjaTq7Ux1qEoZ6jjF93cH7qx6",
     realm=KEYCLOAK_REALM_NAME,
     #callback_uri=KEYCLOAK_REDIRECT_URI
+)
+'''
+keycloak = KeycloakOpenID(
+server_url=KEYCLOAK_SERVER_URL,
+client_id=KEYCLOAK_CLIENT_ID,
+realm_name=KEYCLOAK_REALM
 )
 
 # OAuth2 Configuration
