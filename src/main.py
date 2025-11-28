@@ -53,7 +53,7 @@ async def upload_dataset(
     #local_datasets_dir: str = Form(default="/app/datasets"), 
     file: UploadFile = File(...), 
     session: Session = Depends(get_session),):    
-    user = Depends(get_current_user)
+    user = Depends(get_current_user_with_restricted_role)
 
     node = NODE_NAME
         
@@ -297,6 +297,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
