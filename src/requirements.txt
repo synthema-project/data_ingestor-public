@@ -12,3 +12,4 @@ httpx
 minio
 fastapi-keycloak
 starlette
+keycloak
