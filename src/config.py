@@ -1,5 +1,12 @@
 import os
 
+def get_env_variable(name: str) -> str:
+    """Fetches an environment variable and raises an exception if it's missing."""
+    value = os.getenv(name)
+    if value is None:
+        raise ValueError(f"Missing required environment variable: {name}")
+    return value
+
 class Settings:
     #PostgreSQL settings
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "dataset_catalogue")
