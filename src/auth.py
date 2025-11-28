@@ -1,7 +1,8 @@
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2AuthorizationCodeBearer
 import config
-from fastapi_keycloak import FastAPIKeycloak, KeycloakOpenID
+from fastapi_keycloak import FastAPIKeycloak
+from keycloak import KeycloakOpenID
 import requests
 
 
