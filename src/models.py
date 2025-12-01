@@ -40,13 +40,30 @@ class RemoveDatasetObject(SQLModel):
     use_case: str # to change into use_case
     path: str
 
-class NodeDatasetInfo(SQLModel, table=True):
-    #id: int = Field(default=None, primary_key=True)
+#class NodeDatasetInfo(SQLModel, table=True):
+#    #id: int = Field(default=None, primary_key=True)
+#    id: Optional[uuid_pkg.UUID] = Field(default_factory=uuid_pkg.uuid4,
+                                             primary_key=True)
+#    node: str
+#    path: str
+#    use_case: str #to change into use_case
+
+class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
+    #id: str = Field(default=None, primary_key=True)
+    #id: Optional[int] = Field(default=None, primary_key=True)
     id: Optional[uuid_pkg.UUID] = Field(default_factory=uuid_pkg.uuid4,
                                              primary_key=True)
     node: str
     path: str
-    use_case: str #to change into use_case
+    use_case: str # to change into use_case
 
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    
+    num_records: Optional[int] = None
+    num_features: Optional[int] = None
+    
+    schema: Optional[Dict[str, Any]] = Field(
+        sa_column=Column(JSONB)
+    )
 
 
