@@ -26,6 +26,7 @@ from typing import Optional, List
 from sqlalchemy import Column, String, JSON as JSONType
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from typing import Dict, Any
+from pydantic import field_serializer
 
 class DatasetSchema(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -62,6 +63,9 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     use_case: str # to change into use_case
 
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+    @field_serializer("timestamp")
+    def serialize_ts(self, ts: datetime):
+        return ts.isoformat()
     
     num_records: Optional[int] = None
     num_features: Optional[int] = None
@@ -69,6 +73,7 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     schema: Optional[Dict[str, Any]] = Field(
         sa_column=Column(JSONB)
     )
+
 
 
 
