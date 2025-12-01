@@ -22,7 +22,10 @@ from typing import Dict, List, Union, Optional
 import json
 import uuid as uuid_pkg
 from datetime import datetime
-
+from typing import Optional, List
+from sqlalchemy import Column, String, JSON as JSONType
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from typing import Dict, Any
 
 class DatasetSchema(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -66,6 +69,7 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     schema: Optional[Dict[str, Any]] = Field(
         sa_column=Column(JSONB)
     )
+
 
 
 
