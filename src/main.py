@@ -67,6 +67,8 @@ async def upload_dataset(
         csv_content = await file.read()
         print('DATAFRAME')
         dataframe = pd.read_csv(io.StringIO(csv_content.decode("latin1")), sep=';')
+        print(dataframe)
+        print(len(dataframe))
         print('CSV FILEPATH')
         
         ##csv_file_path = f"{local_datasets_dir}/{uuid.uuid4()}.csv"
@@ -304,6 +306,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
