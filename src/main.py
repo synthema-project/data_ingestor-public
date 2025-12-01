@@ -113,6 +113,9 @@ async def upload_dataset(
                 print(filename)
                 ##os.remove(csv_file_path)
                 print('REMOVE')
+
+                num_records = len(dataframe)
+                num_features = len(dataframe.columns)
                 
                 #node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
                 node_dataset = NodeDatasetInfo(
@@ -120,7 +123,10 @@ async def upload_dataset(
                     node=node, #NODE_NAME, #node
                     path=minio_filepath, 
                     #disease=disease #
-                    use_case=use_case
+                    use_case=use_case,
+                    num_records=num_records,
+                    num_features=num_features,
+                    schema=schema,
                 )
                 print('nodedatasetinfo')
                 print(NodeDatasetInfo)
@@ -298,6 +304,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
