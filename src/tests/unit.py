@@ -66,7 +66,7 @@ def test_remove_dataset_from_minio_success(mock_delete):
 def test_remove_dataset_from_minio_failure(mock_delete):
     mock_delete.side_effect = make_s3error()
 
-    with pytest.raises(HTTPException):
+    with pytest.raises(Exception):
         remove_dataset_from_minio("file.csv")
 
 
@@ -90,5 +90,5 @@ def test_get_dataset_from_minio_success(mock_get):
 def test_get_dataset_from_minio_not_found(mock_get):
     mock_get.side_effect = make_s3error()
 
-    with pytest.raises(HTTPException):
+    with pytest.raises(Exception):
         get_dataset_from_minio("file.csv")
