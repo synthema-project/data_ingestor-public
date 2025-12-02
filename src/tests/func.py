@@ -13,10 +13,8 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def mock_external_systems():
     # Patch functions ***WHERE THEY ARE USED*** inside main.py
-    with patch("main.upload_dataset_to_minio", return_value="uploaded.csv"), \
-         patch("main.delete_from_minio", return_value=True), \
-         patch("main.update_use_case", return_value=True), \
-         patch("main.delete_use_case_entry", return_value=True):
+    with patch("main.upload_dataset", return_value="uploaded.csv"), \
+         patch("main.delete_dataset", return_value=True):
         yield
 
 
