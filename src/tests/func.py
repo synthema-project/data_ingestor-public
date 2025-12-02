@@ -3,6 +3,7 @@ import pytest
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
+from utils import save_dataframe_to_minio, remove_dataset_from_minio
 
 
 client = TestClient(app)
@@ -10,11 +11,15 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def mock_external_systems():
-    with patch("upload_dataset_to_minio", return_value="uploaded.csv"):
-        with patch("remove_dataset_from_minio", return_value=True):
-            with patch("notify_catalogue_dataset_added", return_value=True):
-                with patch("notify_catalogue_dataset_deleted", return_value=True):
-                    yield
+    with patch("main.save_dataframe_to_minio", return_value="uploaded.csv"), \
+         patch("main.remove_dataset_from_minio", return_value=True), \
+         patch("main.get_dataset_from_minio", return_value=pd.DataFrame({"a":[1],"b":[2]})), \
+         patch("httpx.AsyncClient.post") as mock_post:
+
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.json = lambda: {}
+
+        yield
 
 
 def test_full_ingestion_flow_functional():
