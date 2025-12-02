@@ -13,8 +13,8 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def mock_external_systems():
 
-    with patch("main.upload_dataset_to_minio", return_value="uploaded.csv"), \
-         patch("main.delete_dataset_from_minio", return_value=True), \
+    with patch("main.upload_dataset", return_value="uploaded.csv"), \
+         patch("main.delete_dataset", return_value=True), \
          patch("main.httpx.delete") as mock_httpx_delete:
 
         mock_httpx_delete.return_value.status_code = 200
