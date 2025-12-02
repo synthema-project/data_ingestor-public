@@ -4,7 +4,7 @@ import io
 import pytest
 import pandas as pd
 from unittest.mock import MagicMock, patch
-from app.utils import (
+from utils import (
     save_dataframe_to_minio,
     remove_dataset_from_minio,
     get_dataset_from_minio,
