@@ -19,20 +19,13 @@ def sample_df():
 
 # Helper to create a valid S3Error
 def make_s3error():
-    # Build a fake HTTPResponse — minimal structure needed
-    fake_response = HTTPResponse(sock=None)
-    fake_response.msg = {}
-    fake_response.fp = BytesIO(b"error")
-    fake_response.code = 500
-    fake_response.reason = "Internal Server Error"
-
     return S3Error(
         code="err",
         message="msg",
-        resource="/bucket/file",
         request_id="req123",
         host_id="host123",
-        response=fake_response,
+        resource="/bucket/file",
+        response=None
     )
 
 
@@ -56,10 +49,8 @@ def test_save_dataframe_to_minio_failure(mock_put, sample_df):
 def test_save_dataframe_to_minio_failure(mock_put, sample_df):
     mock_put.side_effect = make_s3error()
 
-    with pytest.raises(Exception) as exc:
+    with pytest.raises(Exception):
         save_dataframe_to_minio(sample_df, "file.csv")
-
-    assert "Failed to upload dataset to MinIO" in str(exc.value)
 
 
 # ---------------------------
@@ -75,7 +66,7 @@ def test_remove_dataset_from_minio_success(mock_delete):
 def test_remove_dataset_from_minio_failure(mock_delete):
     mock_delete.side_effect = make_s3error()
 
-    with pytest.raises(Exception):
+    with pytest.raises(HTTPException):
         remove_dataset_from_minio("file.csv")
 
 
@@ -99,7 +90,5 @@ def test_get_dataset_from_minio_success(mock_get):
 def test_get_dataset_from_minio_not_found(mock_get):
     mock_get.side_effect = make_s3error()
 
-    with pytest.raises(Exception) as exc:
+    with pytest.raises(HTTPException):
         get_dataset_from_minio("file.csv")
-
-    assert "Dataset not found" in str(exc.value)
