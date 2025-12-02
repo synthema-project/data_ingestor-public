@@ -20,7 +20,7 @@ def sample_df():
 # ---------------------------------------------------
 # save_dataframe_to_minio
 # ---------------------------------------------------
-@patch("app.utils.minio_client.put_object")
+@patch("utils.minio_client.put_object")
 def test_save_dataframe_to_minio_success(mock_put, sample_df):
     mock_put.return_value = True
 
@@ -29,7 +29,7 @@ def test_save_dataframe_to_minio_success(mock_put, sample_df):
     assert mock_put.called
 
 
-@patch("app.utils.minio_client.put_object")
+@patch("utils.minio_client.put_object")
 def test_save_dataframe_to_minio_failure(mock_put, sample_df):
     mock_put.side_effect = S3Error("err", "message", "request", "resource", "host")
 
