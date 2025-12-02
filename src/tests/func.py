@@ -14,7 +14,7 @@ client = TestClient(app)
 def mock_external_systems():
     with patch("main.save_dataframe_to_minio", return_value="uploaded.csv"), \
          patch("main.remove_dataset_from_minio", return_value=True), \
-         patch("main.get_dataset_from_minio", return_value=pd.DataFrame({"a":[1],"b":[2]})), \
+         #patch("main.get_dataset_from_minio", return_value=pd.DataFrame({"a":[1],"b":[2]})), \
          patch("httpx.AsyncClient.post") as mock_post:
 
         mock_post.return_value.status_code = 200
