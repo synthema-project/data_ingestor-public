@@ -10,10 +10,10 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def mock_external_systems():
-    with patch("services.minio_service.upload_dataset_to_minio", return_value="uploaded.csv"):
-        with patch("services.minio_service.remove_dataset_from_minio", return_value=True):
-            with patch("services.catalogue_service.notify_catalogue_dataset_added", return_value=True):
-                with patch("services.catalogue_service.notify_catalogue_dataset_deleted", return_value=True):
+    with patch("upload_dataset_to_minio", return_value="uploaded.csv"):
+        with patch("remove_dataset_from_minio", return_value=True):
+            with patch("notify_catalogue_dataset_added", return_value=True):
+                with patch("notify_catalogue_dataset_deleted", return_value=True):
                     yield
 
 
