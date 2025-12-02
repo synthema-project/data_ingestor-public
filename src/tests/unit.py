@@ -25,7 +25,7 @@ def make_s3error():
         request_id="req123",
         resource="/bucket/file",
         host_id="host123",
-        #region="eu-west-1",
+        response: Optional[HTTPResponse]
     )
 
 
