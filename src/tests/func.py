@@ -10,12 +10,11 @@ import pandas as pd
 client = TestClient(app)
 
 
-@pytest.fixture(autouse=True)
+pytest.fixture(autouse=True)
 def mock_external_systems():
-    # Patch functions ***WHERE THEY ARE USED*** inside main.py
-    with patch("main.save_dataframe_to_minio", return_value="uploaded.csv"), \
-         patch("main.remove_dataset_from_minio", return_value=True):
-        yield
+    with patch("main.upload_dataset_to_minio", return_value="uploaded.csv"):
+        with patch("main.delete_from_minio", return_value=True):
+            yield
 
 
 def test_full_ingestion_flow_functional():
