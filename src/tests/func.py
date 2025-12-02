@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
-from utils import save_dataframe_to_minio, remove_dataset_from_minio
+from utils import save_dataframe_to_minio, remove_dataset_from_minio, get_dataset_from_minio
 import pandas as pd
 
 
