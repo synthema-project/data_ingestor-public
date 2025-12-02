@@ -12,8 +12,8 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def mock_external_systems():
-    with patch("main.upload_dataset_to_minio", return_value="uploaded.csv"):
-        with patch("main.delete_from_minio", return_value=True):
+    with patch("main.upload_dataset", return_value="uploaded.csv"):
+        with patch("main.delete_dataset", return_value=True):
             with patch("main.post_metadata", return_value=True):
                 yield
 
