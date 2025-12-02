@@ -14,8 +14,7 @@ client = TestClient(app)
 def mock_external_systems():
     with patch("main.upload_dataset", return_value="uploaded.csv"):
         with patch("main.delete_dataset", return_value=True):
-            with patch("main.post_metadata", return_value=True):
-                yield
+            yield
 
 
 def test_full_ingestion_flow_functional():
