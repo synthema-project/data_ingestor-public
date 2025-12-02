@@ -10,7 +10,7 @@ from utils import (
     get_dataset_from_minio,
 )
 from minio.error import S3Error
-
+from http.client import HTTPResponse
 
 @pytest.fixture
 def sample_df():
