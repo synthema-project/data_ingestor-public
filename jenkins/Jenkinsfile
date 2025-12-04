@@ -40,7 +40,7 @@ pipeline {
                 sh 'docker container run -e "PYTHONPATH=/tests" -e MINIO_ENDPOINT="${MINIO_ENDPOINT}" -e MINIO_ACCESS_KEY="${MINIO_ACCESS_KEY}" -e MINIO_SECRET_KEY="${MINIO_SECRET_KEY}" -e MINIO_BUCKET_NAME="${MINIO_BUCKET_NAME}" --name ${APP_NAME}_test_$(date +%s) --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test python -m pytest tests/unit.py' //-p 80:80 -e MINIO_ENDPOINT="obstorageapi.k8s.synthema.rid-intrasoft.eu" -e MINIO_ACCESS_KEY="mqcqwECvoga6pkDRhOUz" -e MINIO_SECRET_KEY="EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9" -e MINIO_BUCKET_NAME="data-annotation"
             }
         }
-///*
+/*
         // **************************************
         // *** Functional & Integration Tests ***
         // **************************************
@@ -88,7 +88,7 @@ pipeline {
                }
            }
         }
-//*/
+*/
         // *******************************
         // *** Push Images To Registry ***
         // *******************************
