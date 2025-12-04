@@ -2,7 +2,7 @@ import os
 from typing import List
 from keycloak import KeycloakOpenID
 from pydantic import BaseModel, Field
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jwcrypto.jws import InvalidJWSSignature, InvalidJWSObject
 from jwcrypto.jwt import JWTExpired
 from typing import Optional, Annotated
