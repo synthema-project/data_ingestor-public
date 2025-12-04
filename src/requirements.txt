@@ -13,3 +13,4 @@ minio
 fastapi-keycloak
 starlette
 keycloak-client
+jwcrypto
