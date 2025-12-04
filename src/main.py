@@ -6,7 +6,7 @@ from database import create_db_and_tables, get_session
 from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan,save_node_dataset_info#,convert_np_to_native, 
 #check_schema_dataset,
 from utils import save_dataframe_to_minio, remove_dataset_from_minio, get_dataset_from_minio
-from auth import keycloak, get_current_user, get_current_user_with_restricted_role
+from auth import UserClaims, require_authentication
 from pathlib import Path
 import uvicorn
 import os
@@ -55,6 +55,7 @@ async def upload_dataset(
     file: UploadFile = File(...), 
     session: Session = Depends(get_session),  
     #user = Depends(get_current_user)
+    current_user: UserClaims = Depends(require_authentication)
     ):  
 
     node = NODE_NAME
@@ -307,6 +308,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
