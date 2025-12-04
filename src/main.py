@@ -55,7 +55,7 @@ async def upload_dataset(
     file: UploadFile = File(...), 
     session: Session = Depends(get_session),  
     #user = Depends(get_current_user)
-    current_user: UserClaims = Depends(require_authentication)
+    ##current_user: UserClaims = Depends(require_authentication)
     ):  
 
     node = NODE_NAME
@@ -230,7 +230,7 @@ async def remove_dataset(
 @app.delete("/dataset", tags=["data-ingestion"])
 async def delete_dataset(
     filename: str,
-    current_user: UserClaims = Depends(require_authentication)
+    ##current_user: UserClaims = Depends(require_authentication)
 ):
     """
     Remove a dataset from MinIO and notify data-catalogue to remove metadata.
@@ -290,7 +290,7 @@ async def get_dataset(
 @app.get("/dataset", tags=["data-ingestion"])
 async def get_dataset(
     filename: str,
-    current_user: UserClaims = Depends(require_authentication)
+    ##current_user: UserClaims = Depends(require_authentication)
 ):
     """
     Retrieve a dataset from MinIO as CSV.
@@ -314,6 +314,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
