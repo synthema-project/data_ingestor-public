@@ -61,7 +61,8 @@ oauth2_scheme = HTTPBearer()
 def get_user_data_from_token(token: str) -> UserClaims:
     decoded_token = keycloak_openid.decode_token(token, 
                                                  key=public_key,
-                                                 validate=True)
+                                                 #validate=True
+                                                )
     user_claims = UserClaims(**decoded_token)
     return user_claims
 
