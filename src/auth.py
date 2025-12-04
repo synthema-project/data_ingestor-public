@@ -62,8 +62,7 @@ def get_user_data_from_token(token: str) -> UserClaims:
   user_claims = UserClaims(**decoded_token)
   return user_claims
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)])
--> UserClaims:
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> UserClaims:
   try:
     user = get_user_data_from_token(token)
   except (JWTExpired, InvalidJWSSignature, InvalidJWSObject):
