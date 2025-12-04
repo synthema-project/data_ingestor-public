@@ -36,8 +36,7 @@ class UserClaims(BaseModel):
   session_state: str
   scope: str
   sid: str
-  synthema_roles: List[str] = Field(alias="synthemaRoles",
-default_factory=list)
+  synthema_roles: List[str] = Field(alias="synthemaRoles", default_factory=list)
   name: str = Field(alias="firstName")
   last_name: str = Field(alias="lastName")
   username: str
