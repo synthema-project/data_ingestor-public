@@ -18,8 +18,6 @@ KEYCLOAK_SERVER_URL="https://users.k8s.synthema.rid-intrasoft.eu"#os.getenv("KEY
 KEYCLOAK_CLIENT_ID="synthema"#os.getenv("KEYCLOAK_CLIENT_ID", "synthema")
 KEYCLOAK_REALM="Synthema"#os.getenv("KEYCLOAK_REALM", "Synthema")
 
-#public_key = "3y_gI5b1HreXU6xl2YFpFzGQ-95lH9UMNxQ1Vgebw7JLIv_kzKkm1Z_dp9Utz1CuCUAlXpLrlQxGa0Stz126Eq4tztH6MEBmaUrNM0OyYq5D7TXAADcHwgogqvQxepgjQPRhLjamPZZGuFGKNmrdAxgOGzAcAWgsOcJ0gnhRNLgScs4uaR53X2cpfFf47tuzDcPfHMouRdh4-uFfh7Ns5_7TIWXWTv_pL4l7opUnIUANic0vH7wzjGuvnIQRZMZyTDxuo08NQachqaVHcNtobO0wMKHmDlWW5I_3cW3iDQ__InJ4AewDiMAPWefwopmHSF8TRDo14g4Lbsiy1TuRIw"
-
 keycloak_openid = KeycloakOpenID(server_url=KEYCLOAK_SERVER_URL,
                                  client_id=KEYCLOAK_CLIENT_ID,
                                  realm_name=KEYCLOAK_REALM)
