@@ -263,7 +263,9 @@ async def delete_dataset(filename: str):
         raise HTTPException(status_code=404, detail="Dataset not found in MinIO")
 
     dataset_full_url = f"obstorageapi.k8s.synthema.rid-intrasoft.eu/{filename}"
-
+    print(dataset_full_url)
+    print(CATALOGUE_ENDPOINT)
+    print(CAT_ENDPOINT)
     async with httpx.AsyncClient() as client:
 
         # delete metadata
@@ -275,7 +277,8 @@ async def delete_dataset(filename: str):
 
         # delete dataset from use-cases  <<< FIX PARAM NAME
         resp_uc = await client.delete(
-            f"{CAT_ENDPOINT.rstrip('/')}/usecases/dataset",
+            #f"{CAT_ENDPOINT.rstrip('/')}/usecases/dataset",
+            "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/usecases/dataset",
             params={"dataset_path": dataset_full_url}
         )
         resp_uc.raise_for_status()
@@ -344,6 +347,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
