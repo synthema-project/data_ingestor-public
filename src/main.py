@@ -285,7 +285,7 @@ async def delete_dataset(filename: str):
 
     return {"message": "Dataset removed successfully"}
 
-'''
+
 @app.get("/dataset", tags=["data-ingestion"])
 async def get_dataset(
     node: str,
@@ -347,6 +347,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
