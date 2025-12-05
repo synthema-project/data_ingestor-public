@@ -255,58 +255,33 @@ async def delete_dataset(
 
 @app.delete("/dataset", tags=["data-ingestion"])
 async def delete_dataset(filename: str):
-    """
-    Remove a dataset from MinIO, notify data-catalogue to remove metadata
-    and to remove the dataset from use-cases.
-    """
 
-    # 1) Remove from MinIO
+    # Remove from MinIO
     success = remove_dataset_from_minio(filename)
     if not success:
         raise HTTPException(status_code=404, detail="Dataset not found in MinIO")
-    logging.info(f"Deleted {filename} from MinIO")
 
-    # Compose full minio URL (what Data-Catalogue stores in use-cases)
-    # if MINIO_ENDPOINT is empty, use just the filename
-    if MINIO_ENDPOINT:
-        dataset_full_url = f"{MINIO_ENDPOINT.rstrip('/')}/{filename.lstrip('/')}"
-    else:
-        dataset_full_url = filename
-
-    # 2) Notify catalogue to remove metadata (existing endpoint)
-    catalogue_metadata_url = CATALOGUE_ENDPOINT  # e.g. "https://data-catalogue.../metadata"
-    catalogue_remove_usecase_url = f"{CATALOGUE_ENDPOINT.rstrip('/')}/usecases/dataset"
+    # ❗ ALWAYS send *only* the stored path
+    dataset_path_for_uc = filename
 
     async with httpx.AsyncClient() as client:
-        # delete metadata entry (this removes NodeDatasetInfo row)
-        try:
-            resp_meta = await client.delete(catalogue_metadata_url, params={"path": filename})
-            resp_meta.raise_for_status()
-            logging.info("Metadata deleted from catalogue")
-        except httpx.HTTPStatusError as exc:
-            # metadata deletion failed — log and raise.
-            logging.error(f"Failed deleting metadata: {exc.response.status_code} {exc.response.text}")
-            raise HTTPException(status_code=500, detail="Failed to delete metadata from catalogue")
-        except Exception as exc:
-            logging.exception("Error contacting data-catalogue for metadata deletion")
-            raise HTTPException(status_code=500, detail="Error contacting data-catalogue")
 
-        # delete dataset reference from use-cases
-        try:
-            resp_uc = await client.delete(catalogue_remove_usecase_url, params={"path": dataset_full_url})
-            # If the use-case endpoint returns 404 (not found) we treat it as non-fatal,
-            # because metadata could have been already missing; still log it
-            if resp_uc.status_code not in (200, 204):
-                logging.warning(f"Use-case removal returned {resp_uc.status_code}: {resp_uc.text}")
-            else:
-                logging.info("Dataset removed from use-cases")
-        except Exception as exc:
-            logging.exception("Error removing dataset from use-cases")
-            # Non-fatal? decide policy. We'll continue, but return 500 so caller knows not fully cleaned.
-            raise HTTPException(status_code=500, detail="Error removing dataset from use-cases")
+        # delete metadata entry
+        resp_meta = await client.delete(
+            f"{CATALOGUE_ENDPOINT}",
+            params={"path": dataset_path_for_uc}
+        )
+        resp_meta.raise_for_status()
+
+        # delete from use-cases
+        resp_uc = await client.delete(
+            f"{CATALOGUE_ENDPOINT}/usecases/dataset",
+            params={"path": dataset_path_for_uc}
+        )
+        if resp_uc.status_code not in (200, 204):
+            logging.warning(f"Use-case removal returned {resp_uc.status_code}: {resp_uc.text}")
 
     return {"message": "Dataset removed successfully"}
-
 
 '''
 @app.get("/dataset", tags=["data-ingestion"])
@@ -370,6 +345,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
