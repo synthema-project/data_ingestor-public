@@ -228,6 +228,8 @@ async def remove_dataset(
         logging.exception("An unexpected error occurred.")
         raise HTTPException(status_code=500, detail="An internal server error occurred")
 '''
+
+'''
 @app.delete("/dataset", tags=["data-ingestion"])
 async def delete_dataset(
     filename: str,
@@ -253,6 +255,8 @@ async def delete_dataset(
         print('DATA REMOVED FROM CATALOGUE')
 
     return {"message": "Dataset removed successfully"}
+
+'''
 
 @app.delete("/dataset", tags=["data-ingestion"])
 async def delete_dataset(filename: str):
@@ -347,6 +351,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
