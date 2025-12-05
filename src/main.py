@@ -229,7 +229,7 @@ async def remove_dataset(
         raise HTTPException(status_code=500, detail="An internal server error occurred")
 '''
 
-'''
+
 @app.delete("/dataset", tags=["data-ingestion"])
 async def delete_dataset(
     filename: str,
@@ -257,7 +257,6 @@ async def delete_dataset(
     return {"message": "Dataset removed successfully"}
 
 '''
-
 @app.delete("/dataset", tags=["data-ingestion"])
 async def delete_dataset(filename: str):
 
@@ -348,6 +347,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
