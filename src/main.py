@@ -261,25 +261,26 @@ async def delete_dataset(filename: str):
     if not success:
         raise HTTPException(status_code=404, detail="Dataset not found in MinIO")
 
-    # ❗ ALWAYS send *only* the stored path
-    dataset_path_for_uc = filename
+    # ⭐ FIX: prepend the miniourl/ prefix exactly as stored in DB
+    dataset_full_url = f"miniourl/{filename}"
 
+    # Notify catalogue that metadata must be deleted
     async with httpx.AsyncClient() as client:
-
-        # delete metadata entry
+        # delete metadata
         resp_meta = await client.delete(
             f"{CATALOGUE_ENDPOINT}",
-            params={"path": dataset_path_for_uc}
+            params={"path": filename}
         )
         resp_meta.raise_for_status()
 
         # delete from use-cases
         resp_uc = await client.delete(
-            f"{CATALOGUE_ENDPOINT}/usecases/dataset",
-            params={"path": dataset_path_for_uc}
+            f"{CATALOGUE_ENDPOINT.rstrip('/')}/usecases/dataset",
+            params={"path": dataset_full_url}
         )
+        # non-fatal even if 404
         if resp_uc.status_code not in (200, 204):
-            logging.warning(f"Use-case removal returned {resp_uc.status_code}: {resp_uc.text}")
+            logging.warning(f"Use-case deletion returned {resp_uc.status_code}: {resp_uc.text}")
 
     return {"message": "Dataset removed successfully"}
 
@@ -345,6 +346,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
