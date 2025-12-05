@@ -262,7 +262,7 @@ async def delete_dataset(filename: str):
     if not success:
         raise HTTPException(status_code=404, detail="Dataset not found in MinIO")
 
-    dataset_full_url = f"miniourl/{filename}"
+    dataset_full_url = f"obstorageapi.k8s.synthema.rid-intrasoft.eu/{filename}"
 
     async with httpx.AsyncClient() as client:
 
@@ -344,6 +344,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
