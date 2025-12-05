@@ -30,6 +30,7 @@ app = FastAPI()
 NODE_NAME = "NODE1" #os.getenv("NODE_NAME")  # NEW
 ANNOTATION_ENDPOINT =  "https://data-annotation.k8s.synthema.rid-intrasoft.eu/schema"
 CATALOGUE_ENDPOINT =  "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/metadata"
+CAT_ENDPOINT = "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/"
 MINIO_ENDPOINT = "obstorageapi.k8s.synthema.rid-intrasoft.eu/"
 
 LOCAL_DATASETS_DIR = "/app/datasets"
@@ -276,7 +277,7 @@ async def delete_dataset(filename: str):
     # 3) Notify catalogue to remove metadata (existing endpoint expects "path")
     catalogue_metadata_url = CATALOGUE_ENDPOINT  # e.g. "https://.../metadata"
     # 4) Use-case removal endpoint expects query param named "dataset_path"
-    catalogue_remove_usecase_url = f"{CATALOGUE_ENDPOINT.rstrip('/')}/usecases/dataset"
+    catalogue_remove_usecase_url = f"{CAT_ENDPOINT.rstrip('/')}/usecases/dataset"
 
     async with httpx.AsyncClient() as client:
         # delete metadata entry (this removes NodeDatasetInfo row)
@@ -379,6 +380,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
