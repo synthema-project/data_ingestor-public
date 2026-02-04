@@ -12,12 +12,10 @@ def test_upload_csv(monkeypatch):
 
     monkeypatch.setattr("utils.save_dataframe_to_minio", fake_save)
 
-    csv = "a;b\n1;2\n"
-
     r = client.post(
         "/dataset",
-        files={"file": ("test.csv", b"123", "text/csv")},
-        data={"use_case": "aml1", "node": "NODE1"}
+        files={"file": ("test.csv", b"a;b\n1;2\n", "text/csv")},
+        data={"use_case": "aml1"}
     )
 
     assert r.status_code == 200
