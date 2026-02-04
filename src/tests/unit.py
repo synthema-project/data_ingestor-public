@@ -123,7 +123,7 @@ from utils import validate_data
 
 def test_validate_data_ok():
     schema = {"a": "int"}
-    data = {"a": [1,2,3]}
+    data = [{"a": 1}, {"a": 2}, {"a": 3}]
     validate_data(data_dict=data, schema=schema)
 
 
