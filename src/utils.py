@@ -106,6 +106,8 @@ def csv_to_json_dict(csv_file_path, schema):
 #            raise ValueError(f"Validation error: {err.message}")
 
 def validate_data(data_dict, schema):
+    if isinstance(data_dict, dict):
+        data_dict = [data_dict]
     errors = []
     #print(data_dict)
     for idx, record in enumerate(data_dict):
@@ -300,6 +302,7 @@ def get_dataset_from_minio(filename: str) -> pd.DataFrame:
         raise HTTPException(status_code=404, detail=f"Dataset not found in MinIO: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve dataset: {str(e)}")
+
 
 
 
