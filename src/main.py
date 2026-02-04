@@ -142,7 +142,7 @@ async def upload_dataset(
                     num_records=num_records,
                     num_features=num_features,
                     data_schema=schema,
-                    data_metadata=metadata_dict,
+                    dataset_metadata=metadata_dict,
                 )
                 print('nodedatasetinfo')
                 print(NodeDatasetInfo)
@@ -153,7 +153,7 @@ async def upload_dataset(
                 #logger.info(f"Payload: {node_dataset.model_dump()}")  # Log payload data
 
                 payload = node_dataset.model_dump()
-                payload["data_metadata"] = metadata_obj.model_dump()
+                payload["dataset_metadata"] = metadata_obj.model_dump()
                 
                 
                 try:
@@ -366,6 +366,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
