@@ -54,29 +54,29 @@ class Distribution(BaseModel):
     documentation: Optional[str]
 
 class DatasetMetadata(BaseModel):
-    title: Optional[str]
-    description: Optional[str]
-    publisher: Optional[Publisher]
-    contactPoint: Optional[str]
-    theme: Optional[str]
-    keyword: Optional[str]
-    accessRights: Optional[str]
-    license: Optional[str]
-    conformsTo: Optional[str]
-    language: Optional[str]
-    spatial: Optional[str]
-    temporal: Optional[Temporal]
-    issued: Optional[str]
-    modified: Optional[str]
-    provenance: Optional[str]
-    purpose: Optional[str]
-    populationCoverage: Optional[str]
-    updateFrequency: Optional[str]
-    applicableLegislation: Optional[str]
-    numberOfRecords: Optional[str]
-    numberOfIndividuals: Optional[str]
-    technicalMetadata: Optional[TechnicalMetadata]
-    distribution: Optional[Distribution]
+    title: Optional[str] = None
+    description: Optional[str] = None
+    publisher: Optional[Publisher] = None
+    contactPoint: Optional[str] = None
+    theme: Optional[str] = None
+    keyword: Optional[str] = None
+    accessRights: Optional[str] = None
+    license: Optional[str] = None
+    conformsTo: Optional[str] = None
+    language: Optional[str] = None
+    spatial: Optional[str] = None
+    temporal: Optional[Temporal] = None
+    issued: Optional[str] = None
+    modified: Optional[str] = None
+    provenance: Optional[str] = None
+    purpose: Optional[str] = None
+    populationCoverage: Optional[str] = None
+    updateFrequency: Optional[str] = None
+    applicableLegislation: Optional[str] = None
+    numberOfRecords: Optional[str] = None
+    numberOfIndividuals: Optional[str] = None
+    technicalMetadata: Optional[TechnicalMetadata] = None
+    distribution: Optional[Distribution] = None
 
 
 class DatasetSchema(SQLModel, table=True):
@@ -124,6 +124,7 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     schema: Optional[Dict[str, Any]] = Field(
         sa_column=Column(JSONB)
     )
+
 
 
 
