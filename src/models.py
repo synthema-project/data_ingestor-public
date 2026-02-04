@@ -42,16 +42,16 @@ class TechnicalMetadata(BaseModel):
     metadataUpdateDate: Optional[str]
 
 class Distribution(BaseModel):
-    title: Optional[str]
-    accessURL: Optional[str]
-    description: Optional[str]
-    downloadURL: Optional[str]
-    mediaType: Optional[str]
-    format: Optional[str]
-    byteSize: Optional[str]
-    rights: Optional[str]
-    license: Optional[str]
-    documentation: Optional[str]
+    title: Optional[str]
+    accessURL: Optional[str]
+    description: Optional[str]
+    downloadURL: Optional[str]
+    mediaType: Optional[str]
+    format: Optional[str]
+    byteSize: Optional[str]
+    rights: Optional[str]
+    license: Optional[str]
+    documentation: Optional[str]
 
 class DatasetMetadata(BaseModel):
     title: Optional[str]
@@ -124,6 +124,7 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     schema: Optional[Dict[str, Any]] = Field(
         sa_column=Column(JSONB)
     )
+
 
 
 
