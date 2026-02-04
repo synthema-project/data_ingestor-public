@@ -51,6 +51,7 @@ async def upload_dataset(
     #node: str, 
     #use_case: str, 
     use_case: str = Form(...),
+    metadata: str = Form(...),
     #disease: str,
     #local_datasets_dir: str = Form(default="/app/datasets"), 
     file: UploadFile = File(...), 
@@ -58,6 +59,15 @@ async def upload_dataset(
     #user = Depends(get_current_user)
     ##current_user: UserClaims = Depends(require_authentication)
     ):  
+
+    try:
+        metadata_dict = json.loads(metadata)
+        metadata_obj = DatasetMetadata(**metadata_dict)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid metadata format: {str(e)}"
+        )
 
     node = NODE_NAME
         
@@ -139,13 +149,21 @@ async def upload_dataset(
                 print('NODEDATASET')
 
                 logger.info(f"Sending POST request to: {CATALOGUE_ENDPOINT}")
-                logger.info(f"Payload: {node_dataset.model_dump()}")  # Log payload data
+                #logger.info(f"Payload: {node_dataset.model_dump()}")  # Log payload data
+
+                payload = node_dataset.model_dump()
+                payload["metadata"] = metadata_obj.model_dump()
+                
                 
                 try:
                     # Send metadata to catalogue
-                    response = await client.post(CATALOGUE_ENDPOINT, 
-                                                 json=node_dataset.model_dump()
-                                                ) #node_dataset.dict() .model_dump()
+                    #response = await client.post(CATALOGUE_ENDPOINT, 
+                    #                             json=node_dataset.model_dump()
+                    #                            ) #node_dataset.dict() .model_dump()
+                    response = await client.post(
+                                                CATALOGUE_ENDPOINT,
+                                                json=payload
+                                                )
                     print('CATALOGUEENDPOINT')
                     print('CATALOGUEENDPOINT POST RESPONSE', response.status_code)
                     #response.raise_for_status()
@@ -347,6 +365,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
