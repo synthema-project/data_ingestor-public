@@ -67,16 +67,16 @@ class DatasetMetadata(BaseModel):
     spatial: Optional[str]
     temporal: Optional[Temporal]
     issued: Optional[str]
-    modified: Optional[str]
-    provenance: Optional[str]
-    purpose: Optional[str]
-    populationCoverage: Optional[str]
-    updateFrequency: Optional[str]
-    applicableLegislation: Optional[str]
-    numberOfRecords: Optional[str]
-    numberOfIndividuals: Optional[str]
-    technicalMetadata: Optional[TechnicalMetadata]
-    distribution: Optional[Distribution]
+    modified: Optional[str]
+    provenance: Optional[str]
+    purpose: Optional[str]
+    populationCoverage: Optional[str]
+    updateFrequency: Optional[str]
+    applicableLegislation: Optional[str]
+    numberOfRecords: Optional[str]
+    numberOfIndividuals: Optional[str]
+    technicalMetadata: Optional[TechnicalMetadata]
+    distribution: Optional[Distribution]
 
 
 class DatasetSchema(SQLModel, table=True):
@@ -124,6 +124,7 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     schema: Optional[Dict[str, Any]] = Field(
         sa_column=Column(JSONB)
     )
+
 
 
 
