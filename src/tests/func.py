@@ -15,7 +15,10 @@ def test_upload_csv(monkeypatch):
     r = client.post(
         "/dataset",
         files={"file": ("test.csv", b"a;b\n1;2\n", "text/csv")},
-        data={"use_case": "aml1"}
+        data={
+            "use_case": "aml1",
+            "metadata": "{}"
+        }
     )
 
     assert r.status_code == 200
