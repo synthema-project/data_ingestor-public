@@ -121,9 +121,14 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     num_records: Optional[int] = None
     num_features: Optional[int] = None
     
-    schema: Optional[Dict[str, Any]] = Field(
+    data_schema: Optional[Dict[str, Any]] = Field(
         sa_column=Column(JSONB)
     )
+
+    dataset_metadata: Optional[DatasetMetadata] = Field(
+        sa_column=Column(JSON)
+    )
+
 
 
 
