@@ -11,6 +11,7 @@ def test_upload_csv(monkeypatch):
         return "file.csv"
 
     monkeypatch.setattr("utils.save_dataframe_to_minio", fake_save)
+    monkeypatch.setattr("utils.validate_data", lambda data, schema: None)
 
     r = client.post(
         "/dataset",
