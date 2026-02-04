@@ -5,7 +5,7 @@ from models import DatasetSchema, NewDataset, RemoveDatasetObject, NodeDatasetIn
 from database import create_db_and_tables, get_session
 from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan,save_node_dataset_info#,convert_np_to_native, 
 #check_schema_dataset,
-from utils import save_dataframe_to_minio, remove_dataset_from_minio, get_dataset_from_minio
+from utils import save_dataframe_to_minio, remove_dataset_from_minio, get_dataset_from_minio, flatten_schema
 from auth import UserClaims, require_authentication
 from pathlib import Path
 import uvicorn
@@ -111,7 +111,9 @@ async def upload_dataset(
                 #data_dict = csv_to_json_dict(csv_file_path=csv_file_path, schema=schema)
                 data_dict = csv_to_json_dict(csv_file_path=dataframe, schema=schema)
                 print('DATADICT')
-                validate_data(data_dict=data_dict, schema=schema)
+                flat_schema = flatten_schema(schema)
+                validate_data(rows, flat_schema)
+                #validate_data(data_dict=data_dict, schema=schema)
                 print('VALIDATE')
                 
                 iid = str(uuid.uuid4()) #int(uuid.uuid4())#str(uuid.uuid4())
@@ -366,6 +368,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
