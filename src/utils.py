@@ -180,22 +180,40 @@ def validate_data(data_dict, schema):
     if isinstance(data_dict, dict):
         data_dict = [data_dict]
 
+    TYPE_MAP = {
+        "string": str,
+        "str": str,
+        "category": str,
+        "int": int,
+        "integer": int,
+        "float": float,
+        "number": float,
+        "bool": bool
+    }
+
     for idx, record in enumerate(data_dict):
-        for key, expected_type in schema.items():
+        for key, type_list in schema.items():
+
+            # schema values come as ["string"]
+            expected = type_list[0].lower()
 
             if key not in record:
                 raise ValueError(f"Missing field {key} in record {idx}")
 
             value = record[key]
 
-            if expected_type == "int" and not isinstance(value, int):
-                raise ValueError(f"{key} must be int")
+            py_type = TYPE_MAP.get(expected)
 
-            if expected_type == "float" and not isinstance(value, float):
-                raise ValueError(f"{key} must be float")
+            if py_type is None:
+                continue   # unknown types ignored safely
 
-            if expected_type == "str" and not isinstance(value, str):
-                raise ValueError(f"{key} must be str")
+            # allow NaN
+            if value is None:
+                continue
+
+            if not isinstance(value, py_type):
+                raise ValueError(f"{key} must be {py_type.__name__}")
+
 
 
 #def validate_data(data_dict, schema):
@@ -358,6 +376,7 @@ def get_dataset_from_minio(filename: str) -> pd.DataFrame:
         raise HTTPException(status_code=404, detail=f"Dataset not found in MinIO: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve dataset: {str(e)}")
+
 
 
 
