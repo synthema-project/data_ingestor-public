@@ -39,7 +39,7 @@ class Temporal(BaseModel):
 
 class TechnicalMetadata(BaseModel):
     datasetIdentifier: Optional[str]
-    metadataUpdateDate: Optional[str]
+    metadataUpdateDate: Optional[str]
 
 class Distribution(BaseModel):
     title: Optional[str]
@@ -124,6 +124,7 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     schema: Optional[Dict[str, Any]] = Field(
         sa_column=Column(JSONB)
     )
+
 
 
 
