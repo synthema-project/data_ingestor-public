@@ -126,8 +126,9 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     )
 
     dataset_metadata: Optional[DatasetMetadata] = Field(
-        sa_column=Column(JSON)
+        sa_column=Column(JSONType)
     )
+
 
 
 
