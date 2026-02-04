@@ -92,3 +92,44 @@ def test_get_dataset_from_minio_not_found(mock_get):
 
     with pytest.raises(Exception):
         get_dataset_from_minio("file.csv")
+
+from pydantic import ValidationError
+from models import DatasetMetadata
+
+def test_valid_metadata():
+    metadata = DatasetMetadata(
+        title="My Dataset",
+        description="desc",
+        publisher={"name": "org"},
+        contactPoint="mail@test.com",
+        theme="health",
+        keyword="covid",
+        accessRights="public",
+        license="MIT",
+        conformsTo="schema",
+        language="en",
+        spatial="EU",
+        temporal={"startDate": "2020", "endDate": "2021"}
+    )
+
+    assert metadata.title == "My Dataset"
+
+
+def test_invalid_metadata_missing_required():
+    with pytest.raises(ValidationError):
+        DatasetMetadata(title="Only title")
+
+from utils import validate_data
+
+def test_validate_data_ok():
+    schema = {"a": "int"}
+    data = {"a": [1,2,3]}
+    validate_data(data_dict=data, schema=schema)
+
+
+def test_validate_data_fail():
+    schema = {"a": "int"}
+    data = {"b": [1]}
+
+    with pytest.raises(Exception):
+        validate_data(data_dict=data, schema=schema)
