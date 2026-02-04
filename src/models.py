@@ -18,15 +18,66 @@
 #    schema: str
 
 from sqlmodel import SQLModel, Field
-from typing import Dict, List, Union, Optional
 import json
 import uuid as uuid_pkg
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Any, Union
 from sqlalchemy import Column, String, JSON as JSONType
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
-from typing import Dict, Any
-from pydantic import field_serializer
+from pydantic import field_serializer, BaseModel
+
+class Publisher(BaseModel):
+    name: Optional[str]
+    url: Optional[str]
+    mail: Optional[str]
+    type: Optional[str]
+    note: Optional[str]
+
+class Temporal(BaseModel):
+    startDate: Optional[str]
+    endDate: Optional[str]
+
+class TechnicalMetadata(BaseModel):
+    datasetIdentifier: Optional[str]
+    metadataUpdateDate: Optional[str]
+
+class Distribution(BaseModel):
+    title: Optional[str]
+    accessURL: Optional[str]
+    description: Optional[str]
+    downloadURL: Optional[str]
+    mediaType: Optional[str]
+    format: Optional[str]
+    byteSize: Optional[str]
+    rights: Optional[str]
+    license: Optional[str]
+    documentation: Optional[str]
+
+class DatasetMetadata(BaseModel):
+    title: Optional[str]
+    description: Optional[str]
+    publisher: Optional[Publisher]
+    contactPoint: Optional[str]
+    theme: Optional[str]
+    keyword: Optional[str]
+    accessRights: Optional[str]
+    license: Optional[str]
+    conformsTo: Optional[str]
+    language: Optional[str]
+    spatial: Optional[str]
+    temporal: Optional[Temporal]
+    issued: Optional[str]
+    modified: Optional[str]
+    provenance: Optional[str]
+    purpose: Optional[str]
+    populationCoverage: Optional[str]
+    updateFrequency: Optional[str]
+    applicableLegislation: Optional[str]
+    numberOfRecords: Optional[str]
+    numberOfIndividuals: Optional[str]
+    technicalMetadata: Optional[TechnicalMetadata]
+    distribution: Optional[Distribution]
+
 
 class DatasetSchema(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -73,6 +124,7 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     schema: Optional[Dict[str, Any]] = Field(
         sa_column=Column(JSONB)
     )
+
 
 
 
