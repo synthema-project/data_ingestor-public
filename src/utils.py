@@ -46,7 +46,41 @@ def replace_none_with_nan(data_dict):
 
     return data_dict
 
+def flatten_schema(schema: dict) -> dict:
+    """
+    Input:
+    {"data":{"clinical":{"ID":["string"]}}}
 
+    Output:
+    {"ID":"str"}
+    """
+
+    flat = {}
+
+    if "data" not in schema:
+        return schema
+
+    for section_name, section in schema["data"].items():
+        for field, types in section.items():
+
+            # types usually ["string"]
+            if isinstance(types, list):
+                t = types[0]
+            else:
+                t = types
+
+            if t in ["string", "str"]:
+                flat[field] = "str"
+            elif t in ["integer", "int"]:
+                flat[field] = "int"
+            elif t in ["number", "float"]:
+                flat[field] = "float"
+            elif t in ["category"]:
+                flat[field] = "str"   # categories arrive as strings
+            else:
+                flat[field] = "str"
+
+    return flat
 #def csv_to_json_dict(csv_file_path, schema):
 #    dataframe = pd.read_csv(csv_file_path)
 #    data = dataframe.where(pd.notnull(dataframe), None)  # Replace NaNs with None
@@ -148,6 +182,7 @@ def validate_data(data_dict, schema):
 
     for idx, record in enumerate(data_dict):
         for key, expected_type in schema.items():
+
             if key not in record:
                 raise ValueError(f"Missing field {key} in record {idx}")
 
@@ -323,6 +358,7 @@ def get_dataset_from_minio(filename: str) -> pd.DataFrame:
         raise HTTPException(status_code=404, detail=f"Dataset not found in MinIO: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve dataset: {str(e)}")
+
 
 
 
