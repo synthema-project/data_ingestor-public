@@ -104,7 +104,7 @@ def csv_to_json_dict(csv_file_path, schema):
 #        except jsonschema.ValidationError as err:
 #            print("Data dictionary is invalid according to the schema:", err.message)
 #            raise ValueError(f"Validation error: {err.message}")
-
+"""
 def validate_data(data_dict, schema):
     if isinstance(data_dict, dict):
         data_dict = [data_dict]
@@ -141,6 +141,27 @@ def validate_data(data_dict, schema):
 
     if errors:
         raise ValueError({"errors": errors})
+"""
+def validate_data(data_dict, schema):
+    if isinstance(data_dict, dict):
+        data_dict = [data_dict]
+
+    for idx, record in enumerate(data_dict):
+        for key, expected_type in schema.items():
+            if key not in record:
+                raise ValueError(f"Missing field {key} in record {idx}")
+
+            value = record[key]
+
+            if expected_type == "int" and not isinstance(value, int):
+                raise ValueError(f"{key} must be int")
+
+            if expected_type == "float" and not isinstance(value, float):
+                raise ValueError(f"{key} must be float")
+
+            if expected_type == "str" and not isinstance(value, str):
+                raise ValueError(f"{key} must be str")
+
 
 #def validate_data(data_dict, schema):
 #    try:
@@ -302,6 +323,7 @@ def get_dataset_from_minio(filename: str) -> pd.DataFrame:
         raise HTTPException(status_code=404, detail=f"Dataset not found in MinIO: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve dataset: {str(e)}")
+
 
 
 
