@@ -6,7 +6,7 @@ client = TestClient(app)
 file_path = "tests/example_data/AML_DATA_ES.csv"
 def test_upload_dataset():
     with open(file_path, "rb") as f:
-        r = client.post(
+        response = client.post(
             "/dataset",
             files={"file": ("sample.csv", f, "text/csv")},
             data={
