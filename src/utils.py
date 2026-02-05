@@ -111,7 +111,7 @@ def flatten_schema(schema: dict) -> dict:
 #                    print("Data dictionary is invalid according to the schema:", err.message)
 #                    raise HTTPException(status_code=400, detail=f"Validation error: {err.message}")
 #    print("Data dictionary is valid according to the schema.")
-'''
+
 def csv_to_json_dict(csv_file_path, schema):
     ##df = pd.read_csv(csv_file_path)
     df = csv_file_path
@@ -121,7 +121,7 @@ def csv_to_json_dict(csv_file_path, schema):
 '''
 def csv_to_json_dict(dataframe, schema):
     return dataframe.to_dict(orient="records")
-
+'''
 #def validate_data(data_dict, schema):
 #    for record in data_dict:
 #        clinical_data = {key: record[key] for key in record.keys() if
@@ -379,6 +379,7 @@ def get_dataset_from_minio(filename: str) -> pd.DataFrame:
         raise HTTPException(status_code=404, detail=f"Dataset not found in MinIO: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve dataset: {str(e)}")
+
 
 
 
