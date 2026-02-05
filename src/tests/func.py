@@ -73,7 +73,7 @@ def test_upload_csv_from_file(monkeypatch):
     async def fake_save(df, name):
         return name
 
-    monkeypatch.setattr("httpx.AsyncClient", FakeAsyncClient)
+    monkeypatch.setattr("main.httpx.AsyncClient", FakeAsyncClient)
     monkeypatch.setattr("utils.save_dataframe_to_minio", fake_save)
     monkeypatch.setattr("utils.validate_data", lambda data, schema: None)
 
