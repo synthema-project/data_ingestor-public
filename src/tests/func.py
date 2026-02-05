@@ -62,6 +62,8 @@ def mock_external(monkeypatch):
 # Tests
 # ---------------------------------------------------
 
+import json
+
 def test_upload_dataset(real_csv_file, valid_metadata):
     with open(real_csv_file, "rb") as f:
         r = client.post(
@@ -69,9 +71,12 @@ def test_upload_dataset(real_csv_file, valid_metadata):
             files={"file": ("dataset.csv", f, "text/csv")},
             data={
                 "use_case": "aml1",
-                "metadata": str(valid_metadata)
+                "metadata": json.dumps(valid_metadata)
             }
         )
+
+    assert r.status_code == 200
+    assert r.json()["path"] == "dataset.csv"
 
     assert r.status_code == 200
     assert r.json()["path"] == "dataset.csv"
