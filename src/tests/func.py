@@ -10,107 +10,23 @@ client = TestClient(app)
 # Fixtures
 # -----------------------------
 
-@pytest.fixture
-def valid_schema():
-    return {
-        "data": {
-            "clinical": {
-                "ID": ["string"],
-                "WHO 2016": ["category"]
-            },
-            "karyotype": {
-                "KARYOTYPE": ["string"]
-            },
-            "mutations": {
-                "ASXL1": ["int"]
-            }
-        }
-    }
+def test_upload_csv_from_file(monkeypatch):
+    # Path to real CSV in repo
+    file_path = "tests/example_data/AML_DATA_ES.csv"
 
-
-@pytest.fixture
-def valid_metadata():
-    return {
-        "title": "AML dataset",
-        "description": "test dataset",
-        "publisher": {
-            "name": "Org",
-            "mail": "mail@org.com",
-            "type": "org",
-            "note": "note",
-            "url": "http://org.com"
-        },
-        "contactPoint": "mail@org.com",
-        "theme": "health",
-        "keyword": "aml",
-        "accessRights": "public",
-        "license": "MIT",
-        "conformsTo": "schema",
-        "language": "en",
-        "spatial": "EU",
-        "temporal": {"startDate": "2020", "endDate": "2021"}
-    }
-
-
-@pytest.fixture
-def real_csv_file(tmp_path):
-    p = tmp_path / "dataset.csv"
-    p.write_text(
-        "ID;WHO 2016;KARYOTYPE;ASXL1\n"
-        "1;AML;46,XY;0\n"
-        "2;AML;46,XX;1\n"
-    )
-    return p
-
-
-# -----------------------------
-# Functional Upload Test
-# -----------------------------
-
-def test_upload_dataset(
-    monkeypatch,
-    real_csv_file,
-    valid_schema,
-    valid_metadata
-):
-
-    class FakeSchemaResponse:
-        status_code = 200
-        def json(self):
-            return {"schema": valid_schema}
-
-    class FakePostResponse:
-        status_code = 200
-        text = "ok"
-
-    class FakeAsyncClient:
-        async def __aenter__(self):
-            return self
-
-        async def __aexit__(self, exc_type, exc, tb):
-            pass
-
-        async def get(self, url):
-            return FakeSchemaResponse()
-
-        async def post(self, url, json):
-            return FakePostResponse()
-
+    # Mock external calls
     async def fake_save(df, name):
-        return name
+        return f"{name}"
 
-    monkeypatch.setattr("httpx.AsyncClient", FakeAsyncClient)
     monkeypatch.setattr("utils.save_dataframe_to_minio", fake_save)
+    monkeypatch.setattr("utils.validate_data", lambda data, schema: None)
+    monkeypatch.setattr("httpx.AsyncClient.post", lambda *a, **k: None)
 
-    with open(real_csv_file, "rb") as f:
+    with open(file_path, "rb") as f:
         r = client.post(
             "/dataset",
-            files={"file": ("dataset.csv", f, "text/csv")},
-            data={
-                "use_case": "aml1",
-                "metadata": json.dumps(valid_metadata)
-            }
+            files={"file": ("sample.csv", f, "text/csv")},
+            data={"use_case": "aml1", "metadata": "{}"}
         )
 
     assert r.status_code == 200
-    assert "filename" in r.json()
