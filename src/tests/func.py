@@ -74,29 +74,32 @@ def test_upload_dataset(
     valid_metadata
 ):
 
-    # ---- Mock annotation service ----
     class FakeSchemaResponse:
         status_code = 200
         def json(self):
             return {"schema": valid_schema}
 
-    async def fake_get(url):
-        return FakeSchemaResponse()
-
-    # ---- Mock catalogue service ----
     class FakePostResponse:
         status_code = 200
         text = "ok"
 
-    async def fake_post(url, json):
-        return FakePostResponse()
+    class FakeAsyncClient:
+        async def __aenter__(self):
+            return self
 
-    # ---- Mock minio save ----
+        async def __aexit__(self, exc_type, exc, tb):
+            pass
+
+        async def get(self, url):
+            return FakeSchemaResponse()
+
+        async def post(self, url, json):
+            return FakePostResponse()
+
     async def fake_save(df, name):
         return name
 
-    monkeypatch.setattr("httpx.AsyncClient.get", fake_get)
-    monkeypatch.setattr("httpx.AsyncClient.post", fake_post)
+    monkeypatch.setattr("httpx.AsyncClient", FakeAsyncClient)
     monkeypatch.setattr("utils.save_dataframe_to_minio", fake_save)
 
     with open(real_csv_file, "rb") as f:
