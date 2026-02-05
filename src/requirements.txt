@@ -14,3 +14,4 @@ fastapi-keycloak
 starlette
 python-keycloak
 jwcrypto
+pytest-asyncio
