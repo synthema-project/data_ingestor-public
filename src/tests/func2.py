@@ -84,7 +84,8 @@ def test_get_dataset_success():
 # -----------------------------
 def test_get_dataset_not_found():
     response = client.get("/dataset", params={"filename": "non_existent.csv"})
-    assert response.status_code == 500  # your main.py returns 500 if MinIO missing
+    assert response.status_code == 404
+    assert "Dataset not found" in response.json()["detail"]
 
 
 # -----------------------------
