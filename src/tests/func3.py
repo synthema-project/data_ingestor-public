@@ -9,7 +9,7 @@ from main import app
 client = TestClient(app)
 
 uploaded_filename = None  # global to share between tests
-'''
+
 def test_upload_dataset_success(monkeypatch):
     global uploaded_filename
 
@@ -97,4 +97,4 @@ def test_delete_dataset_success(monkeypatch):
     response = client.delete("/dataset", params={"filename": uploaded_filename})
     assert response.status_code == 200
     assert response.json()["message"] == "Dataset removed successfully"
-'''
+
