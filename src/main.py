@@ -101,27 +101,22 @@ async def upload_dataset(
         
         async with httpx.AsyncClient() as client:
             try:
-                #response = await client.get(f"{ANNOTATION_ENDPOINT}/{disease}")
-                response = await client.get(f"{ANNOTATION_ENDPOINT}/{use_case}")
-                #response = await requests.get(f"{ANNOTATION_ENDPOINT}/{disease}",allow_redirects=True)
-                print(f"Annotation response: {response.status_code} - {response.text}")
-                print('RESPONSE')
-                #if response.status_code == 308:
-                #    print(f"Redirected to: {response.headers.get('location')}")
+                ##response = await client.get(f"{ANNOTATION_ENDPOINT}/{use_case}")
+                ##print(f"Annotation response: {response.status_code} - {response.text}")
+                ##print('RESPONSE')
                 
-                if response.status_code != 200:
-                    raise Exception(f"Schema service error: {response.status_code}")
-                    #raise HTTPException(status_code=404, detail="Schema not found")
+                ##if response.status_code != 200:
+                ##    raise Exception(f"Schema service error: {response.status_code}")
                 
-                print('SCHEMA1')
-                schema = response.json()["schema"]
-                print(schema)
-                print('SCHEMA')
+                ##print('SCHEMA1')
+                ##schema = response.json()["schema"]
+                ##print(schema)
+                ##print('SCHEMA')
                 
                 #data_dict = csv_to_json_dict(csv_file_path=csv_file_path, schema=schema)
                 data_dict = csv_to_json_dict(csv_file_path=dataframe, schema=schema)
                 print('DATADICT')
-                flat_schema = flatten_schema(schema)
+                ##flat_schema = flatten_schema(schema)
                 ## commented for test purposes, then restore it
                 ##########validate_data(data_dict, flat_schema)
                 #validate_data(data_dict=data_dict, schema=schema)
@@ -379,6 +374,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
