@@ -114,7 +114,7 @@ async def upload_dataset(
                 ##print('SCHEMA')
                 
                 #data_dict = csv_to_json_dict(csv_file_path=csv_file_path, schema=schema)
-                data_dict = csv_to_json_dict(csv_file_path=dataframe, schema=schema)
+                data_dict = csv_to_json_dict(csv_file_path=dataframe)#, schema=schema)
                 print('DATADICT')
                 ##flat_schema = flatten_schema(schema)
                 ## commented for test purposes, then restore it
@@ -374,6 +374,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
