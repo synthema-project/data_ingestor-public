@@ -149,7 +149,7 @@ async def upload_dataset(
                     use_case=use_case,
                     num_records=num_records,
                     num_features=num_features,
-                    data_schema=schema,
+                    ##data_schema=schema,
                     dataset_metadata=metadata_dict,
                 )
                 print('nodedatasetinfo')
@@ -374,6 +374,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
