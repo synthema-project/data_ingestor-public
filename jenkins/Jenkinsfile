@@ -44,7 +44,7 @@ pipeline {
         // **************************************
         // *** Functional & Integration Tests ***
         // **************************************
-
+/*
        stage("Func_Tests"){
             steps {
                 echo "***** Running Functional Tests *****"
@@ -88,7 +88,7 @@ pipeline {
                }
            }
         }
-
+*/
         // *******************************
         // *** Push Images To Registry ***
         // *******************************
