@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form, Request
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, List, Union
 from models import DatasetSchema, NewDataset, RemoveDatasetObject, NodeDatasetInfo, DatasetMetadata
@@ -24,6 +25,14 @@ import requests
 
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
+)
 
 #ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema" 
 #CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata" 
@@ -369,6 +378,7 @@ async def healthcheck():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=82)
+
 
 
 
