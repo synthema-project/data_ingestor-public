@@ -7,7 +7,7 @@ from models import DatasetSchema, NewDataset, RemoveDatasetObject, NodeDatasetIn
 from database import create_db_and_tables, get_session
 from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan,save_node_dataset_info#,convert_np_to_native, 
 #check_schema_dataset,
-from utils import save_dataframe_to_minio, remove_dataset_from_minio, get_dataset_from_minio, flatten_schema
+from utils import save_dataframe_to_minio, remove_dataset_from_minio, get_dataset_from_minio, flatten_schema, save_bytes_to_minio
 from auth import UserClaims, require_authentication
 from pathlib import Path
 import uvicorn
@@ -37,11 +37,15 @@ app.add_middleware(
 #ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema" 
 #CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata" 
 
-NODE_NAME = "NODE1" #os.getenv("NODE_NAME")  # NEW
-ANNOTATION_ENDPOINT =  "https://data-annotation.k8s.synthema.rid-intrasoft.eu/schema"
-CATALOGUE_ENDPOINT =  "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/metadata"
-CAT_ENDPOINT = "https://data-catalogue.k8s.synthema.rid-intrasoft.eu/"
-MINIO_ENDPOINT = "obstorageapi.k8s.synthema.rid-intrasoft.eu/"
+from config import settings
+
+NODE_NAME = settings.NODE_NAME  # this ingestor instance's node/org name
+ANNOTATION_ENDPOINT = settings.ANNOTATION_ENDPOINT
+CATALOGUE_ENDPOINT = settings.CATALOGUE_ENDPOINT
+CAT_ENDPOINT = CATALOGUE_ENDPOINT.replace("/metadata", "/")
+MINIO_ENDPOINT = settings.MINIO_ENDPOINT
+# Optional bearer token forwarded to the (Keycloak-protected) data catalogue.
+CATALOGUE_TOKEN = settings.CATALOGUE_TOKEN or None
 
 LOCAL_DATASETS_DIR = "/app/datasets"
 local_datasets_dir = "/app/datasets"
@@ -54,6 +58,142 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+
+
+def _read_csv_autodetect(raw: bytes) -> pd.DataFrame:
+    """Read a CSV from raw bytes, auto-detecting the delimiter and encoding.
+
+    Also drops unnamed index columns (e.g. a leading patient-id column with no
+    header) so the uploaded partitions contain only real feature columns.
+    """
+    for encoding in ("utf-8", "latin1"):
+        try:
+            text = raw.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:  # pragma: no cover - both decodings failed
+        raise HTTPException(status_code=400, detail="Could not decode CSV file")
+
+    # sep=None + python engine sniffs the delimiter (comma, semicolon, tab, ...)
+    df = pd.read_csv(io.StringIO(text), sep=None, engine="python")
+    df = df.loc[:, ~df.columns.str.match(r"^Unnamed")]
+    return df
+
+
+def _split_train_val_test(df: pd.DataFrame, random_state: int = 42):
+    """Shuffle and split 60/20/20 (train/val/test), matching the MSI simulation."""
+    shuffled = df.sample(frac=1.0, random_state=random_state).reset_index(drop=True)
+    n = len(shuffled)
+    train_end = int(0.6 * n)
+    val_end = train_end + int(0.2 * n)
+    return {
+        "train": shuffled.iloc[:train_end].reset_index(drop=True),
+        "val": shuffled.iloc[train_end:val_end].reset_index(drop=True),
+        "test": shuffled.iloc[val_end:].reset_index(drop=True),
+    }
+
+
+async def _register_in_catalogue(payload: dict) -> None:
+    """POST a NodeDatasetInfo payload to the data catalogue (forwarding a token)."""
+    headers = {}
+    if CATALOGUE_TOKEN:
+        headers["Authorization"] = f"Bearer {CATALOGUE_TOKEN}"
+    async with httpx.AsyncClient(verify=False) as client:
+        response = await client.post(CATALOGUE_ENDPOINT, json=payload, headers=headers, timeout=30)
+        if response.status_code not in (200, 201):
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Catalogue registration failed for {payload.get('path')}: {response.text}",
+            )
+
+
+@app.post("/dataset/partitioned", tags=["data-ingestion"])
+async def upload_dataset_partitioned(
+    use_case: str = Form(...),
+    metadata: str = Form(...),
+    dataset_meta: str = Form(...),
+    file: UploadFile = File(...),
+    node: str = Form(None),
+):
+    """Ingest a full CSV: split 60/20/20, upload the partitions + the DatasetMeta
+    schema JSON to MinIO, and register every object in the data catalogue.
+
+    Form fields:
+      * ``use_case``     - catalogue use-case string (e.g. ``AML-1``).
+      * ``metadata``     - DCAT-AP governance metadata (JSON) → catalogue ``dataset_metadata``.
+      * ``dataset_meta`` - model DatasetMeta variable schema (JSON) → uploaded to MinIO
+                           and consumed by the FL client for preprocessing.
+      * ``file``         - the full dataset CSV.
+
+    The node/org name is taken from this ingestor's ``NODE_NAME`` env.
+    """
+    if not file.filename.endswith(".csv"):
+        raise HTTPException(status_code=400, detail="Only CSV files are accepted")
+
+    # Validate the two JSON payloads up front.
+    try:
+        dcat_metadata = DatasetMetadata(**json.loads(metadata)).model_dump()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid DCAT-AP metadata: {e}")
+    try:
+        dataset_meta_dict = json.loads(dataset_meta)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid dataset_meta JSON: {e}")
+
+    # Prod: one ingestor per org → node from env. Dev: optional `node` form field
+    # lets a single ingestor register several nodes (e.g. ICH and UMCU).
+    node = node or NODE_NAME
+    raw = await file.read()
+    dataframe = _read_csv_autodetect(raw)
+    if dataframe.empty:
+        raise HTTPException(status_code=400, detail="Uploaded CSV has no rows")
+
+    partitions = _split_train_val_test(dataframe)
+
+    # 1. Upload the DatasetMeta schema JSON so the FL client can hydrate it.
+    meta_object = f"{use_case}_{node}_meta.json"
+    save_bytes_to_minio(
+        json.dumps(dataset_meta_dict).encode("utf-8"), meta_object, "application/json"
+    )
+
+    # 2. Upload each partition CSV and register it in the catalogue.
+    uploaded = {}
+    for part_name, part_df in partitions.items():
+        object_name = f"{use_case}_{node}_{part_name}.csv"
+        save_dataframe_to_minio(part_df, object_name)
+        uploaded[part_name] = object_name
+        await _register_in_catalogue(
+            {
+                "node": node,
+                "path": object_name,
+                "use_case": use_case,
+                "num_records": int(len(part_df)),
+                "num_features": int(len(part_df.columns)),
+                "dataset_metadata": dcat_metadata,
+            }
+        )
+
+    # 3. Register the schema JSON too, so its URL travels in the node's dataset list.
+    await _register_in_catalogue(
+        {
+            "node": node,
+            "path": meta_object,
+            "use_case": use_case,
+            "num_records": 0,
+            "num_features": 0,
+            "dataset_metadata": dcat_metadata,
+        }
+    )
+
+    return {
+        "message": "Dataset partitioned, uploaded and registered successfully",
+        "node": node,
+        "use_case": use_case,
+        "partitions": uploaded,
+        "dataset_meta": meta_object,
+        "num_records": int(len(dataframe)),
+    }
 
 @app.post("/dataset", tags=["data-ingestion"])
 #async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_datasets_dir: str = Form(default="/app/datasets"), file: UploadFile = File(...), session: Session = Depends(get_session)): #local_datasets_dir: str = Form(default="/app/datasets")
@@ -373,7 +513,7 @@ async def healthcheck():
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=82)
+    uvicorn.run(app, host="0.0.0.0", port=settings.APP_PORT)
 
 
 

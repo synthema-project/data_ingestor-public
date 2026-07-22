@@ -2,7 +2,23 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: minio-config
-  namespace: synthema-dev
+  namespace: synthema
 data:
-  MINIO_ENDPOINT: obstorageapi.k8s.synthema.rid-intrasoft.eu
+  # MinIO / object storage
+  MINIO_ENDPOINT: minio.synthema.svc.cluster.local:9000
   MINIO_BUCKET_NAME: data-annotation
+  MINIO_SECURE: 'false'
+  # This ingestor instance's node/org name (prod: one ingestor per org)
+  NODE_NAME: NODE1
+  # Downstream services (in-cluster)
+  CATALOGUE_ENDPOINT: http://data-catalogue-service:83/metadata
+  ANNOTATION_ENDPOINT: http://data-annotation-service:80/schema
+  # Auth / Keycloak
+  KEYCLOAK_SERVER_URL: https://users.k8s.synthema.rid-intrasoft.eu
+  KEYCLOAK_CLIENT_ID: synthema
+  KEYCLOAK_REALM_NAME: Synthema
+  # PostgreSQL (shared catalogue DB)
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: '5432'
+  POSTGRES_DB: dataset_catalogue
+  APP_PORT: '82'

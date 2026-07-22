@@ -347,6 +347,27 @@ def save_dataframe_to_minio(dataset: pd.DataFrame, filename: str):
         raise Exception(f"Failed to upload dataset to MinIO: {str(e)}")
 
 
+def save_bytes_to_minio(data: bytes, object_name: str, content_type: str = "application/octet-stream") -> str:
+    """Upload raw bytes (e.g. a JSON schema) to MinIO under ``object_name``.
+
+    Returns the object name (path within the bucket) on success.
+    """
+    buffer = io.BytesIO(data)
+    buffer.seek(0)
+    try:
+        minio_client.put_object(
+            settings.MINIO_BUCKET_NAME,
+            object_name,
+            data=buffer,
+            length=len(data),
+            content_type=content_type,
+        )
+        print(f"Uploading to bucket: {settings.MINIO_BUCKET_NAME}, path: {object_name}")
+        return object_name
+    except S3Error as e:
+        raise Exception(f"Failed to upload object to MinIO: {str(e)}")
+
+
 #def remove_dataset_from_minio(node: str, filename: str):
 def remove_dataset_from_minio(filename: str):
     """

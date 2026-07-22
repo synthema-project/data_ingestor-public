@@ -14,9 +14,11 @@ from fastapi import Depends, HTTPException, status
 #KEYCLOAK_CLIENT_ID=os.getenv("KEYCLOAK_CLIENT_ID", "synthema")
 #KEYCLOAK_REALM=os.getenv("KEYCLOAK_REALM", "Synthema")
 
-KEYCLOAK_SERVER_URL="https://users.k8s.synthema.rid-intrasoft.eu"#os.getenv("KEYCLOAK_SERVER_URL", "https://users.k8s.synthema.rid-intrasoft.eu" )
-KEYCLOAK_CLIENT_ID="synthema"#os.getenv("KEYCLOAK_CLIENT_ID", "synthema")
-KEYCLOAK_REALM="Synthema"#os.getenv("KEYCLOAK_REALM", "Synthema")
+from config import (
+    KEYCLOAK_SERVER_URL,
+    KEYCLOAK_CLIENT_ID,
+    KEYCLOAK_REALM_NAME as KEYCLOAK_REALM,
+)
 
 keycloak_openid = KeycloakOpenID(server_url=KEYCLOAK_SERVER_URL,
                                  client_id=KEYCLOAK_CLIENT_ID,

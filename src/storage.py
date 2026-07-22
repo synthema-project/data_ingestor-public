@@ -6,7 +6,7 @@ minio_client = Minio(
     settings.MINIO_ENDPOINT,
     access_key=settings.MINIO_ACCESS_KEY,
     secret_key=settings.MINIO_SECRET_KEY,
-    secure=True  # Change to True if using HTTPS
+    secure=settings.MINIO_SECURE,  # HTTPS when MINIO_SECURE=true
 )
 
 # Ensure the bucket exists
