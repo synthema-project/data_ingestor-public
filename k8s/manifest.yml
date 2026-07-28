@@ -1,0 +1,177 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-ingestor
+  labels:
+    app: data-ingestor
+    version: v0.1.0
+    env: dev
+    team: synthema
+    component: data-ingestor
+  namespace: synthema
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-ingestor
+  template:
+    metadata:
+      labels:
+        app: data-ingestor
+    spec:
+      containers:
+        - name: data-ingestor-container
+          image: data-ingestor:1.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 82
+          env:
+            - name: MINIO_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: MINIO_ENDPOINT
+            - name: MINIO_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: MINIO_BUCKET_NAME
+            - name: MINIO_SECURE
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: MINIO_SECURE
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: MINIO_ACCESS_KEY
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: MINIO_SECRET_KEY
+            - name: NODE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: NODE_NAME
+            - name: CATALOGUE_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: CATALOGUE_ENDPOINT
+            - name: ANNOTATION_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: ANNOTATION_ENDPOINT
+            - name: KEYCLOAK_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: KEYCLOAK_SERVER_URL
+            - name: KEYCLOAK_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: KEYCLOAK_CLIENT_ID
+            - name: KEYCLOAK_REALM_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: KEYCLOAK_REALM_NAME
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: POSTGRES_PORT
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: POSTGRES_DB
+            - name: APP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: APP_PORT
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: POSTGRES_PASSWORD
+            - name: CATALOGUE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: CATALOGUE_TOKEN
+                  optional: true
+          command: ["python", "main.py"]
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+            requests:
+              cpu: "0.5"
+              memory: "1Gi"
+      imagePullSecrets:
+        - name: harbor-cred
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: data-ingestor
+    component: data-ingestor
+  name: data-ingestor-service
+  namespace: synthema
+spec:
+  type: ClusterIP
+  selector:
+    app: data-ingestor
+  ports:
+    - protocol: TCP
+      port: 82
+
+---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  annotations:
+#    nginx.ingress.kubernetes.io/rewrite-target: /
+#    kubernetes.io/ingress.class: "nginx"
+#    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+#  labels:
+#    app: data-ingestor
+#    component: data-ingestor
+#  name: data-ingestor-ingress-rule
+#  namespace: synthema-dev
+#spec:
+#  ingressClassName: nginx
+#  rules:
+#    - host: data-ingestor.k8s.synthema.rid-intrasoft.eu
+#      http:
+#        paths:
+#          - backend:
+#              service:
+#                name: data-ingestor-service
+#                port:
+#                  number: 82
+#            path: /
+#            pathType: Prefix
+#  tls:
+#    - hosts:
+#         - data-ingestor.k8s.synthema.rid-intrasoft.eu
+#      secretName: data-ingestor.k8s.synthema.rid-intrasoft.eu-tls

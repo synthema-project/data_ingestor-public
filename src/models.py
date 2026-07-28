@@ -1,0 +1,146 @@
+#from sqlmodel import SQLModel, Field
+#from pydantic import BaseModel
+
+#class NodeDatasetInfo(SQLModel, table=True):
+#    id: int = Field(default=None, primary_key=True)
+#    node: str
+##    path: str
+#    disease: str
+
+#class RemoveDatasetObject(BaseModel):
+#    node: str
+##    disease: str
+#    path: str
+
+#class Schema(SQLModel, table=True):
+#    id: int = Field(default=None, primary_key=True)
+#    disease: str
+#    schema: str
+
+from sqlmodel import SQLModel, Field
+import json
+import uuid as uuid_pkg
+from datetime import datetime
+from typing import Optional, List, Dict, Any, Union
+from sqlalchemy import Column, String, JSON as JSONType
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from pydantic import field_serializer, BaseModel
+
+class Publisher(BaseModel):
+    name: Optional[str] = None
+    url: Optional[str] = None
+    mail: Optional[str] = None
+    type: Optional[str] = None
+    note: Optional[str] = None
+
+class Temporal(BaseModel):
+    startDate: Optional[str] = None
+    endDate: Optional[str] = None
+
+class TechnicalMetadata(BaseModel):
+    datasetIdentifier: Optional[str] = None
+    metadataUpdateDate: Optional[str] = None
+
+class Distribution(BaseModel):
+    title: Optional[str] = None
+    accessURL: Optional[str] = None
+    description: Optional[str] = None
+    downloadURL: Optional[str] = None
+    mediaType: Optional[str] = None
+    format: Optional[str] = None
+    byteSize: Optional[str] = None
+    rights: Optional[str] = None
+    license: Optional[str] = None
+    documentation: Optional[str] = None
+
+class DatasetMetadata(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    publisher: Optional[Publisher] = None
+    contactPoint: Optional[str] = None
+    theme: Optional[str] = None
+    keyword: Optional[str] = None
+    accessRights: Optional[str] = None
+    license: Optional[str] = None
+    conformsTo: Optional[str] = None
+    language: Optional[str] = None
+    spatial: Optional[str] = None
+    temporal: Optional[Temporal] = None
+    issued: Optional[str] = None
+    modified: Optional[str] = None
+    provenance: Optional[str] = None
+    purpose: Optional[str] = None
+    populationCoverage: Optional[str] = None
+    updateFrequency: Optional[str] = None
+    applicableLegislation: Optional[str] = None
+    numberOfRecords: Optional[str] = None
+    numberOfIndividuals: Optional[str] = None
+    technicalMetadata: Optional[TechnicalMetadata] = None
+    distribution: Optional[Distribution] = None
+
+
+class DatasetSchema(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    use_case: str # to change into use_case
+    data: str  # JSON string
+
+    def data_dict(self):
+        return json.loads(self.data)
+
+class NewDataset(SQLModel):
+    use_case: str # to change into use_case
+    data: Dict[str, Dict[str, List[Union[str, int, float, bool]]]]
+
+class RemoveDatasetObject(SQLModel):
+    node: str
+    use_case: str # to change into use_case
+    path: str
+
+#class NodeDatasetInfo(SQLModel, table=True):
+#    #id: int = Field(default=None, primary_key=True)
+#    id: Optional[uuid_pkg.UUID] = Field(default_factory=uuid_pkg.uuid4,
+#                                             primary_key=True)
+#    node: str
+#    path: str
+#    use_case: str #to change into use_case
+
+class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
+    #id: str = Field(default=None, primary_key=True)
+    #id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[uuid_pkg.UUID] = Field(default_factory=uuid_pkg.uuid4,
+                                             primary_key=True)
+    node: str
+    path: str
+    use_case: str # to change into use_case
+
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    @field_serializer("timestamp")
+    def serialize_ts(self, ts: datetime):
+        return ts.isoformat()
+    
+    num_records: Optional[int] = None
+    num_features: Optional[int] = None
+    
+    #data_schema: Optional[Dict[str, Any]] = Field(
+    #    sa_column=Column(JSONType) #(JSONB)
+    #)
+
+    dataset_metadata: Optional[DatasetMetadata] = Field(
+        sa_column=Column(JSONType)
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

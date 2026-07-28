@@ -1,0 +1,17 @@
+fastapi
+pandas
+psycopg2-binary
+uvicorn
+python-multipart
+requests
+pytest
+jsonschema
+sqlalchemy
+sqlmodel
+httpx
+minio
+fastapi-keycloak
+starlette
+python-keycloak
+jwcrypto
+pytest-asyncio

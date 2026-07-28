@@ -1,0 +1,62 @@
+from fastapi.testclient import TestClient
+from main import app  # import your FastAPI app
+
+import pandas as pd
+import uuid
+import io
+
+client = TestClient(app)
+
+def test_upload_and_delete_dataset_from_minio():
+    # Create dummy DataFrame
+    df = pd.DataFrame({
+        'name': ['Alice', 'Bob'],
+        'age': [30, 25],
+        'city': ['Athens', 'Thessaloniki']
+    })
+
+    # Convert to CSV
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, index=False, sep=';')
+    csv_buffer.seek(0)
+
+    # Set metadata
+    disease = "AML"
+    node = "test-node"
+    fixed_uuid = "d7976598-eb08-4d3a-b5ad-9481f6ad0db7"
+    filename = f"{disease}_{node}_{fixed_uuid}.csv"
+    #filename = f"{disease}_{node}_{uuid.uuid4()}.csv"
+
+    # Upload the file
+    files = {
+        "file": (filename, csv_buffer.getvalue(), "text/csv"),
+    }
+
+    upload_response = client.post(
+        f"/dataset?node={node}&disease={disease}",
+        files=files
+    )
+    assert upload_response.status_code == 200, f"Upload failed: {upload_response.text}"
+    print("✅ Upload successful")
+    #assert uploaded_filename is not None, "Filename not returned in response"
+    #print(f"✅ Uploaded file: {uploaded_filename}")
+
+    json_response = upload_response.json()
+    filename = json_response.get("filename")
+    filename = str(node + "/" + filename)
+    assert filename is not None, f"Upload response missing filename: {json_response}"
+    print(f"✅ Uploaded filename: {filename}")
+
+    # Delete the file
+    #delete_response = client.delete(
+    #    f"/dataset?node={node}&disease={disease}&filename={filename}"
+    #)
+
+    delete_response = client.delete(
+        "/dataset",
+        params={"node": node, "disease": disease, "filename": filename}
+    )
+
+    assert delete_response.status_code == 200, f"Delete failed: {delete_response.text}"
+    print("🗑️ Delete successful")
+

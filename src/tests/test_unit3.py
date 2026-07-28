@@ -1,0 +1,117 @@
+import os
+import json
+import shutil
+import glob
+from pathlib import Path
+from unittest import mock
+from fastapi.testclient import TestClient
+from sqlmodel import SQLModel, create_engine, Session
+from main import app
+from database import get_session
+from models import DatasetSchema, NodeDatasetInfo
+from httpx import WSGITransport
+import tempfile  # To create temporary directories for mocking
+
+# Set up an SQLite in-memory database for testing
+#TEST_DATABASE_URL = "sqlite:///./test.db"  # Use SQLite for testing
+#engine = create_engine(TEST_DATABASE_URL, echo=True)
+
+# Path for example data
+current_dir = Path(__file__).resolve().parent
+
+# Override the session dependency to use the SQLite database instead of PostgreSQL
+#def override_get_session():
+#    with Session(engine) as session:
+#        yield session
+
+#app.dependency_overrides[get_session] = override_get_session
+
+# Create database and tables for the test
+#def create_test_db_and_tables():
+#    SQLModel.metadata.create_all(engine)
+
+# Test client for FastAPI
+client = TestClient(app)
+
+def test_healthcheck():
+    response = client.get("/healthcheck")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
+def test_upload_dataset():
+    #create_test_db_and_tables()
+
+    csv_path = current_dir / "example_data" / "AML_DATA_ES.csv"
+        
+    with open(csv_path, "rb") as csv_file:
+         response = client.post(
+                "/dataset",
+                data={"node": "NODE-TEST", "disease": "AML"},
+                files={"file": ("AML_DATA_ES.csv", csv_file, "text/csv")},
+        )
+
+        # Assertions
+        # Log or print the response content to inspect the error details
+    print(f"Response Content: {response.content}")
+        
+        # Assertions
+    assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
+
+
+#def test_remove_dataset():
+
+#    remove_data = {
+#        "node": "node1",
+#        "disease": "AML",
+#        #"path": f"/app/datasets/NODE1/AML_NODE1_{*}"
+#    }
+
+    # Match files with the pattern using glob
+#    matched_files = glob.glob("/app/datasets/NODE1/AML_NODE1_*")
+
+    # Loop through each matched file and perform the delete request if files are found
+#    for path in matched_files:
+#        # Update the path in remove_data with each specific file path
+#        remove_data["path"] = path
+
+#        response = client.request("DELETE", "/dataset", json=remove_data)
+    
+        # Assertions for each response
+#        assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
+#        assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
+
+    # Check if there were no matched files, which may indicate a test setup issue
+#    if not matched_files:
+#        print("Warning: No files matched the wildcard pattern.")
+
+def test_remove_dataset():
+    remove_data = {
+        "node": "NODE-TEST",
+        "disease": "AML",
+    }
+
+    # Match files with the pattern using glob
+    matched_files = glob.glob("/app/datasets/NODE-TEST/AML_NODE-TEST_*")
+
+    if not matched_files:
+        print("Warning: No files matched the wildcard pattern.")
+        return
+
+    for path in matched_files:
+        # Check if the file exists in the database
+        response = client.get(f"/dataset/check?path={path}")  # Create a check endpoint for existence
+        if response.status_code != 200:
+            print(f"Skipping file not in database: {path}")
+            continue
+
+        remove_data["path"] = path
+        response = client.request("DELETE", "/dataset", json=remove_data)
+
+        # Assertions for each response
+        assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}. Response content: {response.content.decode()}"
+        assert response.json() == {"message": "Dataset removed successfully from both database and local storage"}
+if __name__ == "__main__":
+    test_healthcheck()
+    test_upload_dataset()
+    test_remove_dataset()
