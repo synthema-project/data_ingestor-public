@@ -8,7 +8,6 @@ metadata:
     env: dev
     team: synthema
     component: data-ingestor
-  namespace: synthema
 spec:
   replicas: 1
   selector:
@@ -21,7 +20,7 @@ spec:
     spec:
       containers:
         - name: data-ingestor-container
-          image: data-ingestor:1.4
+          image: harbor.synthema.rid-intrasoft.eu/synthema/data-ingestor:DOCKER_TAG
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 82
@@ -136,7 +135,6 @@ metadata:
     app: data-ingestor
     component: data-ingestor
   name: data-ingestor-service
-  namespace: synthema
 spec:
   type: ClusterIP
   selector:

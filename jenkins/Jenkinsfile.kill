@@ -5,6 +5,9 @@ pipeline {
         }
     }
 
+    parameters {
+        string(name: 'K8S_NAMESPACE', defaultValue: 'synthema-dev', description: 'Namespace of the service to remove')
+    }
     stages {
 
         // ****************
@@ -13,7 +16,7 @@ pipeline {
         stage("Kill_The_App"){
             steps {
                withKubeConfig([credentialsId: 'k8s-admin']) {
-                   sh 'kubectl delete -f k8s/manifest-staging.yml || true'
+                   sh 'kubectl --namespace "$K8S_NAMESPACE" delete -f k8s/manifest.yml --ignore-not-found'
                }
             }
         }

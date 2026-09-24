@@ -4,6 +4,10 @@ pipeline {
             label 'jenkins-dev'
         }
     }
+    parameters {
+        string(name: 'K8S_NAMESPACE', defaultValue: 'synthema-dev', description: 'Existing target namespace for all service resources')
+    }
+    options { disableConcurrentBuilds() }
     environment {
         APP_NAME = "data-ingestor"
         MAJOR_RELEASE = 0.1
@@ -11,7 +15,6 @@ pipeline {
         DOCKER_REG = "harbor.synthema.rid-intrasoft.eu"
         DOCKER_REPO = "/synthema/"
         DOCKER_REG_CREDS = "harbor-jenkins-creds"
-        K8S_NAMESPACE = "synthema-dev"
         MINIO_ENDPOINT = "obstorageapi.k8s.synthema.rid-intrasoft.eu"
         MINIO_ACCESS_KEY = "mqcqwECvoga6pkDRhOUz" //credentials("MINIO_ACCESS_KEY")
         MINIO_SECRET_KEY = "EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9" //credentials("MINIO_SECRET_KEY")
@@ -44,51 +47,7 @@ pipeline {
         // **************************************
         // *** Functional & Integration Tests ***
         // **************************************
-/*
-       stage("Func_Tests"){
-            steps {
-                echo "***** Running Functional Tests *****"
-                // Deploy the test image
-                withKubeConfig([credentialsId: 'k8s-admin']) {
-                    //sh 'echo "KUBECONFIG is set to: $KUBECONFIG"'
-                    //sh 'kubectl config view'
-                    //staging-${DOCKER_TAG}.yml
-                    sh '''
-                    cp k8s/manifest.yml k8s/manifest-test.yml
-                    sed -e 's|DOCKER_TAG|test|g' k8s/manifest-test.yml | kubectl apply -f -
-                    '''
-                    //sed -i "s|DOCKER_TAG|${DOCKER_TAG}|g" k8s/manifest-staging-${DOCKER_TAG}.yml
-                    //kubectl apply --validate=false -f k8s/manifest-staging-${DOCKER_TAG}.yml
-                    //'''
-                    //kubectl apply -f -
-                }
-                sh 'sleep 3'
-                // Execute the tests
-                script {
-                   withKubeConfig([credentialsId: 'k8s-admin']) {
-                        def nodePort = sh(script: 'kubectl get svc data-ingestor-service -n synthema-dev -o jsonpath={.spec.ports[0].nodePort}', returnStdout: true).trim()
-                        //sh "curl -f http://49.13.149.57:${nodePort}/healthcheck"
-                        //sh "curl -f http://data-annotation.k8s.synthema.rid-intrasoft.eu:${nodePort}/healthcheck"
-                        //sh "curl -f http://data-catalogue.k8s.synthema.rid-intrasoft.eu:${nodePort}/healthcheck"
-                        sh "curl -f http://data-ingestor.k8s.synthema.rid-intrasoft.eu:${nodePort}/healthcheck"
-                        //sh "docker run --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test pytest tests/test_functional8.py"
-                        sh "docker run --rm ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:test pytest tests/func3.py"
-                    }
-                }
-                // Destroy the deployment
-                withKubeConfig([credentialsId: 'k8s-admin']) {
-                    //sh '''
-                    //kubectl delete -f k8s/manifest-staging-${DOCKER_TAG}.yml -n synthema-dev
-                    //rm k8s/manifest-staging-${DOCKER_TAG}.yml
-                    //'''
-                    sh '''
-                    kubectl delete -f k8s/manifest-test.yml -n synthema-dev
-                    rm k8s/manifest-test.yml
-                    '''
-               }
-           }
-        }
-*/
+
         // *******************************
         // *** Push Images To Registry ***
         // *******************************
@@ -120,10 +79,7 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: 'k8s-admin']) {
                     sh '''
-                    cp k8s/manifest.yml k8s/manifest-staging-${DOCKER_TAG}.yml
-                    sed -e "s|DOCKER_TAG|${DOCKER_TAG}|g" k8s/manifest-staging-${DOCKER_TAG}.yml | kubectl apply -f -
-                    kubectl apply -f k8s/secret.yml 
-                    kubectl apply -f k8s/configmap.yml
+                    bash jenkins/deploy.sh
                     '''
                }
             }

@@ -60,25 +60,7 @@ def on_startup():
     create_db_and_tables()
 
 
-def _read_csv_autodetect(raw: bytes) -> pd.DataFrame:
-    """Read a CSV from raw bytes, auto-detecting the delimiter and encoding.
-
-    Also drops unnamed index columns (e.g. a leading patient-id column with no
-    header) so the uploaded partitions contain only real feature columns.
-    """
-    for encoding in ("utf-8", "latin1"):
-        try:
-            text = raw.decode(encoding)
-            break
-        except UnicodeDecodeError:
-            continue
-    else:  # pragma: no cover - both decodings failed
-        raise HTTPException(status_code=400, detail="Could not decode CSV file")
-
-    # sep=None + python engine sniffs the delimiter (comma, semicolon, tab, ...)
-    df = pd.read_csv(io.StringIO(text), sep=None, engine="python")
-    df = df.loc[:, ~df.columns.str.match(r"^Unnamed")]
-    return df
+from csv_input import read_csv_input as _read_csv_autodetect
 
 
 def _split_train_val_test(df: pd.DataFrame, random_state: int = 42):
@@ -229,7 +211,7 @@ async def upload_dataset(
         print('CSV CONTENT')
         csv_content = await file.read()
         print('DATAFRAME')
-        dataframe = pd.read_csv(io.StringIO(csv_content.decode("latin1")), sep=';')
+        dataframe = _read_csv_autodetect(csv_content)
         print(dataframe)
         print(len(dataframe))
         print('CSV FILEPATH')
