@@ -113,6 +113,12 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     path: str
     use_case: str # to change into use_case
 
+    dataset_role: Optional[str] = None
+    collection_id: Optional[str] = None
+    configuration_version: Optional[str] = None
+    dataset_meta: Optional[dict] = Field(default=None, sa_column=Column(JSONType))
+    evaluation_configuration: Optional[dict] = Field(default=None, sa_column=Column(JSONType))
+
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     @field_serializer("timestamp")
     def serialize_ts(self, ts: datetime):

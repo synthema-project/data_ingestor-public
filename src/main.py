@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Dict, List, Union
 from models import DatasetSchema, NewDataset, RemoveDatasetObject, NodeDatasetInfo, DatasetMetadata
 from database import create_db_and_tables, get_session
-from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan,save_node_dataset_info#,convert_np_to_native, 
+from utils import save_dataframe_as_csv, save_dataset_to_database, get_schema_from_database, remove_dataset_from_db, validate_data, csv_to_json_dict, replace_none_with_nan,save_node_dataset_info#,convert_np_to_native,
 #check_schema_dataset,
 from utils import save_dataframe_to_minio, remove_dataset_from_minio, get_dataset_from_minio, flatten_schema, save_bytes_to_minio
 from auth import UserClaims, require_authentication
@@ -34,8 +34,8 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-#ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema" 
-#CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata" 
+#ANNOTATION_ENDPOINT =  "http://data-annotation-service.synthema-dev/schema"
+#CATALOGUE_ENDPOINT = "http://data-catalogue-service.synthema-dev:83/metadata"
 
 from config import settings
 
@@ -58,6 +58,10 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+    from storage import ensure_bucket
+    ensure_bucket()
+    from database import migrate_dataset_partitions
+    migrate_dataset_partitions()
 
 
 from csv_input import read_csv_input as _read_csv_autodetect
@@ -76,27 +80,30 @@ def _split_train_val_test(df: pd.DataFrame, random_state: int = 42):
     }
 
 
-async def _register_in_catalogue(payload: dict) -> None:
+async def _register_in_catalogue(payload: dict, authorization: str = "") -> None:
     """POST a NodeDatasetInfo payload to the data catalogue (forwarding a token)."""
-    headers = {}
-    if CATALOGUE_TOKEN:
+    headers = {"Authorization": authorization} if authorization else {}
+    if not authorization and CATALOGUE_TOKEN:
         headers["Authorization"] = f"Bearer {CATALOGUE_TOKEN}"
-    async with httpx.AsyncClient(verify=False) as client:
+    async with httpx.AsyncClient() as client:
         response = await client.post(CATALOGUE_ENDPOINT, json=payload, headers=headers, timeout=30)
         if response.status_code not in (200, 201):
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"Catalogue registration failed for {payload.get('path')}: {response.text}",
+                detail="Catalogue registration failed",
             )
 
 
 @app.post("/dataset/partitioned", tags=["data-ingestion"])
 async def upload_dataset_partitioned(
+    request: Request,
     use_case: str = Form(...),
     metadata: str = Form(...),
-    dataset_meta: str = Form(...),
+    dataset_meta: str = Form(None),
+    configuration_version: str = Form(None),
     file: UploadFile = File(...),
     node: str = Form(None),
+    current_user: UserClaims = Depends(require_authentication),
 ):
     """Ingest a full CSV: split 60/20/20, upload the partitions + the DatasetMeta
     schema JSON to MinIO, and register every object in the data catalogue.
@@ -110,7 +117,11 @@ async def upload_dataset_partitioned(
 
     The node/org name is taken from this ingestor's ``NODE_NAME`` env.
     """
-    if not file.filename.endswith(".csv"):
+    if not current_user.has_role('Admin') and not any(
+        role.rpartition(':')[0] == NODE_NAME for role in current_user.synthema_roles
+    ):
+        raise HTTPException(403, 'Your account does not belong to this ingestor node')
+    if not file.filename or not file.filename.lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are accepted")
 
     # Validate the two JSON payloads up front.
@@ -118,23 +129,42 @@ async def upload_dataset_partitioned(
         dcat_metadata = DatasetMetadata(**json.loads(metadata)).model_dump()
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid DCAT-AP metadata: {e}")
+    # Resolve a centrally published, immutable metadata/evaluation pair.
+    authorization = request.headers.get("Authorization", "")
+    headers = {"Authorization": authorization} if authorization else ({"Authorization": f"Bearer {CATALOGUE_TOKEN}"} if CATALOGUE_TOKEN else {})
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            CATALOGUE_ENDPOINT.rsplit("/metadata", 1)[0] + f"/evaluation-configurations/{use_case}",
+            params={"version": configuration_version} if configuration_version else {},
+            headers=headers, timeout=30,
+        )
+        if response.status_code != 200:
+            raise HTTPException(422, "Publish a valid central metadata/evaluation configuration before uploading data")
+        configuration = response.json()
+    dataset_meta_dict = configuration["documents"]["metadata"]
+    evaluation_dict = configuration["documents"]["evaluation"]
     try:
-        dataset_meta_dict = json.loads(dataset_meta)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid dataset_meta JSON: {e}")
-
-    # Prod: one ingestor per org → node from env. Dev: optional `node` form field
-    # lets a single ingestor register several nodes (e.g. ICH and UMCU).
-    node = node or NODE_NAME
+        supplied_schema = json.loads(dataset_meta) if dataset_meta is not None else None
+    except (ValueError, TypeError) as error:
+        raise HTTPException(422, 'Invalid dataset_meta JSON') from error
+    if supplied_schema is not None and supplied_schema != dataset_meta_dict:
+        raise HTTPException(422, "Uploaded schema differs from the selected central configuration")
+    if node and node != NODE_NAME:
+        raise HTTPException(403, "Uploads must belong to this ingestor's configured node")
+    node = NODE_NAME
+    collection_id = str(uuid.uuid4())
     raw = await file.read()
     dataframe = _read_csv_autodetect(raw)
-    if dataframe.empty:
-        raise HTTPException(status_code=400, detail="Uploaded CSV has no rows")
+    if len(dataframe) < 5:
+        raise HTTPException(422, "At least five rows are needed for nonempty train/val/test partitions")
+    missing = {v["name"] for v in dataset_meta_dict["variables"]} - set(dataframe.columns)
+    if missing:
+        raise HTTPException(422, "Dataset is missing configured columns: " + ", ".join(sorted(missing)))
 
     partitions = _split_train_val_test(dataframe)
 
     # 1. Upload the DatasetMeta schema JSON so the FL client can hydrate it.
-    meta_object = f"{use_case}_{node}_meta.json"
+    meta_object = f"{use_case}_{node}_{collection_id}_meta.json"
     save_bytes_to_minio(
         json.dumps(dataset_meta_dict).encode("utf-8"), meta_object, "application/json"
     )
@@ -142,7 +172,7 @@ async def upload_dataset_partitioned(
     # 2. Upload each partition CSV and register it in the catalogue.
     uploaded = {}
     for part_name, part_df in partitions.items():
-        object_name = f"{use_case}_{node}_{part_name}.csv"
+        object_name = f"{use_case}_{node}_{collection_id}_{part_name}.csv"
         save_dataframe_to_minio(part_df, object_name)
         uploaded[part_name] = object_name
         await _register_in_catalogue(
@@ -153,7 +183,12 @@ async def upload_dataset_partitioned(
                 "num_records": int(len(part_df)),
                 "num_features": int(len(part_df.columns)),
                 "dataset_metadata": dcat_metadata,
-            }
+                "dataset_role": part_name,
+                "collection_id": collection_id,
+                "configuration_version": configuration["version"],
+                "dataset_meta": dataset_meta_dict,
+                "evaluation_configuration": evaluation_dict,
+            }, authorization
         )
 
     # 3. Register the schema JSON too, so its URL travels in the node's dataset list.
@@ -164,8 +199,13 @@ async def upload_dataset_partitioned(
             "use_case": use_case,
             "num_records": 0,
             "num_features": 0,
+            "dataset_role": "schema",
+            "collection_id": collection_id,
+            "configuration_version": configuration["version"],
+            "dataset_meta": dataset_meta_dict,
+            "evaluation_configuration": evaluation_dict,
             "dataset_metadata": dcat_metadata,
-        }
+        }, authorization
     )
 
     return {
@@ -173,210 +213,21 @@ async def upload_dataset_partitioned(
         "node": node,
         "use_case": use_case,
         "partitions": uploaded,
+        "collection_id": collection_id,
+        "configuration_version": configuration["version"],
         "dataset_meta": meta_object,
         "num_records": int(len(dataframe)),
     }
 
 @app.post("/dataset", tags=["data-ingestion"])
-#async def upload_dataset(node: str = Form(...), disease: str = Form(...),local_datasets_dir: str = Form(default="/app/datasets"), file: UploadFile = File(...), session: Session = Depends(get_session)): #local_datasets_dir: str = Form(default="/app/datasets")
-async def upload_dataset(
-    #node: str, 
-    #use_case: str, 
-    use_case: str = Form(...),
-    metadata: str = Form(...),
-    #disease: str,
-    #local_datasets_dir: str = Form(default="/app/datasets"), 
-    file: UploadFile = File(...), 
-    session: Session = Depends(get_session),  
-    #user = Depends(get_current_user)
-    ##current_user: UserClaims = Depends(require_authentication)
-    ):  
+async def upload_dataset(request: Request, use_case: str = Form(...), metadata: str = Form(...),
+                         file: UploadFile = File(...), configuration_version: str = Form(None),
+                         current_user: UserClaims = Depends(require_authentication)):
+    return await upload_dataset_partitioned(request=request, current_user=current_user, use_case=use_case, metadata=metadata,
+        dataset_meta=None, configuration_version=configuration_version, file=file, node=None)
 
-    try:
-        metadata_dict = json.loads(metadata)
-        metadata_obj = DatasetMetadata(**metadata_dict)
-    except Exception as e:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid metadata format: {str(e)}"
-        )
 
-    node = NODE_NAME
-        
-    if not file.filename.endswith(".csv"):
-        raise HTTPException(status_code=400, detail="Only CSV files are accepted")
-        
-    if file.filename.endswith(".csv"):
-        
-        print('CSV CONTENT')
-        csv_content = await file.read()
-        print('DATAFRAME')
-        dataframe = _read_csv_autodetect(csv_content)
-        print(dataframe)
-        print(len(dataframe))
-        print('CSV FILEPATH')
-        
-        ##csv_file_path = f"{local_datasets_dir}/{uuid.uuid4()}.csv"
-        ##print('TOCSV')
-        ##dataframe.to_csv(csv_file_path, index=False)
-        ##print('CSVFILEPATH', csv_file_path)
-        
-        async with httpx.AsyncClient() as client:
-            try:
-                ##response = await client.get(f"{ANNOTATION_ENDPOINT}/{use_case}")
-                ##print(f"Annotation response: {response.status_code} - {response.text}")
-                ##print('RESPONSE')
-                
-                ##if response.status_code != 200:
-                ##    raise Exception(f"Schema service error: {response.status_code}")
-                
-                ##print('SCHEMA1')
-                ##schema = response.json()["schema"]
-                ##print(schema)
-                ##print('SCHEMA')
-                
-                #data_dict = csv_to_json_dict(csv_file_path=csv_file_path, schema=schema)
-                data_dict = csv_to_json_dict(csv_file_path=dataframe)#, schema=schema)
-                print('DATADICT')
-                ##flat_schema = flatten_schema(schema)
-                ## commented for test purposes, then restore it
-                ##########validate_data(data_dict, flat_schema)
-                #validate_data(data_dict=data_dict, schema=schema)
-                print('VALIDATE')
-                
-                iid = str(uuid.uuid4()) #int(uuid.uuid4())#str(uuid.uuid4())
-                print('IID')
-                #filename = f"{disease}_{node}_{iid}.csv"
-                filename = f"{use_case}_{node}_{iid}.csv"
-                print('FILENAME')
-                ##filepath = save_dataframe_as_csv(dataframe, filename, node, savepath=local_datasets_dir)
-                minio_filepath = save_dataframe_to_minio(dataframe, filename)#, node)
-                #minio_filepath = save_dataframe_to_minio(dataframe, filename, NODE_NAME)
-                print('FILEPATH')
-                local_datasets[filename] = minio_filepath
-                ##print(minio_filepath)
-                print(filename)
-                ##os.remove(csv_file_path)
-                print('REMOVE')
 
-                num_records = len(dataframe)
-                num_features = len(dataframe.columns)
-                
-                #node_dataset = NodeDatasetInfo(id=iid, node=node, path=filepath, disease=disease)
-                node_dataset = NodeDatasetInfo(
-                    id=iid, 
-                    node=node, #NODE_NAME, #node
-                    path=minio_filepath, 
-                    #disease=disease #
-                    use_case=use_case,
-                    num_records=num_records,
-                    num_features=num_features,
-                    ##data_schema=schema,
-                    dataset_metadata=metadata_dict,
-                )
-                print('nodedatasetinfo')
-                print(NodeDatasetInfo)
-                #save_node_dataset_info(session, node_dataset)
-                print('NODEDATASET')
-
-                logger.info(f"Sending POST request to: {CATALOGUE_ENDPOINT}")
-                #logger.info(f"Payload: {node_dataset.model_dump()}")  # Log payload data
-
-                payload = node_dataset.model_dump()
-                payload["dataset_metadata"] = metadata_obj.model_dump()
-                
-                
-                try:
-                    # Send metadata to catalogue
-                    #response = await client.post(CATALOGUE_ENDPOINT, 
-                    #                             json=node_dataset.model_dump()
-                    #                            ) #node_dataset.dict() .model_dump()
-                    response = await client.post(
-                                                CATALOGUE_ENDPOINT,
-                                                json=payload
-                                                )
-                    print('CATALOGUEENDPOINT')
-                    print('CATALOGUEENDPOINT POST RESPONSE', response.status_code)
-                    #response.raise_for_status()
-
-                except httpx.HTTPStatusError as e:
-                    logger.error(f"HTTP error when communicating with {CATALOGUE_ENDPOINT}: {e.response.text}")
-                    raise HTTPException(status_code=e.response.status_code, detail=f"Error saving metadata: {e.response.text}")
-
-                except httpx.RequestError as e:
-                    logger.error(f"Request error when connecting to {CATALOGUE_ENDPOINT}: {str(e)}")
-                    raise HTTPException(status_code=500, detail=f"Error connecting to data-catalogue: {str(e)}")
-
-                except Exception as e:
-                    logger.exception("Unexpected error during communication with data-catalogue")
-                    raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
-
-                #new_dataset = DatasetSchema(disease=disease, data=json.dumps(schema))
-                #print('NEWDATASET')
-                #save_dataset_to_database(session, new_dataset)
-                #print('SAVETOCATALOGUE')
-
-                return {"message": "Dataset uploaded and validated successfully", "filename": filename}
-            except httpx.HTTPStatusError as e:
-                raise HTTPException(status_code=e.response.status_code, detail="Error processing file")
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
-    else:
-        raise HTTPException(status_code=400, detail="Only CSV files are accepted")
-
-'''
-@app.delete("/dataset", tags=["data-ingestion"])
-async def remove_dataset(
-    node: str,
-    disease: str,
-    filename: str,
-    #path: str,
-    #request: Request,
-    session: Session = Depends(get_session)
-):
-    print('ENTER DELETE')
-    #logging.info(f"Received request: {await request.json()}")
-    logging.info(f"Received query parameters: node={node}, disease={disease}, path={filename}")
-    ##removedatasetobject = RemoveDatasetObject(node=node, disease=disease, path=path)
-    removedatasetobject = RemoveDatasetObject(node=node, disease=disease, path=filename)
-    print('REMOVEDATASETOBJECT')
-    try:
-        success = remove_dataset_from_minio(node, filename)
-
-        if not success:
-            raise HTTPException(status_code=404, detail='Dataset not found in MinIO')
-
-        
-        # Notify external service
-        logging.info("Notifying external service to remove metadata.")
-        print('REMOVE METADATA')
-        async with httpx.AsyncClient() as client:
-            url = f"{CATALOGUE_ENDPOINT}/metadata"
-            response = await client.delete(
-                CATALOGUE_ENDPOINT,#url,
-                #json={"node": node, "disease": disease, "path": path},
-                params=removedatasetobject.model_dump(),
-                #content=json.dumps(removedatasetobject.model_dump()),
-                #params={"node": node, "disease": disease, "path": path},
-                headers={"Content-Type": "application/json"}
-            )
-            response.raise_for_status()
-            logging.info("External service notified successfully.")
-
-        return {"message": "Dataset removed successfully from both database and local storage"}
-
-    except httpx.HTTPStatusError as exc:
-        logging.error(f"External service error: {exc.response.status_code} - {exc.response.text}")
-        raise HTTPException(status_code=exc.response.status_code, detail=exc.response.json())
-
-    except FileNotFoundError:
-        logging.error(f"File {removedatasetobject.path} not found.")
-        raise HTTPException(status_code=404, detail="File not found in local storage")
-
-    except Exception as e:
-        logging.exception("An unexpected error occurred.")
-        raise HTTPException(status_code=500, detail="An internal server error occurred")
-'''
 
 
 @app.delete("/dataset", tags=["data-ingestion"])

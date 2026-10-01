@@ -32,17 +32,17 @@ class UserClaims(BaseModel):
     sub: str
     typ: str
     azp: str
-    session_state: str
+    session_state: Optional[str] = None
     scope: str
-    sid: str
+    sid: Optional[str] = None
     synthema_roles: List[str] = Field(alias="synthemaRoles", default_factory=list)
-    name: str = Field(alias="firstName")
-    last_name: str = Field(alias="lastName")
-    username: str
+    name: str = Field(alias="given_name", default="")
+    last_name: str = Field(alias="family_name", default="")
+    username: str = Field(alias="preferred_username", default="")
 
     def has_organization_role(self, organization, role) -> bool:
         for syn_role in self.synthema_roles:
-            org, rol = syn_role.split(":")
+            org, _, rol = syn_role.rpartition(":")
             if role == rol and organization == org:
                 return True
 
@@ -50,7 +50,7 @@ class UserClaims(BaseModel):
 
     def has_role(self, role) -> bool:
         for syn_role in self.synthema_roles:
-            org, rol = syn_role.split(":")
+            org, _, rol = syn_role.rpartition(":")
             if role == rol:
                 return True
 

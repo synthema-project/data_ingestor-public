@@ -18,7 +18,6 @@ def ensure_bucket():
     else:
         print(f"Bucket '{settings.MINIO_BUCKET_NAME}' already exists.")
 
-ensure_bucket()
 
 # Function to upload a file
 def upload_file(file_path: str, object_name: str):
