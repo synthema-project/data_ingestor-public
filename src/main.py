@@ -24,7 +24,7 @@ import logging
 import requests
 
 
-app = FastAPI()
+app = FastAPI(dependencies=[Depends(require_authentication)])
 
 
 app.add_middleware(

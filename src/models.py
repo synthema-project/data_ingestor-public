@@ -22,7 +22,7 @@ import json
 import uuid as uuid_pkg
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Union
-from sqlalchemy import Column, String, JSON as JSONType
+from sqlalchemy import Column, String, JSON as JSONType, DateTime
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from pydantic import field_serializer, BaseModel
 
@@ -104,7 +104,8 @@ class RemoveDatasetObject(SQLModel):
 #    path: str
 #    use_case: str #to change into use_case
 
-class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
+class NodeDatasetInfo(SQLModel, table=True):
+    __tablename__ = "data_catalogue"
     #id: str = Field(default=None, primary_key=True)
     #id: Optional[int] = Field(default=None, primary_key=True)
     id: Optional[uuid_pkg.UUID] = Field(default_factory=uuid_pkg.uuid4,
@@ -119,7 +120,8 @@ class NodeDatasetInfo(SQLModel, table=True, __tablename__="data_catalogue"):
     dataset_meta: Optional[dict] = Field(default=None, sa_column=Column(JSONType))
     evaluation_configuration: Optional[dict] = Field(default=None, sa_column=Column(JSONType))
 
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=datetime.utcnow,
+                                sa_column=Column(DateTime(timezone=False), nullable=False))
     @field_serializer("timestamp")
     def serialize_ts(self, ts: datetime):
         return ts.isoformat()
