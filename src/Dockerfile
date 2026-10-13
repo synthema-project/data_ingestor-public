@@ -13,7 +13,5 @@ EXPOSE 82
 #ENV DATABASE_PATH=/app/data/central_node.db #database
 ENV MINIO_ENDPOINT=obstorageapi.k8s.synthema.rid-intrasoft.eu
 ENV MINIO_BUCKET_NAME=data-annotation
-ENV MINIO_ACCESS_KEY=mqcqwECvoga6pkDRhOUz
-ENV MINIO_SECRET_KEY=EN6t1TWZELRhn1LyGoi6ubtApmXoUJfsny9tRYz9
 
 CMD ["python","main.py"]
