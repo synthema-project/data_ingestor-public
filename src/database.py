@@ -6,7 +6,8 @@ from config import settings
 #postgres_url = f"postgresql://{postgres_arg}"
 
 postgres_arg = f"{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
-postgres_url = f"postgresql://{postgres_arg}"
+# Select the PostgreSQL driver installed by requirements.txt.
+postgres_url = f"postgresql+psycopg2://{postgres_arg}"
 
 connect_args = {}
 engine = create_engine(postgres_url, echo=True, connect_args=connect_args)

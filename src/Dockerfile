@@ -2,8 +2,9 @@ FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11-slim
 WORKDIR /app
 RUN mkdir data
 COPY ./requirements.txt .
-RUN pip install --no-cache-dir -r ./requirements.txt
+RUN python -m pip install --no-cache-dir -r ./requirements.txt
 COPY . .
+RUN python -c "import database; assert database.engine.dialect.driver == 'psycopg2'; print('Ingestor PostgreSQL driver import: OK')"
 EXPOSE 82
 #ENV DATASET_PATH = /app/data/dataset
 #ENV DATASET_PATH = /app/datasets

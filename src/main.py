@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form, Request
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, File, UploadFile, Form, Request
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -24,7 +24,9 @@ import logging
 import requests
 
 
-app = FastAPI(dependencies=[Depends(require_authentication)])
+app = FastAPI()
+# Kubernetes probes must not require a user token. Data routes still do.
+data_routes = APIRouter(dependencies=[Depends(require_authentication)])
 
 
 app.add_middleware(
@@ -67,16 +69,14 @@ def on_startup():
 from csv_input import read_csv_input as _read_csv_autodetect
 
 
-def _split_train_val_test(df: pd.DataFrame, random_state: int = 42):
-    """Shuffle and split 60/20/20 (train/val/test), matching the MSI simulation."""
+def _split_train_test(df: pd.DataFrame, random_state: int = 42):
+    """Shuffle and split 80/20 (train/test), matching MSI without validation split."""
     shuffled = df.sample(frac=1.0, random_state=random_state).reset_index(drop=True)
     n = len(shuffled)
-    train_end = int(0.6 * n)
-    val_end = train_end + int(0.2 * n)
+    train_end = int(0.8 * n)
     return {
         "train": shuffled.iloc[:train_end].reset_index(drop=True),
-        "val": shuffled.iloc[train_end:val_end].reset_index(drop=True),
-        "test": shuffled.iloc[val_end:].reset_index(drop=True),
+        "test": shuffled.iloc[train_end:].reset_index(drop=True),
     }
 
 
@@ -94,7 +94,7 @@ async def _register_in_catalogue(payload: dict, authorization: str = "") -> None
             )
 
 
-@app.post("/dataset/partitioned", tags=["data-ingestion"])
+@data_routes.post("/dataset/partitioned", tags=["data-ingestion"])
 async def upload_dataset_partitioned(
     request: Request,
     use_case: str = Form(...),
@@ -105,7 +105,7 @@ async def upload_dataset_partitioned(
     node: str = Form(None),
     current_user: UserClaims = Depends(require_authentication),
 ):
-    """Ingest a full CSV: split 60/20/20, upload the partitions + the DatasetMeta
+    """Ingest a full CSV: split 80/20 into train/test, upload the partitions + the DatasetMeta
     schema JSON to MinIO, and register every object in the data catalogue.
 
     Form fields:
@@ -155,13 +155,13 @@ async def upload_dataset_partitioned(
     collection_id = str(uuid.uuid4())
     raw = await file.read()
     dataframe = _read_csv_autodetect(raw)
-    if len(dataframe) < 5:
-        raise HTTPException(422, "At least five rows are needed for nonempty train/val/test partitions")
+    if len(dataframe) < 2:
+        raise HTTPException(422, "At least two rows are needed for nonempty train/test partitions")
     missing = {v["name"] for v in dataset_meta_dict["variables"]} - set(dataframe.columns)
     if missing:
         raise HTTPException(422, "Dataset is missing configured columns: " + ", ".join(sorted(missing)))
 
-    partitions = _split_train_val_test(dataframe)
+    partitions = _split_train_test(dataframe)
 
     # 1. Upload the DatasetMeta schema JSON so the FL client can hydrate it.
     meta_object = f"{use_case}_{node}_{collection_id}_meta.json"
@@ -219,7 +219,7 @@ async def upload_dataset_partitioned(
         "num_records": int(len(dataframe)),
     }
 
-@app.post("/dataset", tags=["data-ingestion"])
+@data_routes.post("/dataset", tags=["data-ingestion"])
 async def upload_dataset(request: Request, use_case: str = Form(...), metadata: str = Form(...),
                          file: UploadFile = File(...), configuration_version: str = Form(None),
                          current_user: UserClaims = Depends(require_authentication)):
@@ -230,7 +230,7 @@ async def upload_dataset(request: Request, use_case: str = Form(...), metadata: 
 
 
 
-@app.delete("/dataset", tags=["data-ingestion"])
+@data_routes.delete("/dataset", tags=["data-ingestion"])
 async def delete_dataset(
     filename: str,
     ##current_user: UserClaims = Depends(require_authentication)
@@ -257,7 +257,7 @@ async def delete_dataset(
     return {"message": "Dataset removed successfully"}
 
 '''
-@app.delete("/dataset", tags=["data-ingestion"])
+@data_routes.delete("/dataset", tags=["data-ingestion"])
 async def delete_dataset(filename: str):
 
     success = remove_dataset_from_minio(filename)
@@ -286,7 +286,7 @@ async def delete_dataset(filename: str):
     return {"message": "Dataset removed successfully"}
 
 
-@app.get("/dataset", tags=["data-ingestion"])
+@data_routes.get("/dataset", tags=["data-ingestion"])
 async def get_dataset(
     node: str,
     disease: str,
@@ -320,7 +320,7 @@ async def get_dataset(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving dataset: {str(e)}")
 '''
-@app.get("/dataset", tags=["data-ingestion"])
+@data_routes.get("/dataset", tags=["data-ingestion"])
 async def get_dataset(
     filename: str,
     ##current_user: UserClaims = Depends(require_authentication)
@@ -344,6 +344,8 @@ async def get_dataset(
 @app.get("/healthcheck")
 async def healthcheck():
     return {"status": "ok"}
+
+app.include_router(data_routes)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=settings.APP_PORT)
